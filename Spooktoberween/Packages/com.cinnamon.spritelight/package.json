@@ -1,0 +1,11 @@
+{
+	"name": "com.cinnamon.spritelight",
+	"version": "1.0.0",
+	"description": "light those sprites real good",
+	"displayName": "Spritelight",
+	"unity": "2019.4",
+	"dependencies": {
+		"com.unity.2d.pixel-perfect": "2.0.4",
+		"com.unity.render-pipelines.lightweight": "7.4.3"
+	}
+}
