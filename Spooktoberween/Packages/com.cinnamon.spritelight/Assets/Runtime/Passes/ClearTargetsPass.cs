@@ -8,15 +8,12 @@ public class ClearTargetsPass : ScriptableRenderPass
     ClearFlag m_clearFlag = ClearFlag.None;
     Color m_clearColor = Color.black;
 
-    public ClearTargetsPass(string PassName, RenderPassEvent passEvent) : base()
+    public ClearTargetsPass(string PassName, RenderPassEvent passEvent, ClearFlag clearFlag, Color clearColor) : base()
     {
         renderPassEvent = passEvent;
 
         m_PassName = PassName;
-    }
 
-    public void Setup(ClearFlag clearFlag, Color clearColor)
-    {
         m_clearFlag = clearFlag;
         m_clearColor = clearColor;
     }

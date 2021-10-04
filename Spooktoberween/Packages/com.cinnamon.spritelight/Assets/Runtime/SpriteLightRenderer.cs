@@ -9,25 +9,46 @@ namespace SpriteLightRendering
 {
     public sealed class SpriteLightRenderer : ScriptableRenderer
     {
+#region VARIABLE_DEFS
         const int k_DepthStencilBufferBits = 32;
         const string k_CreateCameraTextures = "Create Camera Texture";
 
-        ColorGradingLutPass m_ColorGradingLutPass;
-        DepthOnlyPass m_DepthPrepass;
-        NormalsPass m_NormalsPass;
-        ClearTargetsPass m_ClearTargetsPass;
+        // Shadows
         MainLightShadowCasterPass m_MainLightShadowCasterPass;
         AdditionalLightsShadowCasterPass m_AdditionalLightsShadowCasterPass;
         PointLightShadowCasterPass m_PointLightShadowCasterPass;
-        DrawObjectsPass m_RenderOpaqueForwardPass;
+
+        // Prepasses
+        ColorGradingLutPass m_ColorGradingLutPass;
+        DepthOnlyPass m_DepthPrepass;
+
+        // Opaque
+        NormalsPass m_NormalsPass;
         SpriteColorPass m_SpriteColorPass;
-        DrawSkyboxPass m_DrawSkyboxPass;
-        CopyDepthPass m_CopyDepthPass;
-        CopyColorPass m_CopyColorPass;
-        DrawObjectsPass m_RenderTransparentForwardPass;
+#if UNITY_EDITOR
+        EditorNormalsDiffusePass m_EditorNormalsDiffusePass;
+#endif // UNITY_EDITOR
         DeferredLightingPass m_DeferredLightingPass;
         UpscaleBlitPass m_UpscaleBasePass;
-        UpscaleBlitPass m_UpscaleLightPass;
+
+        // Skybox
+        DrawSkyboxPass m_DrawSkyboxPass;
+
+        // Copy Passes
+        CopyDepthPass m_CopyDepthPass;
+        CopyColorPass m_CopyColorPass;
+
+        // Transparent
+        ClearTargetsPass m_ClearTargetsPass;
+        NormalsPass m_TransparentNormalsPass;
+        SpriteColorPass m_TransparentColorPass;
+#if UNITY_EDITOR
+        EditorNormalsDiffusePass m_EditorTransparentNormalsDiffusePass;
+#endif // UNITY_EDITOR
+        DeferredLightingPass m_TransparentLightingPass;
+        UpscaleBlitPass m_UpscaleTransparentBasePass;
+
+        // Post processing
         InvokeOnRenderObjectCallbackPass m_OnRenderObjectCallbackPass;
         PostProcessPass m_PostProcessPass;
         PostProcessPass m_FinalPostProcessPass;
@@ -55,7 +76,6 @@ namespace SpriteLightRendering
         RenderTargetHandle m_OpaqueColor;
         RenderTargetHandle m_DiffuseColor;
         RenderTargetHandle m_SpecularColor;
-        RenderTargetHandle m_LightColor;
         RenderTargetHandle m_AfterPostProcessColor;
         RenderTargetHandle m_ColorGradingLut;
 
@@ -67,6 +87,7 @@ namespace SpriteLightRendering
         Material m_ScreenspaceShadowsMaterial;
 
         List<int> ShadowPointLightIndices = new List<int>();
+#endregion
 
         public SpriteLightRenderer(SpriteLightRendererData data) : base(data)
         {
@@ -85,22 +106,43 @@ namespace SpriteLightRendering
 
             // Note: Since all custom render passes inject first and we have stable sort,
             // we inject the builtin passes in the before events.
+
+            // Shadows
             m_MainLightShadowCasterPass = new MainLightShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
             m_AdditionalLightsShadowCasterPass = new AdditionalLightsShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
             m_PointLightShadowCasterPass = new PointLightShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
+
+            // Prepasses
             m_DepthPrepass = new DepthOnlyPass(RenderPassEvent.BeforeRenderingPrePasses, RenderQueueRange.opaque, data.opaqueLayerMask);
             m_ColorGradingLutPass = new ColorGradingLutPass(RenderPassEvent.BeforeRenderingPrePasses, data.postProcessData);
-            m_NormalsPass = new NormalsPass("Normals", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingShadows, data.opaqueLayerMask);
-            m_ClearTargetsPass = new ClearTargetsPass("Clear Diffuse and Specular", RenderPassEvent.BeforeRendering);
-            m_RenderOpaqueForwardPass = new DrawObjectsPass("Render Opaques", true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
+
+            // Opaque
+            m_NormalsPass = new NormalsPass("Normals", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques, data.opaqueLayerMask);
             m_SpriteColorPass = new SpriteColorPass("Sprite Color", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques);
-            m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingSkybox, m_CopyDepthMaterial);
-            m_DrawSkyboxPass = new DrawSkyboxPass(RenderPassEvent.BeforeRenderingSkybox);
-            m_CopyColorPass = new CopyColorPass(RenderPassEvent.BeforeRenderingTransparents, m_SamplingMaterial);
-            m_RenderTransparentForwardPass = new DrawObjectsPass("Render Transparents", false, RenderPassEvent.BeforeRenderingTransparents, RenderQueueRange.transparent, data.transparentLayerMask, m_DefaultStencilState, stencilData.stencilReference);
-            m_DeferredLightingPass = new DeferredLightingPass("Deferred Lighting", RenderQueueRange.transparent, RenderPassEvent.AfterRenderingOpaques);
+#if UNITY_EDITOR
+            m_EditorNormalsDiffusePass = new EditorNormalsDiffusePass("Editor Normals Diffuse", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques + 1);
+#endif // UNITY_EDITOR
+            m_DeferredLightingPass = new DeferredLightingPass("Deferred Lighting", RenderPassEvent.AfterRenderingOpaques);
             m_UpscaleBasePass = new UpscaleBlitPass(RenderPassEvent.AfterRenderingOpaques + 1, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);
-            m_UpscaleLightPass = new UpscaleBlitPass(RenderPassEvent.AfterRenderingOpaques + 1, BlendMode.One, BlendMode.One);
+
+            // Skybox
+            m_DrawSkyboxPass = new DrawSkyboxPass(RenderPassEvent.BeforeRenderingSkybox);
+
+            // Copy Passes
+            m_CopyDepthPass = new CopyDepthPass(RenderPassEvent.AfterRenderingTransparents + 2, m_CopyDepthMaterial);
+            m_CopyColorPass = new CopyColorPass(RenderPassEvent.AfterRenderingTransparents + 2, m_SamplingMaterial);
+
+            // Transparent
+            m_ClearTargetsPass = new ClearTargetsPass("Clear Opaque Textures", RenderPassEvent.BeforeRenderingTransparents - 1, ClearFlag.Color, Color.clear);
+            m_TransparentNormalsPass = new NormalsPass("TransparentNormals", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingTransparents, data.transparentLayerMask);
+            m_TransparentColorPass = new SpriteColorPass("Transparent Sprite Color", RenderQueueRange.transparent, RenderPassEvent.BeforeRenderingTransparents);
+#if UNITY_EDITOR
+            m_EditorTransparentNormalsDiffusePass = new EditorNormalsDiffusePass("Editor Transparent Normals Diffuse", RenderQueueRange.transparent, RenderPassEvent.BeforeRenderingTransparents + 1);
+#endif // UNITY_EDITOR
+            m_TransparentLightingPass = new DeferredLightingPass("Transparent Lighting", RenderPassEvent.AfterRenderingTransparents);
+            m_UpscaleTransparentBasePass = new UpscaleBlitPass(RenderPassEvent.AfterRenderingTransparents + 1, BlendMode.One, BlendMode.OneMinusSrcAlpha);
+
+            // Post processing
             m_OnRenderObjectCallbackPass = new InvokeOnRenderObjectCallbackPass(RenderPassEvent.BeforeRenderingPostProcessing);
             m_PostProcessPass = new PostProcessPass(RenderPassEvent.BeforeRenderingPostProcessing, data.postProcessData, m_BlitMaterial);
             m_FinalPostProcessPass = new PostProcessPass(RenderPassEvent.AfterRendering + 1, data.postProcessData, m_BlitMaterial);
@@ -130,8 +172,6 @@ namespace SpriteLightRendering
             m_BaseDepth.Init("_BaseDepth");
             m_DiffuseColor.Init("_DiffuseTexture");
             m_SpecularColor.Init("_SpecularTexture");
-            m_LightColor.Init("_LightColorTexture");
-     
 
             supportedRenderingFeatures = new RenderingFeatures()
             {
@@ -139,7 +179,6 @@ namespace SpriteLightRendering
             };
         }
 
-        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             // always dispose unmanaged resources
@@ -150,7 +189,6 @@ namespace SpriteLightRendering
             CoreUtils.Destroy(m_ScreenspaceShadowsMaterial);
         }
 
-        /// <inheritdoc />
         public override void Setup(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             Camera camera = renderingData.cameraData.camera;
@@ -171,27 +209,13 @@ namespace SpriteLightRendering
                 if (bIsPixelPerfectCamera)
                 {
                     pixelRatio = PixelPerfectComponent.pixelRatio;
-
-                    //m_ClearTargetsPass.Setup(ClearFlag.All, Color.black);
-                    //EnqueuePass(m_ClearTargetsPass);
                 }
             }
 
             // Special path for depth only offscreen cameras. Only write opaques + transparents.
             bool isOffscreenDepthTexture = cameraData.targetTexture != null && cameraData.targetTexture.format == RenderTextureFormat.Depth;
-            if (isOffscreenDepthTexture)
+            if (isOffscreenDepthTexture || cameraData.isPreviewCamera)
             {
-                ConfigureCameraTarget(BuiltinRenderTextureType.CameraTarget, BuiltinRenderTextureType.CameraTarget);
-
-                for (int i = 0; i < rendererFeatures.Count; ++i)
-                {
-                    if (rendererFeatures[i].isActive)
-                        rendererFeatures[i].AddRenderPasses(this, ref renderingData);
-                }
-
-                EnqueuePass(m_RenderOpaqueForwardPass);
-                EnqueuePass(m_DrawSkyboxPass);
-                EnqueuePass(m_RenderTransparentForwardPass);
                 return;
             }
             
@@ -206,15 +230,7 @@ namespace SpriteLightRendering
 
             bool isSceneViewCamera = cameraData.isSceneViewCamera;
 
-            CommandBuffer commandBuffer = CommandBufferPool.Get("sceneViewKeyword");
-            if (isSceneViewCamera)
-            {
-                commandBuffer.EnableShaderKeyword("UNITY_SCENE_VIEW");
-            }
-            else
-            {
-                commandBuffer.DisableShaderKeyword("UNITY_SCENE_VIEW");
-            }
+            CommandBuffer commandBuffer = CommandBufferPool.Get("SetShaderParameters");
 
             commandBuffer.SetGlobalFloat("_PixelRatio", pixelRatio);
             Vector4 UVOffset = Vector4.one;
@@ -239,6 +255,15 @@ namespace SpriteLightRendering
 
             commandBuffer.SetGlobalVector("_AmbientLightColor", RenderSettings.ambientLight);
 
+            if (isSceneViewCamera || (!cameraData.resolveFinalTarget))
+            {
+                commandBuffer.EnableShaderKeyword("RENDERING_TO_TEMP_TARGET");
+            }
+            else
+            {
+                commandBuffer.DisableShaderKeyword("RENDERING_TO_TEMP_TARGET");
+            }
+
             context.ExecuteCommandBuffer(commandBuffer);
             CommandBufferPool.Release(commandBuffer);
 
@@ -258,7 +283,7 @@ namespace SpriteLightRendering
 
             // The copying of depth should normally happen after rendering opaques.
             // But if we only require it for post processing or the scene camera then we do it after rendering transparent objects
-            m_CopyDepthPass.renderPassEvent = (!requiresDepthTexture && (applyPostProcessing || isSceneViewCamera)) ? RenderPassEvent.AfterRenderingTransparents : RenderPassEvent.AfterRenderingOpaques;
+            m_CopyDepthPass.renderPassEvent = (!requiresDepthTexture && (applyPostProcessing || isSceneViewCamera)) ? RenderPassEvent.AfterRenderingTransparents + 2: RenderPassEvent.AfterRenderingOpaques;
 
             // TODO: CopyDepth pass is disabled in XR due to required work to handle camera matrices in URP.
             // IF this condition is removed make sure the CopyDepthPass.cs is working properly on all XR modes. This requires PureXR SDK integration.
@@ -277,14 +302,14 @@ namespace SpriteLightRendering
             bool createDepthTexture = cameraData.requiresDepthTexture && !requiresDepthPrepass;
             createDepthTexture |= (cameraData.renderType == CameraRenderType.Base && !cameraData.resolveFinalTarget);
 
-    #if UNITY_ANDROID
+#if UNITY_ANDROID
                 if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Vulkan)
                 {
                     // GLES can not use render texture's depth buffer with the color buffer of the backbuffer
                     // in such case we create a color texture for it too.
                     createColorTexture |= createDepthTexture;
                 }
-    #endif
+#endif
 
             // Configure all settings require to start a new camera stack (base camera only)
             if (cameraData.renderType == CameraRenderType.Base)
@@ -295,9 +320,7 @@ namespace SpriteLightRendering
                 bool intermediateRenderTexture = createColorTexture || createDepthTexture;
 
                 // Doesn't create texture for Overlay cameras as they are already overlaying on top of created textures.
-                bool createTextures = intermediateRenderTexture;
-                if (createTextures)
-                    CreateCameraRenderTarget(context, ref renderingData.cameraData);
+                CreateCameraRenderTarget(context, ref renderingData.cameraData);
 
                 // if rendering to intermediate render texture we don't have to create msaa backbuffer
                 int backbufferMsaaSamples = (intermediateRenderTexture) ? 1 : cameraTargetDescriptor.msaaSamples;
@@ -330,8 +353,8 @@ namespace SpriteLightRendering
             if (mainLightShadows)
                 EnqueuePass(m_MainLightShadowCasterPass);
 
-            //if (additionalLightShadows)
-            //    EnqueuePass(m_AdditionalLightsShadowCasterPass);
+            if (additionalLightShadows)
+                EnqueuePass(m_AdditionalLightsShadowCasterPass);
 
             m_PointLightShadowCasterPass.Setup(ref renderingData, ref ShadowPointLightIndices);
             EnqueuePass(m_PointLightShadowCasterPass);
@@ -348,12 +371,29 @@ namespace SpriteLightRendering
                 EnqueuePass(m_ColorGradingLutPass);
             }
 
+            // Opaque
             m_NormalsPass.Setup(m_NormalsTexture, m_NormalsDepthTexture);
             EnqueuePass(m_NormalsPass);
 
             m_SpriteColorPass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
             EnqueuePass(m_SpriteColorPass);
 
+#if UNITY_EDITOR
+            if(isSceneViewCamera)
+            {
+                m_EditorNormalsDiffusePass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
+                EnqueuePass(m_EditorNormalsDiffusePass);
+            }
+#endif // UNITY_EDITOR
+
+            m_DeferredLightingPass.Setup(m_BaseColor.Identifier(), m_BaseDepth.Identifier(), in ShadowPointLightIndices);
+            EnqueuePass(m_DeferredLightingPass);
+
+            //m_UpscaleBasePass.Setup(m_BaseColor);
+            //m_UpscaleBasePass.ConfigureTarget(m_ActiveCameraColorAttachment.Identifier());
+            //EnqueuePass(m_UpscaleBasePass);
+
+            // Skybox and copy color
             bool isOverlayCamera = cameraData.renderType == CameraRenderType.Overlay;
             if (camera.clearFlags == CameraClearFlags.Skybox && RenderSettings.skybox != null && !isOverlayCamera)
                 EnqueuePass(m_DrawSkyboxPass);
@@ -367,18 +407,32 @@ namespace SpriteLightRendering
                 EnqueuePass(m_CopyColorPass);
             }
 
-            m_DeferredLightingPass.Setup(m_LightColor.Identifier(), m_BaseDepth.Identifier(), in ShadowPointLightIndices);
-            EnqueuePass(m_DeferredLightingPass);
+            // Transparent
+            //m_ClearTargetsPass.ConfigureTarget(new RenderTargetIdentifier[]{m_DiffuseColor.Identifier(), m_SpecularColor.Identifier()}, m_BaseDepth.Identifier());
+            //EnqueuePass(m_ClearTargetsPass);
 
-            m_UpscaleBasePass.Setup(m_BaseColor);
-            m_UpscaleBasePass.ConfigureTarget(m_ActiveCameraColorAttachment.Identifier());
-            EnqueuePass(m_UpscaleBasePass);
+            //m_TransparentNormalsPass.Setup(m_NormalsTexture, m_NormalsDepthTexture);
+            //EnqueuePass(m_TransparentNormalsPass);
 
-            m_UpscaleLightPass.Setup(m_LightColor);
-            m_UpscaleLightPass.ConfigureTarget(m_ActiveCameraColorAttachment.Identifier());
-            EnqueuePass(m_UpscaleLightPass);
+            //m_TransparentColorPass.Setup(new RenderTargetIdentifier[] {m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier()}, m_BaseDepth.Identifier());
+            //EnqueuePass(m_TransparentColorPass);
 
-            EnqueuePass(m_RenderTransparentForwardPass);
+#if UNITY_EDITOR
+            if (isSceneViewCamera)
+            {
+                m_EditorTransparentNormalsDiffusePass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
+                EnqueuePass(m_EditorNormalsDiffusePass);
+            }
+#endif // UNITY_EDITOR
+
+            //m_TransparentLightingPass.Setup(m_BaseColor.Identifier(), m_BaseDepth.Identifier(), in ShadowPointLightIndices);
+            //EnqueuePass(m_TransparentLightingPass);
+
+            m_UpscaleTransparentBasePass.Setup(m_BaseColor);
+            m_UpscaleTransparentBasePass.ConfigureTarget(m_ActiveCameraColorAttachment.Identifier());
+            EnqueuePass(m_UpscaleTransparentBasePass);
+
+            // Post processing
             EnqueuePass(m_OnRenderObjectCallbackPass);
 
             bool lastCameraInTheStack = cameraData.resolveFinalTarget;
@@ -510,7 +564,6 @@ namespace SpriteLightRendering
             cmd.ReleaseTemporaryRT(m_NormalsTexture.id);
             cmd.ReleaseTemporaryRT(m_BaseColor.id);
             cmd.ReleaseTemporaryRT(m_BaseDepth.id);
-            cmd.ReleaseTemporaryRT(m_LightColor.id);
 
             cmd.ReleaseTemporaryRT(m_NormalsDepthTexture.id);
         }
@@ -573,7 +626,6 @@ namespace SpriteLightRendering
             cmd.GetTemporaryRT(m_DiffuseColor.id, SpriteColorDescriptor, FilterMode.Point);
             cmd.GetTemporaryRT(m_SpecularColor.id, SpriteColorDescriptor, FilterMode.Point);
             cmd.GetTemporaryRT(m_BaseColor.id, SpriteColorDescriptor, FilterMode.Point);
-            cmd.GetTemporaryRT(m_LightColor.id, SpriteColorDescriptor, FilterMode.Point);
 
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);

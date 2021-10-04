@@ -1,4 +1,4 @@
-﻿Shader "SpriteLight/OverlaySprite"
+﻿Shader "SpriteLight/Opaque/OverlaySprite"
 {
     Properties
     {
@@ -12,9 +12,9 @@
 		[HideInInspector] _Flip("Flip", Vector) = (1,1,1,1)
 		[PerRendererData] _AlphaTex("External Alpha", 2D) = "white" {}
 		[PerRendererData] _EnableExternalAlpha("Enable External Alpha", Float) = 0
-		[PerRendererData] _EmissiveMultiplier("Emissive Multiplier", Color) = (1, 1, 1, 1)
-		[PerRendererData] _DiffuseMultiplier("Diffuse Multiplier", Color) = (1, 1, 1, 1)
-		[PerRendererData] _SpecularMultiplier("Specular Multiplier", Color) = (1, 1, 1, 1)
+		_EmissiveMultiplier("Emissive Multiplier", Color) = (1, 1, 1, 1)
+		_DiffuseMultiplier("Diffuse Multiplier", Color) = (1, 1, 1, 1)
+		_SpecularMultiplier("Specular Multiplier", Color) = (1, 1, 1, 1)
 	}
 	SubShader
 	{

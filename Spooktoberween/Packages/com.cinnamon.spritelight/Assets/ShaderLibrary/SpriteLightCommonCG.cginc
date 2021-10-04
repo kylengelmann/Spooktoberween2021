@@ -28,7 +28,7 @@ float4 GetScreenSpaceUV(float4 ClippedPos, bool bIsRenderTexture, bool bIsLowRes
         }
 #endif
 
-#if UNITY_UV_STARTS_AT_TOP && !defined(UNITY_SCENE_VIEW)
+#if UNITY_UV_STARTS_AT_TOP && !defined(RENDERING_TO_TEMP_TARGET)
 	if (!bIsRenderTexture)
 	{
 		screenPos.y = 1.f - screenPos.y;

@@ -1,4 +1,4 @@
-﻿Shader "SpriteLight/DeferredLight"
+﻿Shader "Hidden/SpriteLight/DeferredLight"
 {
 	Properties
 	{
@@ -25,7 +25,6 @@
 			#pragma shader_feature_local DIRECTIONAL_LIGHTING POINT_LIGHTING
 			#pragma shader_feature_local ATTENUATION_LINEAR ATTENUATION_INVERSE_SQUARED
 			#pragma shader_feature_local SHADOWS_OFF SHADOWS_ON
-			#pragma shader_feature __ UNITY_SCENE_VIEW
 			#pragma shader_feature __ UNITY_PIXEL_PERFECT
 
 			#pragma vertex vert
@@ -54,10 +53,7 @@
 				o.vertex = v.vertex;
 
 				o.viewPos = mul(unity_CameraInvProjection, v.vertex);
-#ifdef UNITY_SCENE_VIEW
-				o.viewPos.x = -o.viewPos.x;
 				o.viewPos.y = -o.viewPos.y;
-#endif
 #else
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.viewPos = UnityObjectToViewPos(v.vertex);
@@ -108,8 +104,9 @@
 				float3 viewDir = float3(0.f, 0.f, -1.f);
 				float vDotL = max(0.f, dot(viewDir, -reflectedLightDir)) * max(min((nDotL)*100.f, 1.f), 0.f);
 
-				// add a small amount to the power as spec was occasionally somehow NaN, this fixed the issue
 				float4 specColor = _SpecularTexture.Sample(Point_Clamp_GBufferSampler, screenPosTexture);
+
+				// add a small amount to the power as spec was occasionally somehow NaN, this fixed the issue
 				float spec = pow(vDotL, specColor.a*128.f + .001f);
 				specColor *= spec;
 
@@ -118,20 +115,26 @@
 
 				// Shadows
 #ifdef SHADOWS_ON
+				float3 positionWS = mul(unity_CameraToWorld, float4(viewPos, 1.0)).xyz;
+				//return viewPos.xyzz;
+
+				//return positionWS.xyzz;
+
+				float4 shadowCoords = TransformWorldToShadowCoord(positionWS);
+
+				//return shadowCoords;
+
 				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((nDotL - .1f)*100.f, 1.f), 0.f);
+
+				//return ShadowAttenuation;
+
 				attenuation *= lerp(1.f - ShadowStrength, 1.f, ShadowAttenuation);
 #endif // SHADOWS_ON
 				LightColor *= max(attenuation, 0.f);
 
-#ifdef UNITY_SCENE_VIEW
-				if (NormalsTexVal.a < .2f && diffuse.a < .2f)
-				{
-					clip(-1);
-				}
-
-				diffuse = lerp(float4(.5f, .5f, .5f, 1.f), diffuse, diffuse.a);
-#endif
-				return (diffuse + specColor) * LightColor;
+				float4 result = (diffuse + specColor) * LightColor;
+				result.a = 0.f;
+				return result;
 			}
 			ENDCG
         }

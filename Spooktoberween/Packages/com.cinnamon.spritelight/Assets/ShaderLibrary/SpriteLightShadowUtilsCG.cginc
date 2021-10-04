@@ -68,13 +68,16 @@ float4 TransformWorldToShadowCoord(float3 positionWS)
 	half cascadeIndex = 0;
 //#endif
 
-	return mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
+	float4 result = mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
 #else
 	float4 result = mul(_PointLightWorldToShadow[_LightIndex*NUM_CUBE_SIDES + GetPointLightWorldToShadowIndex(positionWS)], float4(positionWS, 1.0));
 	result = result / result.w;
 	//result.y = 1.f - result.y;
-	return result;
+
 #endif
+	//result = result / result.w;
+	//result.y = 1.f - result.y;
+	return result;
 }
 
 Texture2D _MainLightShadowmapTexture;

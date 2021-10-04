@@ -1,6 +1,8 @@
 #ifndef SPRITE_SHADOW_CASTER_PASS_INCLUDED
 #define SPRITE_SHADOW_CASTER_PASS_INCLUDED
 
+#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
+
 struct Attributes
 {
 	float4 positionOS : POSITION;
@@ -21,7 +23,7 @@ float3 ApplyShadowBias(float3 positionVS, float3 normalVS)
 	float scale = invNdotL * _ShadowBias.y;
 
 	// normal bias is negative since we want to apply an inset normal offset
-	positionVS = float3(0.f, 0.f, -1.f)  * _ShadowBias.xxx + positionVS;
+	positionVS = float3(0.f, 0.f, 1.f)  * _ShadowBias.xxx + positionVS;
 	positionVS = normalVS * scale.xxx + positionVS;
 	return positionVS;
 }

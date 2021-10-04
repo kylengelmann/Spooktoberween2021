@@ -18,7 +18,7 @@ namespace SpriteLightRendering
         {
             public override void Action(int instanceId, string pathName, string resourceFile)
             {
-                var instance = CreateInstance<SpriteLightRendererData>();
+                SpriteLightRendererData instance = CreateInstance<SpriteLightRendererData>();
                 AssetDatabase.CreateAsset(instance, pathName);
                 ResourceReloader.ReloadAllNullIn(instance, UniversalRenderPipelineAsset.packagePath);
                 Selection.activeObject = instance;

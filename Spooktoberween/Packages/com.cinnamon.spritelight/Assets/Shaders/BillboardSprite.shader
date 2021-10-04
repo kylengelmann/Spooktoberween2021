@@ -1,4 +1,4 @@
-﻿Shader "SpriteLight/BillboardSprite"
+﻿Shader "SpriteLight/Opaque/BillboardSprite"
 {
 	Properties
 	{
@@ -32,7 +32,6 @@
 				#pragma fragment SpriteFragLighting
 				
 				#include "UnityCG.cginc"
-				#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
 				#include "SpriteColorPass.cginc"
 
 			ENDCG
@@ -50,7 +49,6 @@
 				#pragma fragment DepthFrag
 
 				#include "UnityCG.cginc"
-				#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
 				#include "SpriteDepthPass.cginc"
 			ENDCG
 		}
@@ -64,7 +62,6 @@
 			#pragma fragment NormalFrag
 
 			#include "UnityCG.cginc"
-			#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
 			#include "SpriteNormalPass.cginc"
 			ENDCG
 		}
@@ -93,7 +90,6 @@
 				#pragma fragment ShadowPassFragment
 				
 				#include "UnityCG.cginc"
-				#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
 				#include "SpriteShadowCastPass.hlsl"
 			ENDHLSL
 		}

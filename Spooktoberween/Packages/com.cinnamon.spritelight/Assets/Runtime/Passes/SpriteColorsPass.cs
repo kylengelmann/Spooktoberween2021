@@ -12,6 +12,7 @@ namespace SpriteLightRendering
         List<ShaderTagId> m_ShaderTagIdList = new List<ShaderTagId>();
         readonly FilteringSettings m_FilterSettings;
         RenderStateBlock m_RenderStateBlock;
+        bool m_bIsTransparent;
 
         RenderTargetIdentifier[] m_ColorIdentifiers;
         RenderTargetIdentifier m_DepthIdentifier;
@@ -32,6 +33,8 @@ namespace SpriteLightRendering
             m_FilterSettings.sortingLayerRange = SortingLayerRange.all;
 
             m_RenderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
+
+            m_bIsTransparent = renderQueueRange == RenderQueueRange.transparent;
         }
 
         public void Setup(RenderTargetIdentifier[] ColorTargets, RenderTargetIdentifier DepthTarget)
@@ -43,7 +46,7 @@ namespace SpriteLightRendering
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
             ConfigureTarget(m_ColorIdentifiers, m_DepthIdentifier);
-            ConfigureClear(ClearFlag.All, Color.clear);
+            ConfigureClear(m_bIsTransparent ? ClearFlag.None : ClearFlag.All, Color.clear);
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
@@ -54,12 +57,11 @@ namespace SpriteLightRendering
                 context.ExecuteCommandBuffer(commandBuffer);
                 commandBuffer.Clear();
 
-                SortingCriteria sortFlags = SortingCriteria.CommonOpaque;
-                DrawingSettings drawSettings = CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, sortFlags);
+                SortingCriteria SortFlags = m_bIsTransparent ? SortingCriteria.CommonTransparent : SortingCriteria.CommonOpaque;
+                DrawingSettings drawSettings = CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortFlags);
                 FilteringSettings filterSettings = m_FilterSettings;
 
                 context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filterSettings, ref m_RenderStateBlock);
-
             }
             context.ExecuteCommandBuffer(commandBuffer);
             CommandBufferPool.Release(commandBuffer);

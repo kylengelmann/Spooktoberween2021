@@ -1,6 +1,8 @@
 #ifndef SPRITE_COLOR_PASS
 #define SPRITE_COLOR_PASS
 
+#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
+
 struct appdata_t
 {
 	float4 vertex   : POSITION;
@@ -44,15 +46,31 @@ float4 _AmbientLightColor;
 
 fixed4 SpriteFragBase(v2f i) : SV_Target
 {
-	float4 diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord);
-	float alpha = diffuse.a;
-
-	clip(alpha - _AlphaCutoff);
-
-	diffuse.rgb *= _DiffuseMultiplier.rgb;
 	float4 emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+	emissive.rgb *= _EmissiveMultiplier.rgb;
+
+	float4 diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+	diffuse.rgb *= _DiffuseMultiplier.rgb;
+	float diffuseAlpha = diffuse.a * _DiffuseMultiplier.rgb;
+
+	clip(diffuseAlpha - _AlphaCutoff);
+	
 	float4 ambient = _AmbientLightColor * diffuse;
-	return emissive + ambient;
+	emissive.rgb += ambient.rgb;
+	return emissive;
+}
+
+fixed4 SpriteFragBaseTransparent(v2f i) : SV_Target
+{
+	float4 emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+	emissive.rgb *= emissive.a;
+
+	float4 diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+	diffuse.rgb *= _DiffuseMultiplier.rgb * diffuse.a;
+
+	float4 ambient = _AmbientLightColor * diffuse;
+	emissive.rgb += ambient.rgb;
+	return emissive;
 }
 
 struct PixelOutput
@@ -64,7 +82,7 @@ struct PixelOutput
 
 PixelOutput SpriteFragLighting(v2f i)
 {
-	// Get alpha from emissive and clip if alpha is below alpha cutoff
+	// Get alpha from diffuse and clip if alpha is below alpha cutoff
 	PixelOutput output;
 	output.diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
 	float alpha = output.diffuse.a;
@@ -75,14 +93,37 @@ PixelOutput SpriteFragLighting(v2f i)
 	output.emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
 	output.specular = _Specular.Sample(Point_Clamp_GBufferSampler, i.texcoord);
 
+	// Calculate diffuse and specular values
+	output.emissive *= _EmissiveMultiplier;
+	output.diffuse *= _DiffuseMultiplier;
+	output.specular *= _SpecularMultiplier;
+
 	// Calculate ambient and add it to emissive
 	float4 ambient = _AmbientLightColor * output.diffuse;
-	output.emissive += ambient;
+	output.emissive.rgb += ambient.rgb;
 
-	// Calculate diffuse and specular values
-	output.emissive.rgb *= _EmissiveMultiplier.rgb;
-	output.diffuse.rgb *= _DiffuseMultiplier.rgb;
-	output.specular.rgb *= _SpecularMultiplier.rgb;
+	return output;
+}
+
+PixelOutput SpriteFragLightingTransparent(v2f i)
+{
+	PixelOutput output;
+	
+	output.diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
+	output.diffuse *= _DiffuseMultiplier;
+	output.diffuse.rgb *= output.diffuse.a;
+	
+	output.emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
+	output.emissive *= _EmissiveMultiplier;
+	output.emissive.rgb *= output.emissive.a;
+	
+	output.specular = _Specular.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+	output.specular *= _SpecularMultiplier;
+
+	// Calculate ambient and add it to emissive
+	float4 ambient = _AmbientLightColor * output.diffuse;
+	
+	output.emissive.rgb += ambient.rgb;
 
 	return output;
 }

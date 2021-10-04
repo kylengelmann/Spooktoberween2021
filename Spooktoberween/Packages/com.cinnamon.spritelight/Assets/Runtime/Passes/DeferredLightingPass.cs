@@ -11,15 +11,13 @@ namespace SpriteLightRendering
         readonly string m_PassName;
         ProfilingSampler m_ProfilingSampler;
         List<ShaderTagId> m_ShaderTagIdList = new List<ShaderTagId>();
-        readonly FilteringSettings m_FilterSettings;
-        RenderStateBlock m_RenderStateBlock;
         Material m_DirectionalLightMat;
         Material m_DirectionalLightShadowMat;
         Material m_PointLightMat;
         Material m_PointLightShadowMat;
         MaterialPropertyBlock m_MPB;
 
-        static readonly string DeferredShaderName = "SpriteLight/DeferredLight";
+        static readonly string DeferredShaderName = "Hidden/SpriteLight/DeferredLight";
         static readonly string DeferredLightingTag = "DeferredLighting";
         static readonly int LightPositionID = Shader.PropertyToID("LightPosition");
         static readonly int LightColorID = Shader.PropertyToID("LightColor");
@@ -27,7 +25,7 @@ namespace SpriteLightRendering
 
         List<int> ShadowPointLightIndices = new List<int>();
 
-        public DeferredLightingPass(string PassName, RenderQueueRange renderQueueRange, RenderPassEvent passEvent) : base()
+        public DeferredLightingPass(string PassName, RenderPassEvent passEvent) : base()
         {
             renderPassEvent = passEvent;
 
@@ -35,10 +33,6 @@ namespace SpriteLightRendering
             m_ProfilingSampler = new ProfilingSampler(m_PassName);
 
             m_ShaderTagIdList.Add(new ShaderTagId(DeferredLightingTag));
-
-            m_FilterSettings = new FilteringSettings(renderQueueRange);
-
-            m_RenderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
 
             m_DirectionalLightMat = new Material(Shader.Find(DeferredShaderName));
             m_DirectionalLightMat.EnableKeyword("DIRECTIONAL_LIGHTING");
@@ -62,7 +56,7 @@ namespace SpriteLightRendering
         public void Setup(RenderTargetIdentifier colorTarget, RenderTargetIdentifier depthTarget, in List<int> ShadowCastingPointLightIndices)
         {
             ConfigureTarget(colorTarget, depthTarget);
-            ConfigureClear(ClearFlag.Color, Color.black);
+            ConfigureClear(ClearFlag.None, Color.black);
             ShadowPointLightIndices.Clear();
             ShadowPointLightIndices.AddRange(ShadowCastingPointLightIndices);
         }

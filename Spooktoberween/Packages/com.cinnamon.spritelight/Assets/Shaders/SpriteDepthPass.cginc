@@ -1,6 +1,8 @@
 #ifndef SPRITE_DEPTH_PASS
 #define SPRITE_DEPTH_PASS
 
+#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
+
 struct appdata
 {
 	float4 Position : POSITION;

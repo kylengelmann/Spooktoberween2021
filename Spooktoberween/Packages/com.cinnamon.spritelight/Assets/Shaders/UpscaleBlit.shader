@@ -23,7 +23,7 @@
             #pragma vertex vert
             #pragma fragment frag
 			#pragma shader_feature __ UNITY_PIXEL_PERFECT
-			#pragma shader_feature __ UNITY_SCENE_VIEW
+			#pragma shader_feature __ RENDERING_TO_TEMP_TARGET
 
             #include "UnityCG.cginc"
 
@@ -52,7 +52,7 @@
 				o.uv = v.uv;
 				o.uv.x = UVOffset.x + o.uv.x * UVOffset.z;
 				o.uv.y = UVOffset.y + o.uv.y * UVOffset.w;
-#if UNITY_UV_STARTS_AT_TOP && (defined(UNITY_PIXEL_PERFECT) || defined(UNITY_SCENE_VIEW))
+#if UNITY_UV_STARTS_AT_TOP && (defined(UNITY_PIXEL_PERFECT) || defined(RENDERING_TO_TEMP_TARGET))
 				o.uv.y = 1.f - o.uv.y;
 #endif
                 return o;
