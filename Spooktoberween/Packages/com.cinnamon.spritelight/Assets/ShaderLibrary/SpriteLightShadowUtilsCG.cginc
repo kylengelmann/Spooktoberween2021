@@ -90,6 +90,7 @@ SamplerComparisonState Point_Clamp_Compare_ShadowSampler
 
 float SampleShadowMap(float3 positionVS)
 {
+	positionVS.z = -positionVS.z;
 	float3 positionWS = mul(unity_CameraToWorld, float4(positionVS, 1.0)).xyz;
 
 	float4 shadowCoords = TransformWorldToShadowCoord(positionWS);
@@ -111,5 +112,86 @@ float SampleShadowMap(float3 positionVS)
 
 	return  _PointLightShadowTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z + biasK);
 #endif
+}
+
+float4x4 _VisibilityWorldToShadow[NUM_CUBE_SIDES];
+
+Texture2D _VisibilityShadowTexture;
+SamplerComparisonState Point_Clamp_Compare_VisibilityShadowSampler
+{
+	// sampler comparison state
+	ComparisonFunc = LESS;
+};
+
+int GetVisibilityWorldToShadowIndex(float3 positionWS)
+{
+	float3 lightToPosition = positionWS - _PlayerWorldPosition.xyz;
+
+	float absX = abs(lightToPosition.x);
+	float absY = abs(lightToPosition.y);
+	float absZ = abs(lightToPosition.z);
+
+	if (absX > absY && absX > absZ)
+	{
+		if (lightToPosition.x > 0)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+	else if (absY > absX && absY > absZ)
+	{
+		if (lightToPosition.y > 0)
+		{
+			return 2;
+		}
+		else
+		{
+			return 3;
+		}
+	}
+	else
+	{
+		if (lightToPosition.z > 0)
+		{
+			return 4;
+		}
+		else
+		{
+			return 5;
+		}
+	}
+}
+
+float4 TransformVisibilityWorldToShadowCoord(float3 positionWS)
+{
+	float4 result = mul(_VisibilityWorldToShadow[GetVisibilityWorldToShadowIndex(positionWS)], float4(positionWS, 1.0));
+	result = result / result.w;
+
+	return result;
+}
+
+float SampleVisibilityShadowMap(float3 positionVS)
+{
+	positionVS.z = -positionVS.z;
+	float3 positionWS = mul(unity_CameraToWorld, float4(positionVS, 1.0)).xyz;
+
+	float4 shadowCoords = TransformVisibilityWorldToShadowCoord(positionWS);
+
+	if (shadowCoords.z > 1.f || shadowCoords.z < 0.f)
+	{
+		return 1.f;
+	}
+
+#ifdef UNITY_REVERSED_Z
+	float biasK = shadowCoords.z * .1f;
+#else
+	float biasK = (shadowCoords.z - 1.f) * .1f;
+#endif
+
+	return  _VisibilityShadowTexture.SampleCmp(Point_Clamp_Compare_VisibilityShadowSampler, shadowCoords, shadowCoords.z + biasK);
 }
 #endif

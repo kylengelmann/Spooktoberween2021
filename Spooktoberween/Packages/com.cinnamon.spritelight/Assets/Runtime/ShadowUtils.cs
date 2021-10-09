@@ -27,8 +27,6 @@ namespace SpriteLightRendering
             UnityEngine.Rendering.Universal.ShadowUtils.ApplySliceTransform(ref shadowSliceData, shadowmapWidth, shadowmapHeight);
         }
 
-
-
         static Matrix4x4 GetShadowTransform(Matrix4x4 proj, Matrix4x4 view)
         {
             // Currently CullResults ComputeDirectionalShadowMatricesAndCullingPrimitives doesn't
@@ -127,5 +125,7 @@ namespace SpriteLightRendering
             cmd.SetGlobalVector("_ShadowBias", shadowBias);
             cmd.SetGlobalVector("_LightDirection", new Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f));
         }
+
+        public static string GetVisibilityLightTag() { return "VisibilityLight"; }
     }
 }

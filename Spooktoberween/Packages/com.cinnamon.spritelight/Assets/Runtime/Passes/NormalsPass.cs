@@ -22,6 +22,8 @@ namespace SpriteLightRendering
 
         public NormalsPass(string PassName, RenderQueueRange renderQueueRange, RenderPassEvent passEvent, LayerMask layerMask) : base()
         {
+            renderPassEvent = passEvent;
+
             m_PassName = PassName;
             m_ProfilingSampler = new ProfilingSampler(m_PassName);
 

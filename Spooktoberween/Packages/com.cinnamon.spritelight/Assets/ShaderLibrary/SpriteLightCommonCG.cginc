@@ -22,7 +22,7 @@ float4 GetScreenSpaceUV(float4 ClippedPos, bool bIsRenderTexture, bool bIsLowRes
 #ifdef UNITY_PIXEL_PERFECT
         UNITY_BRANCH
         if(bIsLowRes) 
-	{
+		{
           screenPos.x = UVOffset.x + screenPos.x * UVOffset.z;
           screenPos.y = UVOffset.y + screenPos.y * UVOffset.w;
         }
@@ -49,5 +49,8 @@ float GetViewDepth(float4 depth)
 
 	return viewDepth;
 }
+
+float4 _PlayerWorldPosition;
+float4 _PlayerViewPosition;
 
 #endif

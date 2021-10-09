@@ -66,20 +66,23 @@ namespace SpriteLightRendering
                     continue;
                 }
 
-                if (renderingData.cullResults.GetShadowCasterBounds(i, out var bounds))
+                if (!light.light.CompareTag(ShadowUtils.GetVisibilityLightTag()))
                 {
-                    m_PointLightShadowData[m_NumLightsToRender].lightIndex = i;
-                    m_LightPositions[m_NumLightsToRender] = light.light.transform.position;
-                    for(int j = 0; j < NUM_CUBE_SIDES; ++j)
+                    if (renderingData.cullResults.GetShadowCasterBounds(i, out var bounds))
                     {
-                        ShadowUtils.GetPointLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, m_NumLightsToRender, (CubemapFace)j, 1024, 1024, SLICE_RES, .2f,
-                            out m_PointLightShadowData[m_NumLightsToRender].shadowSlices[j], out m_PointLightShadowData[m_NumLightsToRender].shadowSplits[j]);
-                        m_ShadowTransforms[m_NumLightsToRender*NUM_CUBE_SIDES + j] = m_PointLightShadowData[m_NumLightsToRender].shadowSlices[j].shadowTransform;
+                        m_PointLightShadowData[m_NumLightsToRender].lightIndex = i;
+                        m_LightPositions[m_NumLightsToRender] = light.light.transform.position;
+                        for(int j = 0; j < NUM_CUBE_SIDES; ++j)
+                        {
+                            ShadowUtils.GetPointLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, m_NumLightsToRender, (CubemapFace)j, 1024, 1024, SLICE_RES, .2f,
+                                out m_PointLightShadowData[m_NumLightsToRender].shadowSlices[j], out m_PointLightShadowData[m_NumLightsToRender].shadowSplits[j]);
+                            m_ShadowTransforms[m_NumLightsToRender*NUM_CUBE_SIDES + j] = m_PointLightShadowData[m_NumLightsToRender].shadowSlices[j].shadowTransform;
+                        }
+
+                        LightIndices.Add(i);
+
+                        ++m_NumLightsToRender;
                     }
-
-                    LightIndices.Add(i);
-
-                    ++m_NumLightsToRender;
                 }
             }
         }

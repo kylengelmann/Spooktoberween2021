@@ -35,11 +35,11 @@ float4 GetShadowPositionHClip(Attributes input)
 
 	float4 positionCS = mul(UNITY_MATRIX_P, float4(ApplyShadowBias(positionVS, normalVS), 1.f));
 
-#if UNITY_REVERSED_Z
-	positionCS.z = min(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
-#else
-	positionCS.z = max(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
-#endif
+//#if UNITY_REVERSED_Z
+//	positionCS.z = min(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
+//#else
+//	positionCS.z = max(positionCS.z, positionCS.w * UNITY_NEAR_CLIP_VALUE);
+//#endif
 
 	return positionCS;
 }

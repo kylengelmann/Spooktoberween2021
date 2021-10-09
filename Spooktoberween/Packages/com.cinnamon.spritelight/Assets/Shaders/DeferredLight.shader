@@ -116,17 +116,23 @@
 				// Shadows
 #ifdef SHADOWS_ON
 				float3 positionWS = mul(unity_CameraToWorld, float4(viewPos, 1.0)).xyz;
-				//return viewPos.xyzz;
+				//return viewPos.zzzz;
 
-				//return positionWS.xyzz;
+				//return positionWS.xyzz/10.f;
 
 				float4 shadowCoords = TransformWorldToShadowCoord(positionWS);
+				//shadowCoords.r = (shadowCoords.r - .75f) * 4.f;
+				//shadowCoords.g = shadowCoords.g * 4.f;
+				//return shadowCoords.zzzz;
 
 				//return shadowCoords;
 
 				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((nDotL - .1f)*100.f, 1.f), 0.f);
 
-				//return ShadowAttenuation;
+				//return SampleShadowMap(viewPos);
+
+				//return SampleShadowMap(viewPos);
+				//return 1.f;
 
 				attenuation *= lerp(1.f - ShadowStrength, 1.f, ShadowAttenuation);
 #endif // SHADOWS_ON

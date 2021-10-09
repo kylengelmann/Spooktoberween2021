@@ -25,6 +25,9 @@ namespace SpriteLightRendering
 
         List<int> ShadowPointLightIndices = new List<int>();
 
+        RenderTargetHandle ColorTarget;
+        RenderTargetHandle DepthTarget;
+
         public DeferredLightingPass(string PassName, RenderPassEvent passEvent) : base()
         {
             renderPassEvent = passEvent;
@@ -53,14 +56,19 @@ namespace SpriteLightRendering
             m_MPB = new MaterialPropertyBlock();
         }
 
-        public void Setup(RenderTargetIdentifier colorTarget, RenderTargetIdentifier depthTarget, in List<int> ShadowCastingPointLightIndices)
+        public void Setup(RenderTargetHandle colorTarget, RenderTargetHandle depthTarget, in List<int> ShadowCastingPointLightIndices)
         {
-            ConfigureTarget(colorTarget, depthTarget);
-            ConfigureClear(ClearFlag.None, Color.black);
+            ColorTarget = colorTarget;
+            DepthTarget = depthTarget;
             ShadowPointLightIndices.Clear();
             ShadowPointLightIndices.AddRange(ShadowCastingPointLightIndices);
         }
 
+        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        {
+            ConfigureTarget(new RenderTargetIdentifier[] {ColorTarget.Identifier()}, DepthTarget.Identifier());
+            ConfigureClear(ClearFlag.None, Color.black);
+        }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
@@ -159,7 +167,7 @@ namespace SpriteLightRendering
             for (int i = 0; i < renderingData.lightData.visibleLights.Length; ++i)
             {
                 VisibleLight light = renderingData.lightData.visibleLights[i];
-                if (ShadowPointLightIndices.Contains(i) || light.lightType != LightType.Point)
+                if (ShadowPointLightIndices.Contains(i) || light.lightType != LightType.Point || light.light.CompareTag(ShadowUtils.GetVisibilityLightTag()))
                 {
                     continue;
                 }

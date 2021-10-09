@@ -17,10 +17,12 @@ namespace SpriteLightRendering
         MainLightShadowCasterPass m_MainLightShadowCasterPass;
         AdditionalLightsShadowCasterPass m_AdditionalLightsShadowCasterPass;
         PointLightShadowCasterPass m_PointLightShadowCasterPass;
+        VisibilityPass m_VisibilityPass;
 
         // Prepasses
         ColorGradingLutPass m_ColorGradingLutPass;
         DepthOnlyPass m_DepthPrepass;
+        VisibilityTexturePass m_VisibilityTexturePass;
 
         // Opaque
         NormalsPass m_NormalsPass;
@@ -76,6 +78,7 @@ namespace SpriteLightRendering
         RenderTargetHandle m_OpaqueColor;
         RenderTargetHandle m_DiffuseColor;
         RenderTargetHandle m_SpecularColor;
+        RenderTargetHandle m_VisibilityTexture;
         RenderTargetHandle m_AfterPostProcessColor;
         RenderTargetHandle m_ColorGradingLut;
 
@@ -111,13 +114,15 @@ namespace SpriteLightRendering
             m_MainLightShadowCasterPass = new MainLightShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
             m_AdditionalLightsShadowCasterPass = new AdditionalLightsShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
             m_PointLightShadowCasterPass = new PointLightShadowCasterPass(RenderPassEvent.BeforeRenderingShadows);
+            m_VisibilityPass = new VisibilityPass(RenderPassEvent.BeforeRenderingShadows);
 
             // Prepasses
             m_DepthPrepass = new DepthOnlyPass(RenderPassEvent.BeforeRenderingPrePasses, RenderQueueRange.opaque, data.opaqueLayerMask);
             m_ColorGradingLutPass = new ColorGradingLutPass(RenderPassEvent.BeforeRenderingPrePasses, data.postProcessData);
 
             // Opaque
-            m_NormalsPass = new NormalsPass("Normals", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques, data.opaqueLayerMask);
+            m_NormalsPass = new NormalsPass("Normals", RenderQueueRange.opaque, RenderPassEvent.AfterRenderingOpaques - 2, data.opaqueLayerMask);
+            m_VisibilityTexturePass = new VisibilityTexturePass("VisibilityTexture", RenderPassEvent.AfterRenderingOpaques - 1);
             m_SpriteColorPass = new SpriteColorPass("Sprite Color", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques);
 #if UNITY_EDITOR
             m_EditorNormalsDiffusePass = new EditorNormalsDiffusePass("Editor Normals Diffuse", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques + 1);
@@ -172,6 +177,7 @@ namespace SpriteLightRendering
             m_BaseDepth.Init("_BaseDepth");
             m_DiffuseColor.Init("_DiffuseTexture");
             m_SpecularColor.Init("_SpecularTexture");
+            m_VisibilityTexture.Init("_VisibilityTexture");
 
             supportedRenderingFeatures = new RenderingFeatures()
             {
@@ -272,7 +278,8 @@ namespace SpriteLightRendering
             bool isStereoEnabled = false;
 
             bool mainLightShadows = m_MainLightShadowCasterPass.Setup(ref renderingData);
-            bool additionalLightShadows = m_AdditionalLightsShadowCasterPass.Setup(ref renderingData);
+            //bool additionalLightShadows = m_AdditionalLightsShadowCasterPass.Setup(ref renderingData);
+            bool additionalLightShadows = false;
 
             // Depth prepass is generated in the following cases:
             // - If game or offscreen camera requires it we check if we can copy the depth from the rendering opaques pass and use that instead.
@@ -359,6 +366,10 @@ namespace SpriteLightRendering
             m_PointLightShadowCasterPass.Setup(ref renderingData, ref ShadowPointLightIndices);
             EnqueuePass(m_PointLightShadowCasterPass);
 
+            int VisibilityLightIndex;
+            m_VisibilityPass.Setup(ref renderingData, out VisibilityLightIndex);
+            EnqueuePass(m_VisibilityPass);
+
             if (requiresDepthPrepass)
             {
                 m_DepthPrepass.Setup(cameraTargetDescriptor, m_DepthTexture);
@@ -375,6 +386,12 @@ namespace SpriteLightRendering
             m_NormalsPass.Setup(m_NormalsTexture, m_NormalsDepthTexture);
             EnqueuePass(m_NormalsPass);
 
+            if (VisibilityLightIndex >= 0)
+            {
+                m_VisibilityTexturePass.Setup(m_VisibilityTexture.Identifier(), VisibilityLightIndex);
+                EnqueuePass(m_VisibilityTexturePass);
+            }
+
             m_SpriteColorPass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
             EnqueuePass(m_SpriteColorPass);
 
@@ -386,7 +403,7 @@ namespace SpriteLightRendering
             }
 #endif // UNITY_EDITOR
 
-            m_DeferredLightingPass.Setup(m_BaseColor.Identifier(), m_BaseDepth.Identifier(), in ShadowPointLightIndices);
+            m_DeferredLightingPass.Setup(m_BaseColor, m_BaseDepth, in ShadowPointLightIndices);
             EnqueuePass(m_DeferredLightingPass);
 
             //m_UpscaleBasePass.Setup(m_BaseColor);
@@ -564,6 +581,7 @@ namespace SpriteLightRendering
             cmd.ReleaseTemporaryRT(m_NormalsTexture.id);
             cmd.ReleaseTemporaryRT(m_BaseColor.id);
             cmd.ReleaseTemporaryRT(m_BaseDepth.id);
+            cmd.ReleaseTemporaryRT(m_VisibilityTexture.id);
 
             cmd.ReleaseTemporaryRT(m_NormalsDepthTexture.id);
         }
@@ -598,7 +616,7 @@ namespace SpriteLightRendering
 #if UNITY_EDITOR
                 bool bIsPixelPerfectCamera = PixelPerfectComponent && (Application.isPlaying || PixelPerfectComponent.runInEditMode) && PixelPerfectComponent.enabled;
 #else
-                bIsPixelPerfectCamera = PixelPerfectComponent &&  enabled;
+                bIsPixelPerfectCamera = PixelPerfectComponent && PixelPerfectComponent.enabled;
 #endif
 
                 if (bIsPixelPerfectCamera)
@@ -626,6 +644,8 @@ namespace SpriteLightRendering
             cmd.GetTemporaryRT(m_DiffuseColor.id, SpriteColorDescriptor, FilterMode.Point);
             cmd.GetTemporaryRT(m_SpecularColor.id, SpriteColorDescriptor, FilterMode.Point);
             cmd.GetTemporaryRT(m_BaseColor.id, SpriteColorDescriptor, FilterMode.Point);
+             
+            cmd.GetTemporaryRT(m_VisibilityTexture.id, SpriteColorDescriptor, FilterMode.Point);
 
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
