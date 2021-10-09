@@ -2,7 +2,7 @@
 {
     Properties
     {
-		[PerRendererData] _MainTex("Main Texture", 2D) = "white" {}
+		[PerRendererData]_MainTex("Main Texture", 2D) = "white" {}
 		_Emissive("Emissive Texture", 2D) = "black" {}
 		_Specular("Specular Texture", 2D) = "white" {}
 		[PerRendererData] _Color("Tint", Color) = (1,1,1,1)
