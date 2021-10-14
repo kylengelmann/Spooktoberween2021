@@ -12,9 +12,11 @@ float4 _PointLightWorldPosition[MAX_POINT_LIGHT_SHADOWS];
 
 int _LightIndex;
 
+float4x4 _FlashlightWorldToShadow;
+
 int GetPointLightWorldToShadowIndex(float3 positionWS)
 {
-#ifndef DIRECTIONAL_LIGHTING
+#ifdef POINT_LIGHTING
 	float3 lightToPosition = positionWS - _PointLightWorldPosition[_LightIndex].xyz;
 
 	float absX = abs(lightToPosition.x);
@@ -68,20 +70,30 @@ float4 TransformWorldToShadowCoord(float3 positionWS)
 	half cascadeIndex = 0;
 //#endif
 
-	float4 result = mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
+	return mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
 #else
+#ifdef POINT_LIGHTING
 	float4 result = mul(_PointLightWorldToShadow[_LightIndex*NUM_CUBE_SIDES + GetPointLightWorldToShadowIndex(positionWS)], float4(positionWS, 1.0));
 	result = result / result.w;
-	//result.y = 1.f - result.y;
 
+	return result;
+	//result.y = 1.f - result.y;
+#else
+#ifdef SPOT_LIGHTING
+	float4 result = mul(_FlashlightWorldToShadow, float4(positionWS, 1.0));
+	result = result / result.w;
+	return result;
+#endif
+#endif
 #endif
 	//result = result / result.w;
 	//result.y = 1.f - result.y;
-	return result;
+	//return float4(1.f, 0.f, 0.f, 0.f);
 }
 
 Texture2D _MainLightShadowmapTexture;
 Texture2D _PointLightShadowTexture;
+Texture2D _VisibilityShadowTexture;
 SamplerComparisonState Point_Clamp_Compare_ShadowSampler
 {
 	// sampler comparison state
@@ -109,14 +121,18 @@ float SampleShadowMap(float3 positionVS)
 #else
 	float biasK = (shadowCoords.z - 1.f) * .1f;
 #endif
-
-	return  _PointLightShadowTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z + biasK);
+#ifdef POINT_LIGHTING
+	return _PointLightShadowTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z + biasK);
+#else
+#ifdef SPOT_LIGHTING
+	return _VisibilityShadowTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z + biasK);
+#endif
+#endif
 #endif
 }
 
 float4x4 _VisibilityWorldToShadow[NUM_CUBE_SIDES];
 
-Texture2D _VisibilityShadowTexture;
 SamplerComparisonState Point_Clamp_Compare_VisibilityShadowSampler
 {
 	// sampler comparison state

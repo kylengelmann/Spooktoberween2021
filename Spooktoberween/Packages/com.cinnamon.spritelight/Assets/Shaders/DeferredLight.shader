@@ -5,6 +5,8 @@
 		[PerRendererData] LightColor("Color", Color) = (1,1,1,1)
 		[PerRendererData] LightPosition("Position", Color) = (0, 0, 0, 0)
 		[PerRendererData] ShadowStrength("Shadow Strengh", Range(0, 1)) = 1
+		[PerRendererData] SpotlightDirection("Spotlight Direction", Color) = (0, 0, 1, 0)
+		[PerRendererData] SpotlightDirDotLRange("Spotlight Dir Dot L Range", Color) = (0, 1, 0, 0)
 	}
 		SubShader
 	{
@@ -22,7 +24,7 @@
 			Blend One One
 
 			CGPROGRAM
-			#pragma shader_feature_local DIRECTIONAL_LIGHTING POINT_LIGHTING
+			#pragma shader_feature_local DIRECTIONAL_LIGHTING POINT_LIGHTING SPOT_LIGHTING
 			#pragma shader_feature_local ATTENUATION_LINEAR ATTENUATION_INVERSE_SQUARED
 			#pragma shader_feature_local SHADOWS_OFF SHADOWS_ON
 			#pragma shader_feature __ UNITY_PIXEL_PERFECT
@@ -111,16 +113,20 @@
 				specColor *= spec;
 
 				// Attenuation
-				float attenuation = GetLightAttenuation(lightDirAndDistance.w);
+				float attenuation = GetLightAttenuation(lightDirAndDistance);
 
 				// Shadows
 #ifdef SHADOWS_ON
+				//viewPos.z = -viewPos.z;
 				float3 positionWS = mul(unity_CameraToWorld, float4(viewPos, 1.0)).xyz;
-				//return viewPos.zzzz;
+				//return -viewPos.zzzz;
 
 				//return positionWS.xyzz/10.f;
 
+				//return positionWS.xyzz/20.f;
+
 				float4 shadowCoords = TransformWorldToShadowCoord(positionWS);
+				shadowCoords.b = 0.f;
 				//shadowCoords.r = (shadowCoords.r - .75f) * 4.f;
 				//shadowCoords.g = shadowCoords.g * 4.f;
 				//return shadowCoords.zzzz;
@@ -129,13 +135,19 @@
 
 				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((nDotL - .1f)*100.f, 1.f), 0.f);
 
+				//return  max(min((nDotL - .1f) * 100.f, 1.f), 0.f);
 				//return SampleShadowMap(viewPos);
 
 				//return SampleShadowMap(viewPos);
 				//return 1.f;
 
 				attenuation *= lerp(1.f - ShadowStrength, 1.f, ShadowAttenuation);
+
+				//return attenuation;
 #endif // SHADOWS_ON
+
+				//return 1.f;
+
 				LightColor *= max(attenuation, 0.f);
 
 				float4 result = (diffuse + specColor) * LightColor;

@@ -2,6 +2,8 @@ Shader "Hidden/SpriteLight/Visibility"
 {
     Properties
     {
+        _StencilRef("Stencil Ref", Int) = 128
+        _StencilReadMask("Stencil Read Mask", Int) = 128
     }
     SubShader
     {
@@ -15,6 +17,13 @@ Shader "Hidden/SpriteLight/Visibility"
             ZWrite Off
             ZTest Always
             Cull Front
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                WriteMask [_StencilReadMask]
+                Comp NotEqual
+            }
 
             CGPROGRAM
             #pragma shader_feature __ UNITY_PIXEL_PERFECT

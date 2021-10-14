@@ -41,4 +41,11 @@ public class VisibilityLight : MonoBehaviour
         Shader.SetGlobalVector(PlayerViewPositionID, PlayerViewPosition);
 
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        
+    }
+#endif
 }

@@ -15,6 +15,8 @@ namespace SpriteLightRendering
         Material m_DirectionalLightShadowMat;
         Material m_PointLightMat;
         Material m_PointLightShadowMat;
+        Material m_SpotLightMat;
+        Material m_SpotLightShadowMat;
         MaterialPropertyBlock m_MPB;
 
         static readonly string DeferredShaderName = "Hidden/SpriteLight/DeferredLight";
@@ -22,8 +24,11 @@ namespace SpriteLightRendering
         static readonly int LightPositionID = Shader.PropertyToID("LightPosition");
         static readonly int LightColorID = Shader.PropertyToID("LightColor");
         static readonly int ShadowStrengthID = Shader.PropertyToID("ShadowStrength");
+        static readonly int SpotlightDirectionID = Shader.PropertyToID("SpotlightDirection");
+        static readonly int SpotlightDirDotLRangeID = Shader.PropertyToID("SpotlightDirDotLRange");
 
         List<int> ShadowPointLightIndices = new List<int>();
+        int spotLightIndex = -1;
 
         RenderTargetHandle ColorTarget;
         RenderTargetHandle DepthTarget;
@@ -53,15 +58,24 @@ namespace SpriteLightRendering
             m_PointLightShadowMat.EnableKeyword("POINT_LIGHTING");
             m_PointLightShadowMat.EnableKeyword("SHADOWS_ON");
 
+            m_SpotLightMat = new Material(Shader.Find(DeferredShaderName));
+            m_SpotLightMat.EnableKeyword("SPOT_LIGHTING");
+            m_SpotLightMat.EnableKeyword("SHADOWS_OFF");
+
+            m_SpotLightShadowMat = new Material(Shader.Find(DeferredShaderName));
+            m_SpotLightShadowMat.EnableKeyword("SPOT_LIGHTING");
+            m_SpotLightShadowMat.EnableKeyword("SHADOWS_ON");
+
             m_MPB = new MaterialPropertyBlock();
         }
 
-        public void Setup(RenderTargetHandle colorTarget, RenderTargetHandle depthTarget, in List<int> ShadowCastingPointLightIndices)
+        public void Setup(RenderTargetHandle colorTarget, RenderTargetHandle depthTarget, in List<int> ShadowCastingPointLightIndices, int SpotLightIndex)
         {
             ColorTarget = colorTarget;
             DepthTarget = depthTarget;
             ShadowPointLightIndices.Clear();
             ShadowPointLightIndices.AddRange(ShadowCastingPointLightIndices);
+            spotLightIndex = SpotLightIndex;
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -98,6 +112,11 @@ namespace SpriteLightRendering
 
                 DrawDirectionalLights(context, commandBuffer, renderingData);
                 DrawPointLights(context, commandBuffer, renderingData);
+
+                if(spotLightIndex >= 0)
+                {
+                    DrawSpotLight(renderingData.lightData.visibleLights[spotLightIndex], context, commandBuffer, camera, renderingData.lightData.visibleLights[spotLightIndex].light.shadows != LightShadows.None);
+                }
 
                 if (bIsPerfectPixel)
                 {
@@ -196,6 +215,39 @@ namespace SpriteLightRendering
             Matrix4x4 lightMatrix = light.localToWorldMatrix;
             lightMatrix = lightMatrix * Matrix4x4.Scale(light.range * Vector3.one);
             commandBuffer.DrawMesh(DeferredUtils.SphereMesh, lightMatrix, bHasShadows ? m_PointLightShadowMat : m_PointLightMat, 0, -1, m_MPB);
+
+            context.ExecuteCommandBuffer(commandBuffer);
+            commandBuffer.Clear();
+        }
+
+        void DrawSpotLight(VisibleLight light, ScriptableRenderContext context, CommandBuffer commandBuffer, Camera camera, bool bHasShadows)
+        {
+            Vector4 LightPosition = light.localToWorldMatrix.GetColumn(3);
+            LightPosition = camera.transform.InverseTransformPoint(LightPosition);
+
+            LightPosition.z = -LightPosition.z;
+
+            LightPosition.w = light.range;
+
+            Vector4 LightDirection = light.light.transform.forward;
+            LightDirection = camera.transform.InverseTransformDirection(LightDirection);
+
+            LightDirection.z = -LightDirection.z;
+
+            Vector4 LightDirDotLRange = new Vector4(light.light.innerSpotAngle * Mathf.Deg2Rad, light.light.spotAngle * Mathf.Deg2Rad, 0f, 0f);
+
+            m_MPB.SetVector(LightPositionID, LightPosition);
+            m_MPB.SetVector(LightColorID, light.finalColor);
+            m_MPB.SetVector(SpotlightDirectionID, LightDirection);
+            m_MPB.SetVector(SpotlightDirDotLRangeID, LightDirDotLRange);
+            if (bHasShadows)
+            {
+                m_MPB.SetFloat(ShadowStrengthID, light.light.shadowStrength);
+            }
+
+            Matrix4x4 lightMatrix = light.localToWorldMatrix;
+            lightMatrix = lightMatrix * Matrix4x4.Scale(light.range * Vector3.one);
+            commandBuffer.DrawMesh(DeferredUtils.SphereMesh, lightMatrix, bHasShadows ? m_SpotLightShadowMat : m_SpotLightMat, 0, -1, m_MPB);
 
             context.ExecuteCommandBuffer(commandBuffer);
             commandBuffer.Clear();

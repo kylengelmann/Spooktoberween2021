@@ -42,3 +42,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BIllboards
+    uniqueID: 1087986421
+    locked: 0

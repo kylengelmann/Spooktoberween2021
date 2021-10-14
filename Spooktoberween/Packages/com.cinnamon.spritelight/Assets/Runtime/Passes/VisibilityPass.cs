@@ -11,6 +11,10 @@ namespace SpriteLightRendering
         const int MAP_RES = 2048;
         const int SLICE_RES = 512;
 
+        const int FLASHLIGHT_RES = 1024;
+        const int FLASHLIGHT_XOFFSET = 1024;
+        const int FLASHLIGHT_YOFFSET = 1024;
+
         struct PointLightShadowData
         {
             public int lightIndex;
@@ -21,6 +25,16 @@ namespace SpriteLightRendering
         PointLightShadowData m_VisibilityShadowData;
         PointLightShadowData m_ShadowShadowData;
 
+        struct SpotLightShadowData
+        {
+            public int lightIndex;
+            public ShadowSliceData shadowSlice;
+            public ShadowSplitData shadowSplit;
+        }
+
+        SpotLightShadowData m_FlashlightShadowData;
+        Matrix4x4 m_FlashlightShadowTransform;
+
         Matrix4x4[] m_VisibilityTransforms = new Matrix4x4[NUM_CUBE_SIDES];
         Matrix4x4[] m_ShadowTransforms = new Matrix4x4[NUM_CUBE_SIDES];
         Vector4 m_LightPosition;
@@ -29,10 +43,15 @@ namespace SpriteLightRendering
         RenderTargetHandle m_ShadowHandle;
 
         bool bFoundVisibilityLight = false;
+        bool bVisibilityLightCastsShadows = false;
+        bool bFoundFlashlight = false;
+        bool bFlashlightCastsShadows = false;
         ProfilingSampler m_ProfilingSampler;
 
         static readonly int VisibilityWorldToShadowID = Shader.PropertyToID("_VisibilityWorldToShadow");
-        static readonly int VisibilityShadowWorldToShadowID = Shader.PropertyToID("_VisibilityShadowWorldToShadow");
+        //static readonly int VisibilityShadowWorldToShadowID = Shader.PropertyToID("_VisibilityShadowWorldToShadow");
+        static readonly int FlashlightWorldToShadowID = Shader.PropertyToID("_FlashlightWorldToShadow");
+
         static readonly string PassName = "VisibilityShadows";
 
         public VisibilityPass(RenderPassEvent evt) : base()
@@ -50,11 +69,17 @@ namespace SpriteLightRendering
             m_ShadowShadowData.shadowSplits = new ShadowSplitData[NUM_CUBE_SIDES];
         }
 
-        public void Setup(ref RenderingData renderingData, out int LightIndex)
+        public void Setup(ref RenderingData renderingData, out int LightIndex, out int FlashlightIndex)
         {
             int numVisibleLights = renderingData.lightData.visibleLights.Length;
 
+            LightIndex = -1;
+            FlashlightIndex = -1;
+
             bFoundVisibilityLight = false;
+            bVisibilityLightCastsShadows = false;
+            bFoundFlashlight = false;
+            bFlashlightCastsShadows = false;
             for (int i = 0; i < numVisibleLights; ++i)
             {
                 if (i == renderingData.lightData.mainLightIndex)
@@ -64,41 +89,65 @@ namespace SpriteLightRendering
 
                 VisibleLight light = renderingData.lightData.visibleLights[i];
 
-                if (light.lightType != LightType.Point || light.light.shadows == LightShadows.None)
+                if(light.light.shadows == LightShadows.None)
                 {
                     continue;
                 }
 
-                if(light.light.CompareTag(ShadowUtils.GetVisibilityLightTag()))
+                if (light.lightType == LightType.Point)
                 {
-                    if (renderingData.cullResults.GetShadowCasterBounds(i, out var bounds))
+                    if (!bFoundVisibilityLight && light.light.CompareTag(ShadowUtils.GetVisibilityLightTag()))
                     {
-                        m_VisibilityShadowData.lightIndex = i;
-
-                        for (int j = 0; j < NUM_CUBE_SIDES; ++j)
+                        if (renderingData.cullResults.GetShadowCasterBounds(i, out var bounds))
                         {
-                            ShadowUtils.GetPointLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, 0, (CubemapFace)j, MAP_RES, MAP_RES, SLICE_RES, .2f,
-                                out m_VisibilityShadowData.shadowSlices[j], out m_VisibilityShadowData.shadowSplits[j]);
-                            m_VisibilityTransforms[j] = m_VisibilityShadowData.shadowSlices[j].shadowTransform;
+                            m_VisibilityShadowData.lightIndex = i;
+
+                            for (int j = 0; j < NUM_CUBE_SIDES; ++j)
+                            {
+                                ShadowUtils.GetPointLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, 0, (CubemapFace)j, MAP_RES, MAP_RES, SLICE_RES, .2f,
+                                    out m_VisibilityShadowData.shadowSlices[j], out m_VisibilityShadowData.shadowSplits[j]);
+                                m_VisibilityTransforms[j] = m_VisibilityShadowData.shadowSlices[j].shadowTransform;
+                            }
+
+                            m_ShadowShadowData.lightIndex = i;
+
+                            for (int j = 0; j < NUM_CUBE_SIDES; ++j)
+                            {
+                                ShadowUtils.GetPointLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, 1, (CubemapFace)j, MAP_RES, MAP_RES, SLICE_RES, .2f,
+                                    out m_ShadowShadowData.shadowSlices[j], out m_ShadowShadowData.shadowSplits[j]);
+                                m_ShadowTransforms[j] = m_ShadowShadowData.shadowSlices[j].shadowTransform;
+                            }
+
+                            bVisibilityLightCastsShadows = true;
                         }
 
-                        m_ShadowShadowData.lightIndex = i;
-
-                        for (int j = 0; j < NUM_CUBE_SIDES; ++j)
-                        {
-                            ShadowUtils.GetPointLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, 1, (CubemapFace)j, MAP_RES, MAP_RES, SLICE_RES, .2f,
-                                out m_ShadowShadowData.shadowSlices[j], out m_ShadowShadowData.shadowSplits[j]);
-                            m_ShadowTransforms[j] = m_ShadowShadowData.shadowSlices[j].shadowTransform;
-                        }
 
                         bFoundVisibilityLight = true;
                         LightIndex = i;
-                        return;
+
+                        if (bFoundFlashlight) break;
                     }
                 }
-            }
+                else if(light.lightType == LightType.Spot && !bFoundFlashlight)
+                {
+                    if(renderingData.cullResults.GetShadowCasterBounds(i, out var bounds))
+                    {
+                        m_FlashlightShadowData.lightIndex = i;
 
-            LightIndex = -1;
+                        ShadowUtils.GetSpotLightShadowParams(ref renderingData.cullResults, ref renderingData.shadowData, i, FLASHLIGHT_XOFFSET, FLASHLIGHT_YOFFSET, FLASHLIGHT_RES, MAP_RES, MAP_RES, 
+                            out m_FlashlightShadowData.shadowSlice, out m_FlashlightShadowData.shadowSplit);
+
+                        m_FlashlightShadowTransform = m_FlashlightShadowData.shadowSlice.shadowTransform;
+
+                        bFlashlightCastsShadows = true;
+                    }
+
+                    bFoundFlashlight = true;
+                    FlashlightIndex = i;
+
+                    if (bFoundVisibilityLight) break;
+                }
+            }
         }
 
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -115,17 +164,17 @@ namespace SpriteLightRendering
             {
                 context.ExecuteCommandBuffer(commandBuffer);
                 commandBuffer.Clear();
-                //context.ExecuteCommandBuffer(commandBuffer);
-                if(bFoundVisibilityLight)
+
+                if(bFoundVisibilityLight && bVisibilityLightCastsShadows)
                 {
                     int lightIdx = m_VisibilityShadowData.lightIndex;
                     VisibleLight visibleLight = renderingData.lightData.visibleLights[lightIdx];
 
+                    ShadowDrawingSettings settings = new ShadowDrawingSettings(renderingData.cullResults, lightIdx);
+                    settings.useRenderingLayerMaskTest = true;
+
                     for (int j = 0; j < NUM_CUBE_SIDES; ++j)
                     {
-                        ShadowDrawingSettings settings = new ShadowDrawingSettings(renderingData.cullResults, lightIdx);
-
-                        settings.useRenderingLayerMaskTest = true;
                         settings.splitData = m_VisibilityShadowData.shadowSplits[j];
                         Vector4 shadowBias = ShadowUtils.GetShadowBias(ref visibleLight, lightIdx, ref renderingData.shadowData, m_VisibilityShadowData.shadowSlices[j].projectionMatrix, SLICE_RES);
                         ShadowUtils.SetupPointLightShadowCasterConstantBuffer(commandBuffer, (CubemapFace)j, shadowBias);
@@ -133,35 +182,22 @@ namespace SpriteLightRendering
                     }
                 }
 
-                SetGlobalVariables(commandBuffer);
-                context.ExecuteCommandBuffer(commandBuffer);
-            }
-
-            context.ExecuteCommandBuffer(commandBuffer);
-            commandBuffer.Clear();
-
-            commandBuffer = CommandBufferPool.Get("VisShadows");
-            using (new ProfilingScope(commandBuffer, new ProfilingSampler("VisShadows")))
-            {
-                context.ExecuteCommandBuffer(commandBuffer);
-                commandBuffer.Clear();
-                //context.ExecuteCommandBuffer(commandBuffer);
-                if (bFoundVisibilityLight)
+                if(bFoundFlashlight && bFlashlightCastsShadows)
                 {
-                    int lightIdx = m_ShadowShadowData.lightIndex;
+                    int lightIdx = m_FlashlightShadowData.lightIndex;
                     VisibleLight visibleLight = renderingData.lightData.visibleLights[lightIdx];
 
-                    for (int j = 0; j < NUM_CUBE_SIDES; ++j)
-                    {
-                        ShadowDrawingSettings settings = new ShadowDrawingSettings(renderingData.cullResults, lightIdx);
+                    ShadowDrawingSettings settings = new ShadowDrawingSettings(renderingData.cullResults, lightIdx);
+                    settings.useRenderingLayerMaskTest = false;
+                    settings.splitData = m_FlashlightShadowData.shadowSplit;
 
-                        settings.useRenderingLayerMaskTest = false;
-                        settings.splitData = m_ShadowShadowData.shadowSplits[j];
-                        Vector4 shadowBias = ShadowUtils.GetShadowBias(ref visibleLight, lightIdx, ref renderingData.shadowData, m_ShadowShadowData.shadowSlices[j].projectionMatrix, SLICE_RES);
-                        ShadowUtils.SetupPointLightShadowCasterConstantBuffer(commandBuffer, (CubemapFace)j, shadowBias);
-                        UnityEngine.Rendering.Universal.ShadowUtils.RenderShadowSlice(commandBuffer, ref context, ref m_ShadowShadowData.shadowSlices[j], ref settings);
-                    }
+                    Vector4 shadowBias = ShadowUtils.GetShadowBias(ref visibleLight, lightIdx, ref renderingData.shadowData, m_FlashlightShadowData.shadowSlice.projectionMatrix, FLASHLIGHT_RES);
+                    ShadowUtils.SetupSpotLightShadowCasterConstantBuffer(commandBuffer, visibleLight.light, shadowBias);
+                    UnityEngine.Rendering.Universal.ShadowUtils.RenderShadowSlice(commandBuffer, ref context, ref m_FlashlightShadowData.shadowSlice, ref settings);
                 }
+
+                SetGlobalVariables(commandBuffer);
+                context.ExecuteCommandBuffer(commandBuffer);
             }
 
             context.ExecuteCommandBuffer(commandBuffer);
@@ -171,9 +207,11 @@ namespace SpriteLightRendering
         void SetGlobalVariables(CommandBuffer commandBuffer)
         {
             commandBuffer.SetGlobalMatrixArray(VisibilityWorldToShadowID, m_VisibilityTransforms);
-            commandBuffer.SetGlobalMatrixArray(VisibilityShadowWorldToShadowID, m_ShadowTransforms);
+            //commandBuffer.SetGlobalMatrixArray(VisibilityShadowWorldToShadowID, m_ShadowTransforms);
             commandBuffer.SetGlobalTexture(m_ShadowHandle.id, m_ShadowTexture);
             commandBuffer.SetGlobalVector("_VisibilityLightWorldPosition", m_LightPosition);
+
+            commandBuffer.SetGlobalMatrix(FlashlightWorldToShadowID, m_FlashlightShadowTransform);
         }
 
         public override void FrameCleanup(CommandBuffer cmd)

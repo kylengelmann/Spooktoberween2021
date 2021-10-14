@@ -27,6 +27,22 @@ namespace SpriteLightRendering
             UnityEngine.Rendering.Universal.ShadowUtils.ApplySliceTransform(ref shadowSliceData, shadowmapWidth, shadowmapHeight);
         }
 
+        public static void GetSpotLightShadowParams(ref CullingResults cullingResults, ref ShadowData shadowData, int lightIndex, int sliceXOffset, int sliceYOffset, int sliceResolution, int shadowmapWidth, int shadowmapHeight, out ShadowSliceData shadowSliceData, out ShadowSplitData shadowSplitData)
+        {
+            Matrix4x4 viewMatrix, projMatrix;
+            cullingResults.ComputeSpotShadowMatricesAndCullingPrimitives(lightIndex, out viewMatrix, out projMatrix, out shadowSplitData);
+
+            shadowSliceData = new ShadowSliceData();
+            shadowSliceData.offsetX = sliceXOffset;
+            shadowSliceData.offsetY = sliceYOffset;
+            shadowSliceData.resolution = sliceResolution;
+            shadowSliceData.viewMatrix = viewMatrix;
+            shadowSliceData.projectionMatrix = projMatrix;
+            shadowSliceData.shadowTransform = GetShadowTransform(projMatrix, viewMatrix);
+
+            UnityEngine.Rendering.Universal.ShadowUtils.ApplySliceTransform(ref shadowSliceData, shadowmapWidth, shadowmapHeight);
+        }
+
         static Matrix4x4 GetShadowTransform(Matrix4x4 proj, Matrix4x4 view)
         {
             // Currently CullResults ComputeDirectionalShadowMatricesAndCullingPrimitives doesn't
@@ -41,6 +57,7 @@ namespace SpriteLightRendering
 
             Matrix4x4 worldToShadow = proj * view;
 
+            // textureScaleAndBias maps texture space coordinates from [-1,1] to [0,1]
             var textureScaleAndBias = Matrix4x4.identity;
             textureScaleAndBias.m00 = 0.5f;
             textureScaleAndBias.m11 = 0.5f;
@@ -124,6 +141,14 @@ namespace SpriteLightRendering
 
             cmd.SetGlobalVector("_ShadowBias", shadowBias);
             cmd.SetGlobalVector("_LightDirection", new Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0.0f));
+        }
+
+        public static void SetupSpotLightShadowCasterConstantBuffer(CommandBuffer cmd, Light light, Vector4 shadowBias)
+        {
+            Vector3 lightDirection = light.transform.forward;
+
+            cmd.SetGlobalVector("_ShadowBias", shadowBias);
+            cmd.SetGlobalVector("_LightDirection", new Vector4(lightDirection.x, lightDirection.y, lightDirection.z, 0f));
         }
 
         public static string GetVisibilityLightTag() { return "VisibilityLight"; }

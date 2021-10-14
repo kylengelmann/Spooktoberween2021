@@ -30,9 +30,9 @@ namespace SpriteLightRendering
             m_VisiblityMaterial = new Material(Shader.Find(VisibilityShaderName));
         }
 
-        public void Setup(RenderTargetIdentifier colorTarget, int LightIndex)
+        public void Setup(RenderTargetIdentifier colorTarget, RenderTargetIdentifier depthTarget, int LightIndex)
         {
-            ConfigureTarget(colorTarget);
+            ConfigureTarget(colorTarget, depthTarget);
             ConfigureClear(ClearFlag.Color, Color.black);
             VisibilityLightIndex = LightIndex;
         }

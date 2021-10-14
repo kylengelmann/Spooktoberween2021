@@ -15,6 +15,8 @@
 		_EmissiveMultiplier("Emissive Multiplier", Color) = (1, 1, 1, 1)
 		_DiffuseMultiplier("Diffuse Multiplier", Color) = (1, 1, 1, 1)
 		_SpecularMultiplier("Specular Multiplier", Color) = (1, 1, 1, 1)
+		_StencilRef("Stencil Ref", Int) = 0
+		_StencilWriteMask("Stencil Write Mask", Int) = 0
 	}
 	SubShader
 	{
@@ -26,6 +28,13 @@
 		{
 			Name "LitSpriteColor"
 			Tags { "LightMode" = "LitSpriteColor" }
+
+			Stencil
+			{
+				Ref [_StencilRef]
+				WriteMask [_StencilWriteMask]
+				Pass Replace
+			}
 
 			CGPROGRAM
 				#pragma vertex SpriteVert
