@@ -112,6 +112,7 @@
 				float spec = pow(vDotL, specColor.a*128.f + .001f);
 				specColor *= spec;
 
+
 				// Attenuation
 				float attenuation = GetLightAttenuation(lightDirAndDistance);
 

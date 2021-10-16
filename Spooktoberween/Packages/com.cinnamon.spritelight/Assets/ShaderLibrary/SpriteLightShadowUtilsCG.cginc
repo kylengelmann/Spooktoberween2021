@@ -103,9 +103,10 @@ SamplerComparisonState Point_Clamp_Compare_ShadowSampler
 float SampleShadowMap(float3 positionVS)
 {
 	positionVS.z = -positionVS.z;
+
 	float3 positionWS = mul(unity_CameraToWorld, float4(positionVS, 1.0)).xyz;
 
-	float4 shadowCoords = TransformWorldToShadowCoord(positionWS);
+	float4 shadowCoords = TransformWorldToShadowCoord(positionWS.xyz);
 
 	if (shadowCoords.z > 1.f || shadowCoords.z < 0.f)
 	{
@@ -114,7 +115,7 @@ float SampleShadowMap(float3 positionVS)
 
 #ifdef DIRECTIONAL_LIGHTING
 	return _MainLightShadowmapTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z);
-#else
+#endif
 
 #ifdef UNITY_REVERSED_Z
 	float biasK = shadowCoords.z * .1f;
@@ -123,11 +124,9 @@ float SampleShadowMap(float3 positionVS)
 #endif
 #ifdef POINT_LIGHTING
 	return _PointLightShadowTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z + biasK);
-#else
+#endif
 #ifdef SPOT_LIGHTING
 	return _VisibilityShadowTexture.SampleCmp(Point_Clamp_Compare_ShadowSampler, shadowCoords, shadowCoords.z + biasK);
-#endif
-#endif
 #endif
 }
 

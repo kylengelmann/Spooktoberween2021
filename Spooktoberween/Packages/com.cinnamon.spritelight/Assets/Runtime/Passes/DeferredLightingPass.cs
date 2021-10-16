@@ -234,7 +234,7 @@ namespace SpriteLightRendering
 
             LightDirection.z = -LightDirection.z;
 
-            Vector4 LightDirDotLRange = new Vector4(light.light.innerSpotAngle * Mathf.Deg2Rad, light.light.spotAngle * Mathf.Deg2Rad, 0f, 0f);
+            Vector4 LightDirDotLRange = new Vector4(light.light.innerSpotAngle * Mathf.Deg2Rad * .5f, light.light.spotAngle * Mathf.Deg2Rad * .5f, 0f, 0f);
 
             m_MPB.SetVector(LightPositionID, LightPosition);
             m_MPB.SetVector(LightColorID, light.finalColor);

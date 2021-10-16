@@ -34,6 +34,8 @@ float4 GetLightAttenuation(float4 lightDirAndDistance)
 	float dirAttenuation = 1.f - clamp((dirDotL - SpotlightDirDotLRange.x) / max(.0001f, (SpotlightDirDotLRange.y - SpotlightDirDotLRange.x)), 0.f, 1.f);
 
 	attenuation *= dirAttenuation;
+
+	//return dirDotL;
 #endif // SPOT_LIGHTING
 	return attenuation;
 }
