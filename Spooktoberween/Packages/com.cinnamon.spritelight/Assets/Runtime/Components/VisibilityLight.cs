@@ -1,16 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.Rendering;
 
 [ExecuteInEditMode]
 public class VisibilityLight : MonoBehaviour
 {
+    public float VisibilityBoundsAngle = 60f;
+    public float VisibilityBoundsDistanceFalloff = 1f;
+    public float VisibilityBoundsFalloffSlope = .2f;
+
     int PlayerWorldPositionID;
     int PlayerViewPositionID;
+    int PlayerViewBoundsID;
+    int PlayerViewBoundsParamsID;
 
     new Light light;
+
+    Vector2 PlayerDirection = Vector2.right;
 
     void Start()
     {
@@ -24,6 +29,8 @@ public class VisibilityLight : MonoBehaviour
 
         PlayerWorldPositionID = Shader.PropertyToID("_PlayerWorldPosition");
         PlayerViewPositionID = Shader.PropertyToID("_PlayerViewPosition");
+        PlayerViewBoundsID = Shader.PropertyToID("_PlayerViewBounds");
+        PlayerViewBoundsParamsID = Shader.PropertyToID("_PlayerViewBoundsParams");
     }
 
     private void OnDestroy()
@@ -40,12 +47,13 @@ public class VisibilityLight : MonoBehaviour
         Shader.SetGlobalVector(PlayerWorldPositionID, PlayerWorldPosition);
         Shader.SetGlobalVector(PlayerViewPositionID, PlayerViewPosition);
 
+        Vector3 PlayerDirectionView = camera.worldToCameraMatrix.MultiplyVector(PlayerDirection);
+        PlayerDirection.y = 0f;
+        PlayerDirection.Normalize();
+        Quaternion BoundsRotation = Quaternion.Euler(0f, VisibilityBoundsAngle, 0f);
+        Vector3 LeftBounds = BoundsRotation * PlayerDirection;
+        Vector3 RightBounds = Quaternion.Inverse(BoundsRotation) * PlayerDirection;
+        Shader.SetGlobalVector(PlayerViewBoundsID, new Vector4(LeftBounds.x, LeftBounds.z, RightBounds.x, RightBounds.z));
+        Shader.SetGlobalVector(PlayerViewBoundsParamsID, new Vector4(VisibilityBoundsDistanceFalloff, VisibilityBoundsFalloffSlope, 0f, 0f));
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        
-    }
-#endif
 }

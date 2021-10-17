@@ -18,6 +18,9 @@ namespace SpriteLightRendering
 
         int VisibilityLightIndex;
 
+        //RenderTargetIdentifier VisTex;
+        //int VisTexID = Shader.PropertyToID("_VisibilityTexture");
+
         public VisibilityTexturePass(string PassName, RenderPassEvent passEvent) : base()
         {
             renderPassEvent = passEvent;
@@ -32,6 +35,8 @@ namespace SpriteLightRendering
 
         public void Setup(RenderTargetIdentifier colorTarget, RenderTargetIdentifier depthTarget, int LightIndex)
         {
+            //VisTex = colorTarget;
+
             ConfigureTarget(colorTarget, depthTarget);
             ConfigureClear(ClearFlag.Color, Color.black);
             VisibilityLightIndex = LightIndex;
@@ -50,6 +55,8 @@ namespace SpriteLightRendering
                 Matrix4x4 lightMatrix = light.localToWorldMatrix;
                 lightMatrix = lightMatrix * Matrix4x4.Scale(light.range * Vector3.one);
                 commandBuffer.DrawMesh(DeferredUtils.SphereMesh, lightMatrix, m_VisiblityMaterial, 0, -1);
+
+                //commandBuffer.SetGlobalTexture(VisTexID, VisTex);
 
                 context.ExecuteCommandBuffer(commandBuffer);
                 commandBuffer.Clear();

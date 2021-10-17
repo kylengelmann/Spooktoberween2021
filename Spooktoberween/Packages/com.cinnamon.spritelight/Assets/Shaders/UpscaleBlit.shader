@@ -41,6 +41,7 @@
 
             //Texture2D _LightResult;
 			Texture2D _BlitTex;
+			Texture2D _VisibilityTexture;
 			SamplerState Point_Clamp_BlitSampler;
 
 			float4 UVOffset;
@@ -60,7 +61,7 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-				fixed4 color = _BlitTex.Sample(Point_Clamp_BlitSampler, i.uv);
+				fixed4 color = _BlitTex.Sample(Point_Clamp_BlitSampler, i.uv) * _VisibilityTexture.Sample(Point_Clamp_BlitSampler, i.uv);
 				return color;
             }
             ENDCG

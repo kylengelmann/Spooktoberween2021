@@ -60,6 +60,9 @@ Shader "Hidden/SpriteLight/Visibility"
 
             float _PixelRatio;
 
+			float4 _PlayerViewBounds;
+			float4 _PlayerViewBoundsParams;
+
             float4 frag(v2f i) : SV_Target
             {
                 float4 screenPosTexture = GetScreenSpaceUV(i.vertex, true);
@@ -72,16 +75,35 @@ Shader "Hidden/SpriteLight/Visibility"
 
                 viewPos.z = GetViewDepth(_NormalsDepth.Sample(Point_Clamp_GBufferSampler, screenPosDepth));
 
-                float PlayerDistance = length(_PlayerViewPosition.xy - viewPos.xy);
+				float2 ToPlayer = _PlayerViewPosition.xy - viewPos.xy;
 
-                float DistanceAttenuation = (_PlayerViewPosition.w - PlayerDistance) / (_PlayerViewPosition.w + .001f);
+                float PlayerDistance = length(ToPlayer);
+
+                float DistanceAttenuation = max(0.f, (_PlayerViewPosition.w - PlayerDistance) / (_PlayerViewPosition.w + .001f));
                 //float DiatanceAttenuation = 1.f;
+
+				float BoundsLeftPerpDist = dot(ToPlayer, float2(-_PlayerViewBounds.y, _PlayerViewBounds.x));
+				float BoundsLeftParDist = -(dot(ToPlayer, float2(_PlayerViewBounds.x, _PlayerViewBounds.y)));
+				float BoundsLeftEffectiveDist = max(BoundsLeftPerpDist - (BoundsLeftParDist * _PlayerViewBoundsParams.y), 0.f);
+
+				//return BoundsLeftEffectiveDist;
+
+				float BoundsRightPerpDist = dot(ToPlayer, float2(_PlayerViewBounds.w, -_PlayerViewBounds.z));
+				float BoundsRightParDist = -(dot(ToPlayer, float2(_PlayerViewBounds.z, _PlayerViewBounds.w)));
+				float BoundsRightEffectiveDist = max(BoundsRightPerpDist - (BoundsRightParDist * _PlayerViewBoundsParams.y), 0.f);
+
+				//return BoundsRightEffectiveDist + BoundsLeftEffectiveDist;
+
+				//return (BoundsLeftParDist < 0.f && BoundsRightParDist < 0.f) ? PlayerDistance : max(BoundsLeftEffectiveDist, BoundsRightEffectiveDist);
+
+				float BoundsAttenuation = 1.f - ( (BoundsLeftParDist < 0.f && BoundsRightParDist < 0.f) ? PlayerDistance : max(BoundsLeftEffectiveDist, BoundsRightEffectiveDist)) / _PlayerViewBoundsParams.x;
+
 
                 float ShadowAttenuation = SampleVisibilityShadowMap(viewPos);
 
                 //return SampleVisibilityShadowMap(viewPos);
 
-                return ShadowAttenuation * DistanceAttenuation;
+                return ShadowAttenuation * DistanceAttenuation * BoundsAttenuation;
             }
 
             ENDCG
