@@ -25,6 +25,22 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Look_Mouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""734396fb-4064-412f-91be-0ddfe497b445"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Look_Gamepad"",
+                    ""type"": ""Value"",
+                    ""id"": ""ecdde42e-a74a-4783-b781-7107ddf9ff89"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -93,6 +109,28 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a475828c-696b-4638-a5e4-6ca5394316c4"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look_Mouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cd411f54-079a-4e1c-9860-be221adbb525"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look_Gamepad"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -102,6 +140,8 @@ public class @SpookyControls : IInputActionCollection, IDisposable
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
+        m_Gameplay_Look_Mouse = m_Gameplay.FindAction("Look_Mouse", throwIfNotFound: true);
+        m_Gameplay_Look_Gamepad = m_Gameplay.FindAction("Look_Gamepad", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -152,11 +192,15 @@ public class @SpookyControls : IInputActionCollection, IDisposable
     private readonly InputActionMap m_Gameplay;
     private IGameplayActions m_GameplayActionsCallbackInterface;
     private readonly InputAction m_Gameplay_Movement;
+    private readonly InputAction m_Gameplay_Look_Mouse;
+    private readonly InputAction m_Gameplay_Look_Gamepad;
     public struct GameplayActions
     {
         private @SpookyControls m_Wrapper;
         public GameplayActions(@SpookyControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_Gameplay_Movement;
+        public InputAction @Look_Mouse => m_Wrapper.m_Gameplay_Look_Mouse;
+        public InputAction @Look_Gamepad => m_Wrapper.m_Gameplay_Look_Gamepad;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -169,6 +213,12 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                 @Movement.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMovement;
+                @Look_Mouse.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Mouse;
+                @Look_Mouse.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Mouse;
+                @Look_Mouse.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Mouse;
+                @Look_Gamepad.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Gamepad;
+                @Look_Gamepad.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Gamepad;
+                @Look_Gamepad.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Gamepad;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -176,6 +226,12 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
+                @Look_Mouse.started += instance.OnLook_Mouse;
+                @Look_Mouse.performed += instance.OnLook_Mouse;
+                @Look_Mouse.canceled += instance.OnLook_Mouse;
+                @Look_Gamepad.started += instance.OnLook_Gamepad;
+                @Look_Gamepad.performed += instance.OnLook_Gamepad;
+                @Look_Gamepad.canceled += instance.OnLook_Gamepad;
             }
         }
     }
@@ -183,5 +239,7 @@ public class @SpookyControls : IInputActionCollection, IDisposable
     public interface IGameplayActions
     {
         void OnMovement(InputAction.CallbackContext context);
+        void OnLook_Mouse(InputAction.CallbackContext context);
+        void OnLook_Gamepad(InputAction.CallbackContext context);
     }
 }

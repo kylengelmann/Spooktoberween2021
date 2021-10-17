@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
         controls.Gameplay.Movement.performed += OnMovmentInput;
         controls.Gameplay.Movement.canceled += OnMovmentInput;
 
+        controls.Gameplay.Look_Mouse.performed += OnLookInput;
+        controls.Gameplay.Look_Mouse.performed += OnLookInput;
+
         if(isActiveAndEnabled)
         {
             controls.Enable();
@@ -41,10 +44,22 @@ public class PlayerController : MonoBehaviour
 
     void OnMovmentInput(InputAction.CallbackContext context)
     {
-        Debug.Log(context.ReadValue<Vector2>());
         if(player)
         {
             player.HandleMoveInput(context.ReadValue<Vector2>());
+        }
+    }
+
+    void OnLookInput(InputAction.CallbackContext context)
+    {
+        if (player)
+        {
+            Vector3 PlayerPos = Camera.main.WorldToScreenPoint(player.transform.position);
+
+            Vector2 LookInput = context.ReadValue<Vector2>();
+            Vector2 LookDir = LookInput - new Vector2(PlayerPos.x, PlayerPos.y);
+
+            player.HandleLookInput(LookDir);
         }
     }
 }

@@ -134,7 +134,7 @@
 
 				//return shadowCoords;
 
-				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((nDotL - .1f)*100.f, 1.f), 0.f);
+				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((nDotL - .0001f)*100.f, 1.f), 0.f);
 
 				//return  max(min((nDotL - .1f) * 100.f, 1.f), 0.f);
 				//return SampleShadowMap(viewPos);

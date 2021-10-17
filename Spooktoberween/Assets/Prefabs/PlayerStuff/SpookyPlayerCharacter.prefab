@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1023978255755757134}
   - component: {fileID: 1023978255755757129}
+  - component: {fileID: 2029685293}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -71,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -8360621857648827146, guid: 9d04e166a0b48a74dac74d757e299516, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -83,6 +84,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2029685293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1023978255755757128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 889911e892e2cf64ab6fc3fa4fcd3143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1023978256251086983
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +143,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a72f4455e5767b4419ff416722351326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxTurnRate: 360
   VisibilityLightPrefab: {fileID: 1430917484440479, guid: ddec3e09f4a14854d9479de6c758c44d, type: 3}
+  Sprite: {fileID: 1023978255755757128}
+  FlashlightPrefab: {fileID: 3096717413027817122, guid: 90d2a0aaf8a625444a31630b1570f869, type: 3}
 --- !u!143 &1023978256251086981
 CharacterController:
   m_ObjectHideFlags: 0

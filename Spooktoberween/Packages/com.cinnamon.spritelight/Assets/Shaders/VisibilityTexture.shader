@@ -76,8 +76,6 @@ Shader "Hidden/SpriteLight/Visibility"
 
                 float3 normal = normalize(DecodeNormal(normalsTexVal));
 
-                //return normal.xyzz;
-
                 float4 screenPosDepth = screenPosTexture;
 
                 float3 viewPos = i.viewPos;
@@ -90,29 +88,19 @@ Shader "Hidden/SpriteLight/Visibility"
 
                 float nDotL = dot(normalize(_PlayerViewPosition.xyz - viewPos.xyz), normal);
 
-                float DistanceAttenuation = max(0.f, (_PlayerViewPosition.w - PlayerDistance) / (_PlayerViewPosition.w + .001f));
-                //float DiatanceAttenuation = 1.f;
+                float DistanceAttenuation = clamp((_PlayerViewPosition.w - PlayerDistance + _PlayerViewBoundsParams.x) / (_PlayerViewBoundsParams.x + .001f), 0.f, 1.f);
 
 				float BoundsLeftPerpDist = dot(ToPlayer, float2(-_PlayerViewBounds.y, _PlayerViewBounds.x));
 				float BoundsLeftParDist = -(dot(ToPlayer, float2(_PlayerViewBounds.x, _PlayerViewBounds.y)));
 				float BoundsLeftEffectiveDist = max(BoundsLeftPerpDist - (BoundsLeftParDist * _PlayerViewBoundsParams.y), 0.f);
 
-				//return BoundsLeftEffectiveDist;
-
 				float BoundsRightPerpDist = dot(ToPlayer, float2(_PlayerViewBounds.w, -_PlayerViewBounds.z));
 				float BoundsRightParDist = -(dot(ToPlayer, float2(_PlayerViewBounds.z, _PlayerViewBounds.w)));
 				float BoundsRightEffectiveDist = max(BoundsRightPerpDist - (BoundsRightParDist * _PlayerViewBoundsParams.y), 0.f);
 
-				//return BoundsRightEffectiveDist + BoundsLeftEffectiveDist;
-
-				//return (BoundsLeftParDist < 0.f && BoundsRightParDist < 0.f) ? PlayerDistance : max(BoundsLeftEffectiveDist, BoundsRightEffectiveDist);
-
 				float BoundsAttenuation = 1.f - ( (BoundsLeftParDist < 0.f && BoundsRightParDist < 0.f) ? PlayerDistance : max(BoundsLeftEffectiveDist, BoundsRightEffectiveDist)) / _PlayerViewBoundsParams.x;
 
-
-                float ShadowAttenuation = SampleVisibilityShadowMap(viewPos) * max(min((nDotL - .1f) * 100.f, 1.f), 0.f);
-
-                //return SampleVisibilityShadowMap(viewPos);
+                float ShadowAttenuation = SampleVisibilityShadowMap(viewPos) * max(min((nDotL - .0001f) * 100.f, 1.f), 0.f);
 
                 return ShadowAttenuation * DistanceAttenuation * BoundsAttenuation;
             }

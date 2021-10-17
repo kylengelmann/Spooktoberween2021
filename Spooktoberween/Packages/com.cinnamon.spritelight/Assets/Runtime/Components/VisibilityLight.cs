@@ -15,7 +15,7 @@ public class VisibilityLight : MonoBehaviour
 
     new Light light;
 
-    Vector2 PlayerDirection = Vector2.right;
+    [System.NonSerialized] public Vector2 ViewDir = Vector2.right;
 
     void Start()
     {
@@ -47,12 +47,11 @@ public class VisibilityLight : MonoBehaviour
         Shader.SetGlobalVector(PlayerWorldPositionID, PlayerWorldPosition);
         Shader.SetGlobalVector(PlayerViewPositionID, PlayerViewPosition);
 
-        Vector3 PlayerDirectionView = camera.worldToCameraMatrix.MultiplyVector(PlayerDirection);
-        PlayerDirection.y = 0f;
-        PlayerDirection.Normalize();
+        Vector3 PlayerDirectionView = new Vector3(ViewDir.x, 0f, ViewDir.y);
+
         Quaternion BoundsRotation = Quaternion.Euler(0f, VisibilityBoundsAngle, 0f);
-        Vector3 LeftBounds = BoundsRotation * PlayerDirection;
-        Vector3 RightBounds = Quaternion.Inverse(BoundsRotation) * PlayerDirection;
+        Vector3 LeftBounds = BoundsRotation * PlayerDirectionView;
+        Vector3 RightBounds = Quaternion.Inverse(BoundsRotation) * PlayerDirectionView;
         Shader.SetGlobalVector(PlayerViewBoundsID, new Vector4(LeftBounds.x, LeftBounds.z, RightBounds.x, RightBounds.z));
         Shader.SetGlobalVector(PlayerViewBoundsParamsID, new Vector4(VisibilityBoundsDistanceFalloff, VisibilityBoundsFalloffSlope, 0f, 0f));
     }
