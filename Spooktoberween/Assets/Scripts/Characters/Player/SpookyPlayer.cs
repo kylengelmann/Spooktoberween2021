@@ -7,6 +7,7 @@ public class SpookyPlayer : Character
     public PlayerMovementComponent movementComponent {get; private set;}
 
     public float maxTurnRate = 360;
+    public float turnDampingTime = .1f;
 
     [SerializeField] GameObject VisibilityLightPrefab;
     [SerializeField] GameObject Sprite;
@@ -17,33 +18,49 @@ public class SpookyPlayer : Character
 
     Quaternion CurrentLookRotation = Quaternion.identity;
     Quaternion TargetLookRotation = Quaternion.identity;
-    float FloorAngle = -60f;
 
-    Quaternion StartingFlashlightRotation = Quaternion.identity;
+    float CurrentLookSpeed = 0f;
+
+    float CurrentLookAngle = 0f;
+    float TargetLookAngle = 0f;
+    float FloorAngle = 60f;
+    Quaternion FloorRotation;
+
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
     }
 
+    Vector3 FloorNormal = Vector3.up;
+
     private void Start()
     {
+        FloorRotation = CurrentLookRotation = TargetLookRotation = Quaternion.Euler(FloorAngle, 0f, 0f);
+        FloorNormal = FloorRotation * Vector3.up;
+
+        Debug.Log(FloorNormal);
+
         if(VisibilityLightPrefab)
         {
             GameObject visibilityObject = Instantiate(VisibilityLightPrefab, Sprite.transform, false);
             visibilityLight = visibilityObject.GetComponent<VisibilityLight>();
             visibilityLight.transform.rotation = Quaternion.identity;
-
+        }
+        if(FlashlightPrefab)
+        {
             Flashlight = Instantiate(FlashlightPrefab, Sprite.transform, false);
-            StartingFlashlightRotation = Flashlight.transform.rotation = Quaternion.Inverse(Sprite.transform.rotation) * Flashlight.transform.rotation;
+            Flashlight.transform.rotation = CurrentLookRotation;
         }
     }
 
     private void Update()
     {
-        CurrentLookRotation = Quaternion.RotateTowards(CurrentLookRotation, TargetLookRotation, maxTurnRate * Time.deltaTime);
+        CurrentLookAngle = Mathf.SmoothDampAngle(CurrentLookAngle, TargetLookAngle, ref CurrentLookSpeed, turnDampingTime, maxTurnRate, Time.deltaTime);
+
+        CurrentLookRotation = FloorRotation * Quaternion.Euler(0f, CurrentLookAngle, 0f);
         Vector3 CurrentLookDir = CurrentLookRotation * Vector3.right;
         visibilityLight.ViewDir = new Vector2(CurrentLookDir.x, CurrentLookDir.z);
-        //Flashlight.transform.rotation = CurrentLookRotation * StartingFlashlightRotation;
+        Flashlight.transform.rotation = CurrentLookRotation;
     }
 
     public void HandleMoveInput(Vector2 input)
@@ -53,10 +70,13 @@ public class SpookyPlayer : Character
 
     public void HandleLookInput(Vector2 input)
     {
-        Vector3 NewLookDir = new Vector3(input.x, Mathf.Tan(FloorAngle * Mathf.Deg2Rad) * input.y, input.y);
+        Vector3 NewLookDir = new Vector3(input.x, Mathf.Tan(FloorAngle * Mathf.Deg2Rad) * input.y, input.y).normalized;
 
-        Debug.Log(NewLookDir);
+        float cos = Vector3.Dot(NewLookDir, Vector3.right);
+        float sin = Vector3.Dot(Vector3.Cross(Vector3.right, NewLookDir), FloorNormal);
 
-        TargetLookRotation = Quaternion.FromToRotation(Vector3.right, NewLookDir);
+        TargetLookAngle = Mathf.Acos(cos) * Mathf.Rad2Deg * (sin < 0f ? 1f : -1f);
+
+        TargetLookRotation = FloorRotation * Quaternion.Euler(0f, TargetLookAngle, 0f);
     }
 }

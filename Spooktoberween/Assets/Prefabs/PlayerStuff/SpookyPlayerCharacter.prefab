@@ -143,10 +143,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a72f4455e5767b4419ff416722351326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTurnRate: 360
+  maxTurnRate: 450
+  turnDampingTime: 0.1
   VisibilityLightPrefab: {fileID: 1430917484440479, guid: ddec3e09f4a14854d9479de6c758c44d, type: 3}
   Sprite: {fileID: 1023978255755757128}
-  FlashlightPrefab: {fileID: 3096717413027817122, guid: 90d2a0aaf8a625444a31630b1570f869, type: 3}
+  FlashlightPrefab: {fileID: 2671912278504909673, guid: 6b8a9ce578f29a54990731c788a5d714, type: 3}
 --- !u!143 &1023978256251086981
 CharacterController:
   m_ObjectHideFlags: 0
