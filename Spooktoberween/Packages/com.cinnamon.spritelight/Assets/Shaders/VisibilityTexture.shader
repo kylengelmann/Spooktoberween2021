@@ -50,12 +50,15 @@ Shader "Hidden/SpriteLight/Visibility"
             v2f vert(appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.viewPos = UnityObjectToViewPos(v.vertex);
+                o.vertex = v.vertex;
+
+                o.viewPos = mul(unity_CameraInvProjection, v.vertex);
+                o.viewPos.y = -o.viewPos.y;
                 return o;
             }
 
             Texture2D _NormalsDepth;
+            Texture2D _NormalsTexture;
             SamplerState Point_Clamp_GBufferSampler;
 
             float _PixelRatio;
@@ -69,6 +72,12 @@ Shader "Hidden/SpriteLight/Visibility"
 #ifdef UNITY_PIXEL_PERFECT
                 screenPosTexture *= _PixelRatio;
 #endif
+                float4 normalsTexVal = _NormalsTexture.Sample(Point_Clamp_GBufferSampler, screenPosTexture);
+
+                float3 normal = normalize(DecodeNormal(normalsTexVal));
+
+                //return normal.xyzz;
+
                 float4 screenPosDepth = screenPosTexture;
 
                 float3 viewPos = i.viewPos;
@@ -78,6 +87,8 @@ Shader "Hidden/SpriteLight/Visibility"
 				float2 ToPlayer = _PlayerViewPosition.xy - viewPos.xy;
 
                 float PlayerDistance = length(ToPlayer);
+
+                float nDotL = dot(normalize(_PlayerViewPosition.xyz - viewPos.xyz), normal);
 
                 float DistanceAttenuation = max(0.f, (_PlayerViewPosition.w - PlayerDistance) / (_PlayerViewPosition.w + .001f));
                 //float DiatanceAttenuation = 1.f;
@@ -99,7 +110,7 @@ Shader "Hidden/SpriteLight/Visibility"
 				float BoundsAttenuation = 1.f - ( (BoundsLeftParDist < 0.f && BoundsRightParDist < 0.f) ? PlayerDistance : max(BoundsLeftEffectiveDist, BoundsRightEffectiveDist)) / _PlayerViewBoundsParams.x;
 
 
-                float ShadowAttenuation = SampleVisibilityShadowMap(viewPos);
+                float ShadowAttenuation = SampleVisibilityShadowMap(viewPos) * max(min((nDotL - .1f) * 100.f, 1.f), 0.f);
 
                 //return SampleVisibilityShadowMap(viewPos);
 

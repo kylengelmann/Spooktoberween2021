@@ -35,15 +35,15 @@ namespace SpriteLightRendering
 
         public void Setup(RenderTargetIdentifier colorTarget, RenderTargetIdentifier depthTarget, int LightIndex)
         {
-            //VisTex = colorTarget;
-
             ConfigureTarget(colorTarget, depthTarget);
-            ConfigureClear(ClearFlag.Color, Color.black);
+            ConfigureClear(ClearFlag.Color, Color.white);
             VisibilityLightIndex = LightIndex;
         }
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            if(VisibilityLightIndex < 0) return;
+
             CommandBuffer commandBuffer = CommandBufferPool.Get(m_PassName);
 
             using (new ProfilingScope(commandBuffer, m_ProfilingSampler))
@@ -54,7 +54,7 @@ namespace SpriteLightRendering
                 VisibleLight light = renderingData.lightData.visibleLights[VisibilityLightIndex];
                 Matrix4x4 lightMatrix = light.localToWorldMatrix;
                 lightMatrix = lightMatrix * Matrix4x4.Scale(light.range * Vector3.one);
-                commandBuffer.DrawMesh(DeferredUtils.SphereMesh, lightMatrix, m_VisiblityMaterial, 0, -1);
+                commandBuffer.DrawMesh(DeferredUtils.FullscreenQuadDoubleSided, Matrix4x4.identity, m_VisiblityMaterial, 0, -1);
 
                 //commandBuffer.SetGlobalTexture(VisTexID, VisTex);
 

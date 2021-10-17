@@ -7,6 +7,7 @@ public class SpookyPlayer : Character
     public PlayerMovementComponent movementComponent {get; private set;}
 
     [SerializeField] GameObject VisibilityLightPrefab;
+    [SerializeField] GameObject Sprite;
 
     VisibilityLight visibilityLight;
     private void Awake()
@@ -18,7 +19,7 @@ public class SpookyPlayer : Character
     {
         if(VisibilityLightPrefab)
         {
-            GameObject visibilityObject = Instantiate(VisibilityLightPrefab, transform, false);
+            GameObject visibilityObject = Instantiate(VisibilityLightPrefab, Sprite.transform, false);
             visibilityLight = visibilityObject.GetComponent<VisibilityLight>();
         }
     }
