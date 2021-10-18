@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
 
     SpookyControls controls;
 
+    Vector2 mousePos = Vector2.zero;
+
     private void Awake()
     {
         controls = new SpookyControls();
@@ -42,6 +44,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        Vector3 PlayerPos = Camera.main.WorldToScreenPoint(player.transform.position);
+        Vector2 LookDir = mousePos - new Vector2(PlayerPos.x, PlayerPos.y);
+
+        player.HandleLookInput(LookDir);
+    }
+
     void OnMovmentInput(InputAction.CallbackContext context)
     {
         if(player)
@@ -56,8 +66,9 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 PlayerPos = Camera.main.WorldToScreenPoint(player.transform.position);
 
-            Vector2 LookInput = context.ReadValue<Vector2>();
-            Vector2 LookDir = LookInput - new Vector2(PlayerPos.x, PlayerPos.y);
+            mousePos = context.ReadValue<Vector2>();
+
+            Vector2 LookDir = mousePos - new Vector2(PlayerPos.x, PlayerPos.y);
 
             player.HandleLookInput(LookDir);
         }

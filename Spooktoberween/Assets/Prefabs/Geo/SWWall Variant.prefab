@@ -55,9 +55,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8923991
+      objectReference: {fileID: 0}
+    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.23911756
+      objectReference: {fileID: 0}
+    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.36964372
+      objectReference: {fileID: 0}
+    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.09904577
+      objectReference: {fileID: 0}
     - target: {fileID: 7041980475250988753, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Name
-      value: SWWall
+      value: SWWall Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}

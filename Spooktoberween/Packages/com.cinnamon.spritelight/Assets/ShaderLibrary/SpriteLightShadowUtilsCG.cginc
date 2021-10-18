@@ -196,10 +196,12 @@ float SampleVisibilityShadowMap(float3 positionVS)
 
 	float4 shadowCoords = TransformVisibilityWorldToShadowCoord(positionWS);
 
-	if (shadowCoords.z > 1.f || shadowCoords.z < 0.f)
-	{
-		return 1.f;
-	}
+	//if (shadowCoords.z > 1.f) || shadowCoords.z < 0.f)
+	//{
+	//	return 1.f;
+	//}
+
+	shadowCoords.z = clamp(shadowCoords.z, .001f, .999f);
 
 #ifdef UNITY_REVERSED_Z
 	float biasK = shadowCoords.z * .1f;
