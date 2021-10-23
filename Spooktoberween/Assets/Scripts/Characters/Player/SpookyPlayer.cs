@@ -13,6 +13,8 @@ public class SpookyPlayer : Character
     [SerializeField] GameObject Sprite;
     [SerializeField] GameObject FlashlightPrefab;
 
+    public GameObject visibleArea;
+
     VisibilityLight visibilityLight;
     GameObject Flashlight;
 
@@ -61,6 +63,8 @@ public class SpookyPlayer : Character
         Vector3 CurrentLookDir = CurrentLookRotation * Vector3.right;
         visibilityLight.ViewDir = new Vector2(CurrentLookDir.x, CurrentLookDir.z);
         Flashlight.transform.rotation = CurrentLookRotation;
+
+        visibleArea.transform.LookAt(transform.position + new Vector3(CurrentLookDir.x, 0f, CurrentLookDir.z), Vector3.up);
     }
 
     public void HandleMoveInput(Vector2 input)

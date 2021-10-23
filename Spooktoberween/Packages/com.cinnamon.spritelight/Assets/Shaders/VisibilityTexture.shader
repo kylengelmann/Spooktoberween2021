@@ -88,7 +88,7 @@ Shader "Hidden/SpriteLight/Visibility"
 
                 float nDotL = dot(normalize(_PlayerViewPosition.xyz - viewPos.xyz), normal);
 
-                float DistanceAttenuation = clamp((_PlayerViewPosition.w - PlayerDistance - _PlayerViewBoundsParams.x) / (_PlayerViewBoundsParams.x + .001f), 0.f, 1.f);
+                float DistanceAttenuation = clamp((_PlayerViewPosition.w*.5f - PlayerDistance - _PlayerViewBoundsParams.x) / (_PlayerViewBoundsParams.x + .001f), 0.f, 1.f);
 
 				float BoundsLeftPerpDist = dot(ToPlayer, float2(-_PlayerViewBounds.y, _PlayerViewBounds.x));
 				float BoundsLeftParDist = -(dot(ToPlayer, float2(_PlayerViewBounds.x, _PlayerViewBounds.y)));

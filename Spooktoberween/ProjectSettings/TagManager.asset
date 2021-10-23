@@ -12,6 +12,7 @@ TagManager:
   - 
   - Water
   - UI
+  - Collision
   - 
   - 
   - 
@@ -34,10 +35,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - FlashlightCollision
+  - SpookyThing
+  - Visibility
   m_SortingLayers:
   - name: Default
     uniqueID: 0

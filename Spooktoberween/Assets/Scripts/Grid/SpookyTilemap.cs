@@ -5,12 +5,15 @@ using UnityEngine.Tilemaps;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
+using UnityEditor;
 #endif
 
 [ExecuteInEditMode]
 public class SpookyTilemap : MonoBehaviour
 {
 #if UNITY_EDITOR
+    [SerializeField] GameObject generatedGeoPrefab;
+
     [System.NonSerialized] Tilemap tilemap;
 
     [System.Serializable]
@@ -65,7 +68,7 @@ public class SpookyTilemap : MonoBehaviour
         if (geoParent)
         {
             Transform tilemapGeoParentTransform = geoParent.transform.Find(tilemapGeoParentName);
-            if(tilemapGeoParentTransform)
+            if(tilemapGeoParentTransform && tilemapGeoParentTransform.gameObject)
             {
                 tilemapGeoParent = tilemapGeoParentTransform.gameObject;
                 for(int i = tilemapGeoParentTransform.childCount - 1; i >= 0; --i)
@@ -81,12 +84,18 @@ public class SpookyTilemap : MonoBehaviour
                 bMadeSceneDirty = true;
             }
         }
-        else
+        else if(generatedGeoPrefab)
         {
-            geoParent = new GameObject(geoParentName);
+            geoParent = Instantiate(generatedGeoPrefab);
+            geoParent.name = geoParentName;
             tilemapGeoParent = new GameObject(tilemapGeoParentName);
             tilemapGeoParent.transform.SetParent(geoParent.transform);
             bMadeSceneDirty = true;
+        }
+        else
+        {
+            Debug.LogError("SpookyTilemap on " + gameObject.name + " has no generated geo prefab");
+            return;
         }
 
         Matrix4x4 cellToWorldGeo = transform.localToWorldMatrix * cellToLocalGeo;
@@ -101,7 +110,9 @@ public class SpookyTilemap : MonoBehaviour
                 {
                     Vector3 cellPosFloat = new Vector3(cellPos.x + .5f, cellPos.y + .5f, 0f);
                     Vector3 tileGeoPos = cellToWorldGeo.MultiplyPoint3x4(cellPosFloat);
-                    GameObject tileGeoInstance = Instantiate(tileGeo, tileGeoPos, tilemap.transform.rotation);
+                    GameObject tileGeoInstance = (GameObject)PrefabUtility.InstantiatePrefab(tileGeo, gameObject.scene); 
+                    tileGeoInstance.transform.position = tileGeoPos;
+                    tileGeoInstance.transform.rotation = tilemap.transform.rotation;
                     tileGeoInstance.transform.SetParent(tilemapGeoParent.transform, true);
                     tileGeoInstance.name += cellPos.x + "_" + cellPos.y;
 
@@ -125,7 +136,4 @@ public class SpookyTilemap : MonoBehaviour
         }
     }
 #endif // UNITY_EDITOR
-
-
-
 }
