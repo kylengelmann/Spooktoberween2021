@@ -386,11 +386,8 @@ namespace SpriteLightRendering
             m_NormalsPass.Setup(m_NormalsTexture, m_NormalsDepthTexture);
             EnqueuePass(m_NormalsPass);
 
-            //if (VisibilityLightIndex >= 0)
-            //{
-                m_VisibilityTexturePass.Setup(m_VisibilityTexture.Identifier(), m_BaseDepth.Identifier(), VisibilityLightIndex);
-                EnqueuePass(m_VisibilityTexturePass);
-            //}
+            m_VisibilityTexturePass.Setup(m_VisibilityTexture.Identifier(), m_BaseDepth.Identifier(), VisibilityLightIndex);
+            EnqueuePass(m_VisibilityTexturePass);
 
             m_SpriteColorPass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
             EnqueuePass(m_SpriteColorPass);

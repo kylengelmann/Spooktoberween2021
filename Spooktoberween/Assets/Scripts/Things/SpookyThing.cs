@@ -8,13 +8,13 @@ public class SpookyThing : MonoBehaviour
     public OnVisibleChanged onVisibleChanged;
 
     bool bIsInVisibleArea;
-    bool bIsOnCamera;
 
-    SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer {get; private set;}
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        //bIsOnCamera = spriteRenderer.isVisible;
     }
 
     private void Start()
@@ -24,10 +24,12 @@ public class SpookyThing : MonoBehaviour
 
     void UpdateVisible()
     {
-        bool newVisible = bIsOnCamera && bIsInVisibleArea;
+        bool newVisible = bIsInVisibleArea;
         if (bIsVisible != newVisible)
         {
             bIsVisible = newVisible;
+
+            spriteRenderer.enabled = newVisible;
 
             Debug.Log(gameObject.name + " visible changed to " + bIsVisible);
 
@@ -44,19 +46,19 @@ public class SpookyThing : MonoBehaviour
         {
             bIsInVisibleArea = newInVisibleArea;
 
-            spriteRenderer.enabled = newInVisibleArea;
+            UpdateVisible();
         }
     }
 
-    private void OnBecameVisible()
-    {
-        bIsOnCamera = true;
-        UpdateVisible();
-    }
+    //private void OnBecameVisible()
+    //{
+    //    bIsOnCamera = true;
+    //    UpdateVisible();
+    //}
 
-    private void OnBecameInvisible()
-    {
-        bIsOnCamera = false;
-        UpdateVisible();
-    }
+    //private void OnBecameInvisible()
+    //{
+    //    bIsOnCamera = false;
+    //    UpdateVisible();
+    //}
 }

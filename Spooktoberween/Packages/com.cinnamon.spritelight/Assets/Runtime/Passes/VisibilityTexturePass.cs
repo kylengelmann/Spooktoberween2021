@@ -43,6 +43,9 @@ namespace SpriteLightRendering
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
             if(VisibilityLightIndex < 0) return;
+#if UNITY_EDITOR
+            if (renderingData.cameraData.isSceneViewCamera) return;
+#endif
 
             CommandBuffer commandBuffer = CommandBufferPool.Get(m_PassName);
 
