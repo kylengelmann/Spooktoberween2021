@@ -191,7 +191,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -212,7 +212,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 74
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -233,7 +233,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 296
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -254,7 +254,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 370
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -275,7 +275,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 518
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -296,7 +296,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 592
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -317,7 +317,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 666
-        y: 75
+        y: 150
         width: 74
         height: 75
       alignment: 9
@@ -338,7 +338,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -359,7 +359,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 74
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -380,7 +380,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 148
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -401,7 +401,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 222
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -422,7 +422,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 296
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -443,7 +443,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 370
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -464,7 +464,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 444
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -485,7 +485,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 518
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -506,7 +506,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 592
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -527,7 +527,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 666
-        y: 0
+        y: 75
         width: 74
         height: 75
       alignment: 9
@@ -539,6 +539,27 @@ TextureImporter:
       bones: []
       spriteID: 9feb0b8ef7cb83b30800000000000000
       internalID: 4267367904484310777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: necessary_walls_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e92c4a28e80232b70800000000000000
+      internalID: 8872971487299289758
       vertices: []
       indices: 
       edges: []
