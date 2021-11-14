@@ -283,12 +283,12 @@ MonoBehaviour:
   - geo: {fileID: 7041980475250988753, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
     sprites:
     - {fileID: 6116525937705090812, guid: 49ea7b8193e4f7143a446d4c583a08de, type: 3}
-  - geo: {fileID: 2073474107857454119, guid: 7cae479d88748c04fa83204eb1b0567d, type: 3}
-    sprites:
-    - {fileID: -6709720624785850284, guid: 49ea7b8193e4f7143a446d4c583a08de, type: 3}
   - geo: {fileID: 4781317015156022083, guid: be0dfec68dbfd9741a5a4e343fbb87e9, type: 3}
     sprites:
-    - {fileID: 3256554681947576596, guid: 49ea7b8193e4f7143a446d4c583a08de, type: 3}
+    - {fileID: 6368003246756130340, guid: bfa1997634f0b1347a7f393befe8f0a4, type: 3}
+  - geo: {fileID: 4781317015156022083, guid: be0dfec68dbfd9741a5a4e343fbb87e9, type: 3}
+    sprites:
+    - {fileID: -2137283479786872772, guid: bfa1997634f0b1347a7f393befe8f0a4, type: 3}
   - geo: {fileID: 8336335435193121403, guid: c74ad326977eadf408cb92737f10fd0f, type: 3}
     sprites:
-    - {fileID: -4468580361216276836, guid: 49ea7b8193e4f7143a446d4c583a08de, type: 3}
+    - {fileID: -6583159509138188259, guid: bfa1997634f0b1347a7f393befe8f0a4, type: 3}

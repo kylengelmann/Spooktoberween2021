@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class SpookyPlayer : Character
 {
-    public PlayerMovementComponent movementComponent {get; private set;}
+    public PlayerMovementComponent movementComponent { get; private set; }
 
     public float maxTurnRate = 360;
     public float turnDampingTime = .1f;
+
+    public Vector2 lookDir {get; private set; }
 
     [SerializeField] GameObject VisibilityLightPrefab;
     [SerializeField] GameObject Sprite;
@@ -65,6 +67,7 @@ public class SpookyPlayer : Character
         Flashlight.transform.rotation = CurrentLookRotation;
 
         visibleArea.transform.LookAt(transform.position + new Vector3(CurrentLookDir.x, 0f, CurrentLookDir.z), Vector3.up);
+        lookDir = new Vector2(CurrentLookDir.x, CurrentLookDir.z);
     }
 
     public void HandleMoveInput(Vector2 input)
