@@ -639,10 +639,13 @@ namespace SpriteLightRendering
             RenderTextureDescriptor SpriteColorDescriptor = descriptor;
             SpriteColorDescriptor.depthBufferBits = 0;
             cmd.GetTemporaryRT(m_DiffuseColor.id, SpriteColorDescriptor, FilterMode.Point);
-            cmd.GetTemporaryRT(m_SpecularColor.id, SpriteColorDescriptor, FilterMode.Point);
             cmd.GetTemporaryRT(m_BaseColor.id, SpriteColorDescriptor, FilterMode.Point);
-             
+
             cmd.GetTemporaryRT(m_VisibilityTexture.id, SpriteColorDescriptor, FilterMode.Point);
+
+            SpriteColorDescriptor.colorFormat = RenderTextureFormat.ARGB32;
+            cmd.GetTemporaryRT(m_SpecularColor.id, SpriteColorDescriptor, FilterMode.Point);
+
 
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
