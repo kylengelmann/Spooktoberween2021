@@ -115,6 +115,7 @@
 
 				// Attenuation
 				float attenuation = GetLightAttenuation(lightDirAndDistance);
+				float specAtten = attenuation;
 
 				// Shadows
 #ifdef SHADOWS_ON
@@ -143,15 +144,16 @@
 				//return 1.f;
 
 				attenuation *= lerp(1.f - ShadowStrength, 1.f, ShadowAttenuation);
+				specAtten *= ShadowAttenuation;
 
 				//return attenuation;
 #endif // SHADOWS_ON
 
 				//return 1.f;
 
-				LightColor *= max(attenuation, 0.f);
+				//LightColor *= max(attenuation, 0.f);
 
-				float4 result = (diffuse + specColor) * LightColor;
+				float4 result = (diffuse*max(attenuation, 0.f) + specColor*max(specAtten, 0.f)) * LightColor;
 				result.a = 0.f;
 				return result;
 			}

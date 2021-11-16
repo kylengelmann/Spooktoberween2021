@@ -1,0 +1,552 @@
+fileFormatVersion: 2
+guid: 41ab212c29f8cbb47a087f7ce7a035cf
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6060113903209802685
+    second: fancyWalls_0
+  - first:
+      213: 4361184032975010650
+    second: fancyWalls_1
+  - first:
+      213: -7958954808348830135
+    second: fancyWalls_2
+  - first:
+      213: -2697468550625803359
+    second: fancyWalls_3
+  - first:
+      213: 2552945626394600474
+    second: fancyWalls_4
+  - first:
+      213: -689855160024214627
+    second: fancyWalls_5
+  - first:
+      213: -4263576115494935987
+    second: fancyWalls_6
+  - first:
+      213: 5107129463450040495
+    second: fancyWalls_7
+  - first:
+      213: 839041437643443655
+    second: fancyWalls_8
+  - first:
+      213: -4482269485228143960
+    second: fancyWalls_9
+  - first:
+      213: -8751269319845754374
+    second: fancyWalls_10
+  - first:
+      213: -613924970713742766
+    second: fancyWalls_11
+  - first:
+      213: -3305085346740619519
+    second: fancyWalls_12
+  - first:
+      213: 5367912776799098879
+    second: fancyWalls_13
+  - first:
+      213: -671829195752165663
+    second: fancyWalls_14
+  - first:
+      213: 3623600790167623625
+    second: fancyWalls_15
+  - first:
+      213: 5696696699958393242
+    second: fancyWalls_16
+  - first:
+      213: 5785648596236501985
+    second: fancyWalls_17
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: fancyWalls_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbbe933bc79d91450800000000000000
+      internalID: 6060113903209802685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5bb49d75c9068c30800000000000000
+      internalID: 4361184032975010650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9461bf825cc1c8190800000000000000
+      internalID: -7958954808348830135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_3
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a3492f15aaa09ad0800000000000000
+      internalID: -2697468550625803359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_4
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1423286582ed6320800000000000000
+      internalID: 2552945626394600474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_5
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d93594013642d66f0800000000000000
+      internalID: -689855160024214627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_6
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 150
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d42a513cc1cb4d4c0800000000000000
+      internalID: -4263576115494935987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa8fed2303b20e640800000000000000
+      internalID: 5107129463450040495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_8
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cd029afdbfd4ab00800000000000000
+      internalID: 839041437643443655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_9
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8aa4769b6a7cbc1c0800000000000000
+      internalID: -4482269485228143960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_10
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af9c1d87bee3d8680800000000000000
+      internalID: -8751269319845754374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_11
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2528dd9ed76ea77f0800000000000000
+      internalID: -613924970713742766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_12
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1073d23636af122d0800000000000000
+      internalID: -3305085346740619519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_13
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff71466ea38ae7a40800000000000000
+      internalID: 5367912776799098879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_14
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eea47de7ee2da6f0800000000000000
+      internalID: -671829195752165663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_15
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c714c158bd994230800000000000000
+      internalID: 3623600790167623625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_16
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 75
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a99f82a577bbe0f40800000000000000
+      internalID: 5696696699958393242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fancyWalls_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 75
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22666667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e30aed9eb0ca4050800000000000000
+      internalID: 5785648596236501985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

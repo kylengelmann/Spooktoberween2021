@@ -1,13 +1,7 @@
 fileFormatVersion: 2
-guid: b44f0c3df89049d43bead1df8e7be118
+guid: bc03f1f60763c08458b7e6a3a80c0a5f
 TextureImporter:
-  internalIDToNameTable:
-  - first:
-      213: 3888304585077839217
-    second: Dining Table_0
-  - first:
-      213: -5023189466393362850
-    second: Dining Table_1
+  internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -107,49 +101,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Dining Table_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 61
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 17556144b6806f530800000000000000
-      internalID: 3888304585077839217
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Dining Table_1
-      rect:
-        serializedVersion: 2
-        x: 63
-        y: 0
-        width: 61
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e5eb3285bcb0a4ab0800000000000000
-      internalID: -5023189466393362850
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
