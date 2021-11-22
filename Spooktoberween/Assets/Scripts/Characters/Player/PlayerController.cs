@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     public SpookyPlayer player {get; private set;}
 
     SpookyControls controls;
-
+    bool bLastLookInputWasController;
     Vector2 mousePos = Vector2.zero;
 
     private void Awake()
@@ -17,10 +17,13 @@ public class PlayerController : MonoBehaviour
         controls.Gameplay.Movement.performed += OnMovmentInput;
         controls.Gameplay.Movement.canceled += OnMovmentInput;
 
-        controls.Gameplay.Look_Mouse.performed += OnLookInput;
-        controls.Gameplay.Look_Mouse.performed += OnLookInput;
+        controls.Gameplay.Look_Mouse.performed += OnMouseLookInput;
+        controls.Gameplay.Look_Mouse.performed += OnMouseLookInput;
 
-        if(isActiveAndEnabled)
+        controls.Gameplay.Look_Gamepad.performed += OnGamepadLookInput;
+        controls.Gameplay.Look_Gamepad.performed += OnGamepadLookInput;
+
+        if (isActiveAndEnabled)
         {
             controls.Enable();
         }
@@ -46,10 +49,13 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Vector3 PlayerPos = Camera.main.WorldToScreenPoint(player.transform.position);
-        Vector2 LookDir = mousePos - new Vector2(PlayerPos.x, PlayerPos.y);
+        if(!bLastLookInputWasController)
+        {
+            Vector3 PlayerPos = Camera.main.WorldToScreenPoint(player.transform.position);
+            Vector2 LookDir = mousePos - new Vector2(PlayerPos.x, PlayerPos.y);
 
-        player.HandleLookInput(LookDir);
+            player.HandleLookInput(LookDir);
+        }
     }
 
     void OnMovmentInput(InputAction.CallbackContext context)
@@ -60,8 +66,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnLookInput(InputAction.CallbackContext context)
+    void OnMouseLookInput(InputAction.CallbackContext context)
     {
+        bLastLookInputWasController = false;
+
         if (player)
         {
             Vector3 PlayerPos = Camera.main.WorldToScreenPoint(player.transform.position);
@@ -71,6 +79,16 @@ public class PlayerController : MonoBehaviour
             Vector2 LookDir = mousePos - new Vector2(PlayerPos.x, PlayerPos.y);
 
             player.HandleLookInput(LookDir);
+        }
+    }
+
+    void OnGamepadLookInput(InputAction.CallbackContext context)
+    {
+        bLastLookInputWasController = true;
+
+        if (player)
+        {
+            player.HandleLookInput(context.ReadValue<Vector2>());
         }
     }
 }

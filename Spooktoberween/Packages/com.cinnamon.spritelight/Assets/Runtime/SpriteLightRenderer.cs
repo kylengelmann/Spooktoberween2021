@@ -261,14 +261,14 @@ namespace SpriteLightRendering
 
             commandBuffer.SetGlobalVector("_AmbientLightColor", RenderSettings.ambientLight);
 
-            if (isSceneViewCamera || (!cameraData.resolveFinalTarget))
+            //if (isSceneViewCamera || (!cameraData.resolveFinalTarget))
             {
                 commandBuffer.EnableShaderKeyword("RENDERING_TO_TEMP_TARGET");
             }
-            else
-            {
-                commandBuffer.DisableShaderKeyword("RENDERING_TO_TEMP_TARGET");
-            }
+            //else
+            //{
+            //    commandBuffer.DisableShaderKeyword("RENDERING_TO_TEMP_TARGET");
+            //}
 
             context.ExecuteCommandBuffer(commandBuffer);
             CommandBufferPool.Release(commandBuffer);
@@ -422,25 +422,25 @@ namespace SpriteLightRendering
             }
 
             // Transparent
-            m_ClearTargetsPass.ConfigureTarget(new RenderTargetIdentifier[] { m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
-            EnqueuePass(m_ClearTargetsPass);
+//            m_ClearTargetsPass.ConfigureTarget(new RenderTargetIdentifier[] { m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
+//            EnqueuePass(m_ClearTargetsPass);
 
-            m_TransparentNormalsPass.Setup(m_NormalsTexture, m_NormalsDepthTexture);
-            EnqueuePass(m_TransparentNormalsPass);
+//            m_TransparentNormalsPass.Setup(m_NormalsTexture, m_NormalsDepthTexture);
+//            EnqueuePass(m_TransparentNormalsPass);
 
-            m_TransparentColorPass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
-            EnqueuePass(m_TransparentColorPass);
+//            m_TransparentColorPass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
+//            EnqueuePass(m_TransparentColorPass);
 
-#if UNITY_EDITOR
-            if (isSceneViewCamera)
-            {
-                m_EditorTransparentNormalsDiffusePass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
-                EnqueuePass(m_EditorNormalsDiffusePass);
-            }
-#endif // UNITY_EDITOR
+//#if UNITY_EDITOR
+//            if (isSceneViewCamera)
+//            {
+//                m_EditorTransparentNormalsDiffusePass.Setup(new RenderTargetIdentifier[] { m_BaseColor.Identifier(), m_DiffuseColor.Identifier(), m_SpecularColor.Identifier() }, m_BaseDepth.Identifier());
+//                EnqueuePass(m_EditorNormalsDiffusePass);
+//            }
+//#endif // UNITY_EDITOR
 
-            m_TransparentLightingPass.Setup(m_BaseColor, m_BaseDepth, in ShadowPointLightIndices, FlashlightIndex);
-            EnqueuePass(m_TransparentLightingPass);
+//            m_TransparentLightingPass.Setup(m_BaseColor, m_BaseDepth, in ShadowPointLightIndices, FlashlightIndex);
+//            EnqueuePass(m_TransparentLightingPass);
 
             m_UpscaleTransparentBasePass.Setup(m_BaseColor);
             m_UpscaleTransparentBasePass.ConfigureTarget(m_ActiveCameraColorAttachment.Identifier());

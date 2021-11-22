@@ -9,7 +9,7 @@ public class SpookyPlayer : Character
     public float maxTurnRate = 360;
     public float turnDampingTime = .1f;
 
-    public Vector2 lookDir {get; private set; }
+    public Vector2 lookDir {get; private set;}
 
     [SerializeField] GameObject VisibilityLightPrefab;
     [SerializeField] GameObject Sprite;
@@ -33,6 +33,8 @@ public class SpookyPlayer : Character
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
+
+        currentFaceDirection = EFaceDirection.South;
     }
 
     Vector3 FloorNormal = Vector3.up;
@@ -70,6 +72,13 @@ public class SpookyPlayer : Character
         lookDir = new Vector2(CurrentLookDir.x, CurrentLookDir.z);
     }
 
+    void SetLookDir(in Vector2 newLookDir)
+    {
+        lookDir = newLookDir;
+        EFaceDirection newFaceDir = SpookyUtilities.VectorToFaceDirection(newLookDir);
+        if(newFaceDir != EFaceDirection.None) currentFaceDirection = newFaceDir;
+    }
+
     public void HandleMoveInput(Vector2 input)
     {
         movementComponent.SetMovmentInput(input);
@@ -85,5 +94,10 @@ public class SpookyPlayer : Character
         TargetLookAngle = Mathf.Acos(cos) * Mathf.Rad2Deg * (sin < 0f ? 1f : -1f);
 
         TargetLookRotation = FloorRotation * Quaternion.Euler(0f, TargetLookAngle, 0f);
+    }
+
+    public Vector2 GetVelocity()
+    {
+        return movementComponent.velocity;
     }
 }
