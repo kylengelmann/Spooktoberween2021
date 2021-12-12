@@ -642,10 +642,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+    x: 0.03010279
+    y: 0.03002611
+    width: 0.9397944
+    height: 0.9399478
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -1491,22 +1491,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1023978255755757129, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: m_SortingOrder
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978255755757129, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: m_SpriteSortPoint
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978255755757134, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.084
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978256251086981, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: m_Radius
-      value: 0.11
-      objectReference: {fileID: 0}
     - target: {fileID: 1023978256251086983, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
       propertyPath: m_Name
       value: SpookyPlayerCharacter
@@ -1672,26 +1656,6 @@ PrefabInstance:
     - target: {fileID: 6644566671662507965, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7001154731331798535, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
-      propertyPath: m_Size.x
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7001154731331798535, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
-      propertyPath: m_Size.y
-      value: 0.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7001154731331798535, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b5a647f035c3ecf41b0eb7d9763e9b6c, type: 3}
-    - target: {fileID: 7001154731331798535, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
-      propertyPath: m_SortingOrder
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7001154731331798535, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
