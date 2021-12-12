@@ -75,7 +75,7 @@ namespace CheatSystem
                 if (Event.current.type == EventType.KeyDown && Event.current.keyCode != KeyCode.None)
                 {
                     bool bUsedEvent = true;
-                    int currentSuggestionIdx = -1;
+                    //int currentSuggestionIdx = -1;
                     bool bTabCompleted = false;
 
                     switch (Event.current.keyCode)

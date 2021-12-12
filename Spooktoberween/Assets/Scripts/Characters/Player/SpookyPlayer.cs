@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[assembly:CheatSystem.CheatClass(typeof(SpookyPlayer))]
 public class SpookyPlayer : Character
 {
     public PlayerMovementComponent movementComponent { get; private set; }
@@ -69,7 +70,7 @@ public class SpookyPlayer : Character
         Flashlight.transform.rotation = CurrentLookRotation;
 
         visibleArea.transform.LookAt(transform.position + new Vector3(CurrentLookDir.x, 0f, CurrentLookDir.z), Vector3.up);
-        lookDir = new Vector2(CurrentLookDir.x, CurrentLookDir.z);
+        SetLookDir(new Vector2(CurrentLookDir.x, CurrentLookDir.z));
     }
 
     void SetLookDir(in Vector2 newLookDir)
@@ -99,5 +100,14 @@ public class SpookyPlayer : Character
     public Vector2 GetVelocity()
     {
         return movementComponent.velocity;
+    }
+
+    [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]
+    void SetVisibilityLightEnabled(bool bNewEnabled)
+    {
+        if(visibilityLight)
+        {
+            visibilityLight.enabled = bNewEnabled;
+        }
     }
 }

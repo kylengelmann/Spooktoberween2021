@@ -55,4 +55,22 @@ public class VisibilityLight : MonoBehaviour
         Shader.SetGlobalVector(PlayerViewBoundsID, new Vector4(LeftBounds.x, LeftBounds.z, RightBounds.x, RightBounds.z));
         Shader.SetGlobalVector(PlayerViewBoundsParamsID, new Vector4(VisibilityBoundsDistanceFalloff, VisibilityBoundsFalloffSlope, 0f, 0f));
     }
+
+    private void OnEnable()
+    {
+        if(light)
+        {
+            light.enabled = true;
+            RenderPipelineManager.beginCameraRendering += OnFrameRender;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (light)
+        {
+            light.enabled = false;
+            RenderPipelineManager.beginCameraRendering -= OnFrameRender;
+        }
+    }
 }

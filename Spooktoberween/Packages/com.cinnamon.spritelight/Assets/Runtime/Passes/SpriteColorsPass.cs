@@ -51,14 +51,25 @@ namespace SpriteLightRendering
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            if(m_ShaderTagIdList.Count <= 0) return;
+
             CommandBuffer commandBuffer = CommandBufferPool.Get(m_PassName);
             using (new ProfilingScope(commandBuffer, m_ProfilingSampler))
             {
                 context.ExecuteCommandBuffer(commandBuffer);
                 commandBuffer.Clear();
 
-                SortingCriteria SortFlags = m_bIsTransparent ? SortingCriteria.CommonTransparent : SortingCriteria.CommonOpaque;
-                DrawingSettings drawSettings = CreateDrawingSettings(m_ShaderTagIdList, ref renderingData, SortFlags);
+                SortingSettings sortingSettings = new SortingSettings();
+                sortingSettings.criteria = SortingCriteria.CommonTransparent;
+                sortingSettings.distanceMetric = DistanceMetric.CustomAxis;
+                sortingSettings.customAxis = Vector3.forward;
+
+                DrawingSettings drawSettings = new DrawingSettings(m_ShaderTagIdList[0], sortingSettings);
+                for(int i = 1; i < m_ShaderTagIdList.Count; ++i)
+                {
+                    drawSettings.SetShaderPassName(i, m_ShaderTagIdList[i]);
+                }
+
                 FilteringSettings filterSettings = m_FilterSettings;
 
                 context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filterSettings, ref m_RenderStateBlock);

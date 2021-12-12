@@ -125,7 +125,7 @@ namespace SpriteLightRendering
             m_VisibilityTexturePass = new VisibilityTexturePass("VisibilityTexture", RenderPassEvent.AfterRenderingOpaques - 1);
             m_SpriteColorPass = new SpriteColorPass("Sprite Color", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques);
 #if UNITY_EDITOR
-            m_EditorNormalsDiffusePass = new EditorNormalsDiffusePass("Editor Normals Diffuse", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques + 1);
+            m_EditorNormalsDiffusePass = new EditorNormalsDiffusePass("Editor Normals Diffuse", RenderQueueRange.opaque, RenderPassEvent.BeforeRenderingOpaques - 1);
 #endif // UNITY_EDITOR
             m_DeferredLightingPass = new DeferredLightingPass("Deferred Lighting", RenderPassEvent.AfterRenderingOpaques);
             m_UpscaleBasePass = new UpscaleBlitPass(RenderPassEvent.AfterRenderingOpaques + 1, BlendMode.SrcAlpha, BlendMode.OneMinusSrcAlpha);

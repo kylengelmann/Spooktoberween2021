@@ -1,0 +1,18 @@
+{
+    "name": "SpookyAssembly",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4098bc9eff50e2f4ebf59a1beda02a37",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:4c420312aac795c40923c2b926c98296"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

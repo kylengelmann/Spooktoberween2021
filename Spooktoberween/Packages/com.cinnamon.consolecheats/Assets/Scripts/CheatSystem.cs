@@ -92,6 +92,16 @@ namespace CheatSystem
                     {
                         methodParams[paramInfo.Position] = Tokens[paramInfo.Position + 1];
                     }
+                    else if (paramInfo.ParameterType == typeof(bool))
+                    {
+                        if(Tokens[paramInfo.Position + 1] == "1") methodParams[paramInfo.Position] = true;
+                        else if (Tokens[paramInfo.Position + 1] == "0") methodParams[paramInfo.Position] = false;
+                        else
+                        {
+                            methodParams[paramInfo.Position] = paramInfo.ParameterType.InvokeMember("Parse", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
+                            null, null, new object[] { Tokens[paramInfo.Position + 1] });
+                        }
+                    }
                     else
                     {
                         methodParams[paramInfo.Position] = paramInfo.ParameterType.InvokeMember("Parse", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
