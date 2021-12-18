@@ -21,7 +21,7 @@ Shader "Hidden/SpriteLight/Visibility"
             Stencil
             {
                 Ref [_StencilRef]
-                WriteMask [_StencilReadMask]
+                ReadMask [_StencilReadMask]
                 Comp NotEqual
             }
 
@@ -100,7 +100,7 @@ Shader "Hidden/SpriteLight/Visibility"
 
 				float BoundsAttenuation = 1.f - ( (BoundsLeftParDist < 0.f && BoundsRightParDist < 0.f) ? PlayerDistance : max(BoundsLeftEffectiveDist, BoundsRightEffectiveDist)) / _PlayerViewBoundsParams.x;
 
-                float ShadowAttenuation = SampleVisibilityShadowMap(viewPos) * max(min((nDotL - .0001f) * 100.f, 1.f), 0.f);
+                float ShadowAttenuation = SampleVisibilityShadowMap(viewPos);// *max(min((nDotL - .0001f) * 100.f, 1.f), 0.f);
 
                 return ShadowAttenuation * DistanceAttenuation * BoundsAttenuation;
             }

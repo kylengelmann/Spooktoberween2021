@@ -15,8 +15,8 @@
 		_EmissiveMultiplier("Emissive Multiplier", Color) = (1, 1, 1, 1)
 		_DiffuseMultiplier("Diffuse Multiplier", Color) = (1, 1, 1, 1)
 		_SpecularMultiplier("Specular Multiplier", Color) = (1, 1, 1, 1)
-		_StencilRef("Stencil Ref", Int) = 0
-		_StencilWriteMask("Stencil Write Mask", Int) = 255
+		_StencilRef("Stencil Ref", Integer) = 0
+		_StencilWriteMask("Stencil Write Mask", Integer) = 255
 	}
 	SubShader
 	{
