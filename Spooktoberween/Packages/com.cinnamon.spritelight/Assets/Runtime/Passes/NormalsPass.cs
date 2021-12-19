@@ -29,8 +29,7 @@ namespace SpriteLightRendering
 
             m_ShaderTagIdList.Add(new ShaderTagId(NormalsTag));
 
-            m_FilterSettings = new FilteringSettings(renderQueueRange);
-            m_FilterSettings.renderingLayerMask = 1;
+            m_FilterSettings = new FilteringSettings(renderQueueRange, renderingLayerMask: 1);
 
             m_RenderStateBlock = new RenderStateBlock(RenderStateMask.Nothing);
         }

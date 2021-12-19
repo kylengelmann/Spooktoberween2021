@@ -7,6 +7,8 @@
 		[PerRendererData] ShadowStrength("Shadow Strengh", Range(0, 1)) = 1
 		[PerRendererData] SpotlightDirection("Spotlight Direction", Color) = (0, 0, 1, 0)
 		[PerRendererData] SpotlightDirDotLRange("Spotlight Dir Dot L Range", Color) = (0, 1, 0, 0)
+		_StencilRef("Stencil Ref", Integer) = 0
+		_StencilReadMask("Stencil Read Mask", Integer) = 0
 	}
 		SubShader
 	{
@@ -23,10 +25,18 @@
 			Cull Front
 			Blend One One
 
+			Stencil
+			{
+				Ref [_StencilRef]
+				ReadMask [_StencilReadMask]
+				Comp Equal
+			}
+
 			CGPROGRAM
 			#pragma shader_feature_local DIRECTIONAL_LIGHTING POINT_LIGHTING SPOT_LIGHTING
 			#pragma shader_feature_local ATTENUATION_LINEAR ATTENUATION_INVERSE_SQUARED
 			#pragma shader_feature_local SHADOWS_OFF SHADOWS_ON
+			#pragma shader_feature_local SINGLE_SIDED DOUBLE_SIDED
 			#pragma shader_feature __ UNITY_PIXEL_PERFECT
 
 			#pragma vertex vert
@@ -98,8 +108,17 @@
 				float4 lightDirAndDistance = GetLightDirectionAndDistance(viewPos);
 
 				// Diffuse
-				float nDotL = max(0.f, dot(normal, -lightDirAndDistance.xyz));
-				float4 diffuse = _DiffuseTexture.Sample(Point_Clamp_GBufferSampler, screenPosTexture) * nDotL;
+				float nDotL = dot(normal, -lightDirAndDistance.xyz);
+
+#ifdef SINGLE_SIDED
+				float diffuseNDotL = max(0.f, nDotL);
+#else
+#ifdef DOUBLE_SIDED
+				float diffuseNDotL = abs(nDotL);
+#endif // DOUBLE_SIDED
+#endif // SINGLE_SIDED
+
+				float4 diffuse = _DiffuseTexture.Sample(Point_Clamp_GBufferSampler, screenPosTexture) * diffuseNDotL;
 
 				// Specular
 				float3 reflectedLightDir = 2.f*nDotL*normal + lightDirAndDistance.xyz;
@@ -110,8 +129,8 @@
 
 				// add a small amount to the power as spec was occasionally somehow NaN, this fixed the issue
 				float spec = pow(vDotL, specColor.a*128.f + .001f);
-				specColor *= spec;
 
+				specColor *= spec;
 
 				// Attenuation
 				float attenuation = GetLightAttenuation(lightDirAndDistance);
@@ -119,39 +138,16 @@
 
 				// Shadows
 #ifdef SHADOWS_ON
-				//viewPos.z = -viewPos.z;
 				float3 positionWS = mul(unity_CameraToWorld, float4(viewPos, 1.0)).xyz;
-				//return -viewPos.zzzz;
-
-				//return positionWS.xyzz/10.f;
-
-				//return positionWS.xyzz/20.f;
 
 				float4 shadowCoords = TransformWorldToShadowCoord(positionWS);
 				shadowCoords.b = 0.f;
-				//shadowCoords.r = (shadowCoords.r - .75f) * 4.f;
-				//shadowCoords.g = shadowCoords.g * 4.f;
-				//return shadowCoords.zzzz;
 
-				//return shadowCoords;
-
-				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((nDotL - .0001f)*100.f, 1.f), 0.f);
-
-				//return  max(min((nDotL - .1f) * 100.f, 1.f), 0.f);
-				//return SampleShadowMap(viewPos);
-
-				//return SampleShadowMap(viewPos);
-				//return 1.f;
+				float ShadowAttenuation = SampleShadowMap(viewPos) * max(min((diffuseNDotL - .0001f)*100.f, 1.f), 0.f);
 
 				attenuation *= lerp(1.f - ShadowStrength, 1.f, ShadowAttenuation);
 				specAtten *= ShadowAttenuation;
-
-				//return attenuation;
 #endif // SHADOWS_ON
-
-				//return 1.f;
-
-				//LightColor *= max(attenuation, 0.f);
 
 				float4 result = (diffuse*max(attenuation, 0.f) + specColor*max(specAtten, 0.f)) * LightColor;
 				result.a = 0.f;

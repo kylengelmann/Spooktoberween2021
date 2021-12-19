@@ -56,6 +56,7 @@ public class SpookyTilemap : MonoBehaviour
     public struct SpriteGeoMapEntry
     {
         public GameObject geo;
+        public EFaceDirection tileDirection;
         public List<Sprite> sprites;
     }
 
@@ -65,6 +66,9 @@ public class SpookyTilemap : MonoBehaviour
                                                       new Vector4(.25f, .25f, 0f, 0f),
                                                       new Vector4(.4375f, .4375f, 0f, 10f),
                                                       new Vector4(0f, 0f, 0f, 1f)).transpose;
+
+#if UNITY_EDITOR
+    [SerializeField] GameObject generatedGeoPrefab;
     
     const string geoParentName = "GeneratedGeo";
 
