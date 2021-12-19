@@ -103,11 +103,11 @@ public class SpookyPlayer : Character
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]
-    void SetVisibilityLightEnabled(bool bNewEnabled)
+    void ToggleVisibilityLightEnabled()
     {
         if(visibilityLight)
         {
-            visibilityLight.enabled = bNewEnabled;
+            visibilityLight.enabled = !visibilityLight.enabled;
         }
     }
 }

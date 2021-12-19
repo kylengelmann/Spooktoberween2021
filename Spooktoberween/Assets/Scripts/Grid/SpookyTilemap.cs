@@ -29,12 +29,22 @@ public class SpookyTilemap : MonoBehaviour
 
     private void Awake()
     {
+#if UNITY_EDITOR
+        if (!Application.isPlaying) return;
+#endif
         tilemap = GetComponent<Tilemap>();
+    }
+
+    private void Start()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying) return;
+#endif
 
         cellToWorld = tilemap.gameObject.transform.localToWorldMatrix * cellToLocalWorld;
         worldToCell = cellToWorld.inverse;
 
-        SpookyPlayer player = PlayerController.GetPlayer();
+        SpookyPlayer player = SpookyGameManager.gameManager.player;
         if(player)
         {
             lastPlayerCell = tilemap.WorldToCell(player.transform.position);
@@ -43,19 +53,14 @@ public class SpookyTilemap : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        
-    }
-
     private void Update()
     {
 #if UNITY_EDITOR
         if (!Application.isPlaying) return;
 #endif
 
-        SpookyPlayer player = PlayerController.GetPlayer();
-        if(!player) return;
+        SpookyPlayer player = SpookyGameManager.gameManager.player;
+        if (!player) return;
 
         Vector3 playerPos = player.transform.position;
 

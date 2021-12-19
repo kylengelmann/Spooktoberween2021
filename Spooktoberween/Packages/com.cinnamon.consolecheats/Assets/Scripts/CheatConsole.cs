@@ -27,20 +27,42 @@ namespace CheatSystem
         void UpdateHistory()
         {
             HistoryIdx = -1;
-            HistoryStart = (HistoryStart - 1 + k_NumHistory) % k_NumHistory;
-            if (HistoryLength < k_NumHistory)
+
+            if(History[HistoryStart] == CurrentDisplayString) return;
+
+            int HistoryEnd = (HistoryStart + HistoryLength - 1 + k_NumHistory) % k_NumHistory;
+
+            bool bCheatInCurrentHistory = false;
+            for(int i = HistoryEnd; i != HistoryStart; i = (i - 1 + k_NumHistory) % k_NumHistory)
             {
-                ++HistoryLength;
+                if(History[i] == CurrentDisplayString)
+                {
+                    bCheatInCurrentHistory = true;
+                }
+
+                if(bCheatInCurrentHistory)
+                {
+                    History[i] = History[(i - 1 + k_NumHistory) % k_NumHistory];
+                }
             }
 
-            History[HistoryStart] = CurrentCheatString;
+            if(!bCheatInCurrentHistory)
+            {
+                HistoryStart = (HistoryStart - 1 + k_NumHistory) % k_NumHistory;
+                if (HistoryLength < k_NumHistory)
+                {
+                    ++HistoryLength;
+                }
+            }
+
+            History[HistoryStart] = CurrentDisplayString;
         }
 
         void Submit()
         {
             CheatSystem.ExecuteCheat(CurrentDisplayString);
             bIsEnabled = false;
-            
+
             UpdateHistory();
 
             CurrentCheatString = "";
