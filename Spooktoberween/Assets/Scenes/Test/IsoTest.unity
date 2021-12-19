@@ -2165,29 +2165,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1023978255755757128, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978255755757129, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: m_RenderingLayerMask
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1023978256251086983, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
       propertyPath: m_Name
       value: SpookyPlayerCharacter
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978256251087002, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: huntFastBlinkTime
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978256251087002, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: huntSlowBlinkTime
-      value: 0.075
-      objectReference: {fileID: 0}
-    - target: {fileID: 1023978256251087002, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: huntFastBlinkProbability
-      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 1023978256251087003, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
       propertyPath: m_RootOrder

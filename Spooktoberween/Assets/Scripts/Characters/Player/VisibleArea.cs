@@ -101,7 +101,16 @@ public class VisibleArea : MonoBehaviour
     private void Awake()
     {
         visibleArea = this;
-        visibleAreaCollider = GetComponent<Collider>();
+
+        foreach(Collider collider in GetComponents<Collider>())
+        {
+            if(collider.enabled)
+            {
+                visibleAreaCollider = collider;
+                break;
+            }
+        }
+        //visibleAreaCollider = GetComponent<Collider>();
     }
 
     private void OnTriggerEnter(Collider other)
