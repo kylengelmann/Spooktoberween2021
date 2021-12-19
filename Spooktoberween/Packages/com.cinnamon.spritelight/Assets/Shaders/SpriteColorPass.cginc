@@ -127,4 +127,19 @@ PixelOutput SpriteFragLightingTransparent(v2f i)
 
 	return output;
 }
+
+PixelOutput SpriteFragUnlit(v2f i)
+{
+	PixelOutput output;
+
+	output.emissive = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
+	float alpha = output.emissive.a;
+
+	clip(alpha - _AlphaCutoff);
+
+	output.diffuse = 0.f;
+	output.specular = 0.f;
+
+	return output;
+}
 #endif
