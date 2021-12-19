@@ -23,12 +23,29 @@ public class SpookyTilemap : MonoBehaviour
     Matrix4x4 cellToWorld;
     Matrix4x4 worldToCell;
 
+    Vector3Int lastPlayerCell;
+
+    bool bForceFullVisibilityUpdate;
+
     private void Awake()
     {
         tilemap = GetComponent<Tilemap>();
 
         cellToWorld = tilemap.gameObject.transform.localToWorldMatrix * cellToLocalWorld;
         worldToCell = cellToWorld.inverse;
+
+        SpookyPlayer player = PlayerController.GetPlayer();
+        if(player)
+        {
+            lastPlayerCell = tilemap.WorldToCell(player.transform.position);
+
+            bForceFullVisibilityUpdate = true;
+        }
+    }
+
+    private void Start()
+    {
+        
     }
 
     private void Update()
@@ -45,14 +62,64 @@ public class SpookyTilemap : MonoBehaviour
         Vector3 playerCellPos = worldToCell.MultiplyPoint(playerPos);
         playerCellPos.z = 0;
 
-        foreach (Vector3Int cellPos in tilemap.cellBounds.allPositionsWithin)
+        if(bForceFullVisibilityUpdate)
         {
-            if (tilemap.HasTile(cellPos))
+            foreach (Vector3Int cellPos in tilemap.cellBounds.allPositionsWithin)
             {
-                SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
-                if(tile)
+                if (tilemap.HasTile(cellPos))
                 {
-                    tile.UpdateVisibility(cellPos, playerCellPos, tilemap);
+                    SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
+                    if (tile)
+                    {
+                        tile.UpdateVisibility(cellPos, playerCellPos, tilemap);
+                    }
+                }
+            }
+
+            bForceFullVisibilityUpdate = false;
+        }
+        else
+        {
+            Vector3Int roundedPlayerPos = new Vector3Int(Mathf.FloorToInt(playerCellPos.x), Mathf.FloorToInt(playerCellPos.y), 0);
+
+            int xUpdateMin = Mathf.Min(roundedPlayerPos.x, lastPlayerCell.x);
+            int xUpdateMax = Mathf.Max(roundedPlayerPos.x, lastPlayerCell.x);
+
+            int yUpdateMin = Mathf.Min(roundedPlayerPos.y, lastPlayerCell.y);
+            int yUpdateMax = Mathf.Max(roundedPlayerPos.y, lastPlayerCell.y);
+
+            BoundsInt cellBounds = tilemap.cellBounds;
+
+            BoundsInt xBounds = new BoundsInt(xUpdateMin, cellBounds.yMin, 0, xUpdateMax - xUpdateMin + 1, cellBounds.size.y, 1);
+            BoundsInt yBounds = new BoundsInt(cellBounds.xMin, yUpdateMin, 0, cellBounds.size.x, yUpdateMax - yUpdateMin + 1, 1);
+
+            lastPlayerCell = roundedPlayerPos;
+
+            int numUpdateCells = xBounds.size.x*xBounds.size.y + yBounds.size.x * yBounds.size.y - xBounds.size.y * yBounds.size.x;
+
+            foreach (Vector3Int cellPos in xBounds.allPositionsWithin)
+            {
+                if (tilemap.HasTile(cellPos))
+                {
+                    SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
+                    if(tile)
+                    {
+                        tile.UpdateVisibility(cellPos, playerCellPos, tilemap);
+                    }
+                }
+            }
+
+            foreach(Vector3Int cellPos in yBounds.allPositionsWithin)
+            {
+                if(xBounds.Contains(cellPos)) continue;
+
+                if (tilemap.HasTile(cellPos))
+                {
+                    SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
+                    if (tile)
+                    {
+                        tile.UpdateVisibility(cellPos, playerCellPos, tilemap);
+                    }
                 }
             }
         }
