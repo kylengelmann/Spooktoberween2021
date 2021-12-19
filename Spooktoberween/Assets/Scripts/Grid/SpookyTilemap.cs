@@ -15,9 +15,20 @@ public class SpookyTilemap : MonoBehaviour
 
     Dictionary<Vector3Int, SpookyTileGeo> geoInstances;
 
+    readonly Matrix4x4 cellToLocalWorld = new Matrix4x4(new Vector4(.5f, -.5f, 0f, 0f),
+                                                        new Vector4(.25f, .25f, 0f, 0f),
+                                                        new Vector4(0f, 0f, 1f, 0f),
+                                                        new Vector4(0f, 0f, 0f, 1f)).transpose;
+
+    Matrix4x4 cellToWorld;
+    Matrix4x4 worldToCell;
+
     private void Awake()
     {
         tilemap = GetComponent<Tilemap>();
+
+        cellToWorld = tilemap.gameObject.transform.localToWorldMatrix * cellToLocalWorld;
+        worldToCell = cellToWorld.inverse;
     }
 
     private void Update()
@@ -31,10 +42,8 @@ public class SpookyTilemap : MonoBehaviour
 
         Vector3 playerPos = player.transform.position;
 
-        Vector3Int playerCellPos = tilemap.WorldToCell(playerPos);
+        Vector3 playerCellPos = worldToCell.MultiplyPoint(playerPos);
         playerCellPos.z = 0;
-
-        Debug.Log(playerCellPos);
 
         foreach (Vector3Int cellPos in tilemap.cellBounds.allPositionsWithin)
         {
@@ -56,7 +65,6 @@ public class SpookyTilemap : MonoBehaviour
     public struct SpriteGeoMapEntry
     {
         public GameObject geo;
-        public EFaceDirection tileDirection;
         public List<Sprite> sprites;
     }
 
@@ -67,9 +75,6 @@ public class SpookyTilemap : MonoBehaviour
                                                       new Vector4(.4375f, .4375f, 0f, 10f),
                                                       new Vector4(0f, 0f, 0f, 1f)).transpose;
 
-#if UNITY_EDITOR
-    [SerializeField] GameObject generatedGeoPrefab;
-    
     const string geoParentName = "GeneratedGeo";
 
     public void GenerateGeo()

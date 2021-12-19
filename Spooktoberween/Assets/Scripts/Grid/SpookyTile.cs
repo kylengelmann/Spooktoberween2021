@@ -43,7 +43,7 @@ public class SpookyTile : Tile
         return base.StartUp(position, tilemap, go);
     }
 
-    public void UpdateVisibility(Vector3Int position, Vector3Int playerTilePos, Tilemap tilemap)
+    public void UpdateVisibility(Vector3Int position, Vector3 playerTilePos, Tilemap tilemap)
     {
         if (hideBehavior == EWallHideBehavior.None) return;
 

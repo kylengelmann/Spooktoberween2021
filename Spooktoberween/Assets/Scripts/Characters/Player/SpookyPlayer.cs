@@ -87,7 +87,6 @@ public class SpookyPlayer : Character
 
     public void HandleLookInput(Vector2 input)
     {
-        Debug.Log(input);
         Vector3 NewLookDir = new Vector3(input.x, Mathf.Tan(FloorAngle * Mathf.Deg2Rad) * input.y, input.y).normalized;
 
         float cos = Vector3.Dot(NewLookDir, Vector3.right);

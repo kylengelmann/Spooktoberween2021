@@ -323,8 +323,6 @@ namespace SpriteLightRendering
 
             Material LightMaterial = m_SpotLightMaterials.GetMaterial(bHasShadows, !bCheckRecievesShadows, bDoubleSided);
 
-            Debug.Log(LightMaterial.GetInteger(StencilReadMask));
-
             commandBuffer.DrawMesh(DeferredUtils.SphereMesh, lightMatrix, LightMaterial, 0, -1, m_MPB);
 
             context.ExecuteCommandBuffer(commandBuffer);
