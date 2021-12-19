@@ -31,6 +31,14 @@ public class SpookyPlayer : Character
     float FloorAngle = 60f;
     Quaternion FloorRotation;
 
+
+
+    public float huntTotalBlinkTime = .5f;
+    public float huntFastBlinkTime = .05f;
+    public float huntFastBlinkProbability = .667f;
+    public float huntSlowBlinkTime = .1f;
+    Coroutine huntBlinkCoroutine;
+
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
@@ -57,6 +65,12 @@ public class SpookyPlayer : Character
         {
             Flashlight = Instantiate(FlashlightPrefab, Sprite.transform, false);
             Flashlight.transform.rotation = CurrentLookRotation;
+        }
+
+        SpookManager spookManager = SpookManager.spookManager;
+        if(spookManager)
+        {
+            spookManager.onHuntProgressed += OnHuntProgressed;
         }
     }
 
@@ -100,6 +114,35 @@ public class SpookyPlayer : Character
     public Vector2 GetVelocity()
     {
         return movementComponent.velocity;
+    }
+
+    void OnHuntProgressed()
+    {
+        if (huntBlinkCoroutine == null)
+        {
+            huntBlinkCoroutine = StartCoroutine(BlinkFlashlight());
+        }
+    }
+
+    IEnumerator BlinkFlashlight()
+    {
+        WaitForSeconds fastBlink = new WaitForSeconds(.05f);
+        WaitForSeconds slowBlink = new WaitForSeconds(.1f);
+        float totalTime = 0f;
+        while(totalTime < huntTotalBlinkTime)
+        {
+            if(Random.value < huntFastBlinkProbability)
+            {
+                yield return fastBlink;
+                totalTime += huntFastBlinkTime;
+            }
+            else
+            {
+                yield return slowBlink;
+                totalTime += huntSlowBlinkTime;
+            }
+        }
+
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]

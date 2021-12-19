@@ -12,6 +12,8 @@ public class SpookyGameManager : MonoBehaviour
 
     public SpookyPlayer player {get; private set;}
 
+    [SerializeField] SpookBehavior spookBehavior;
+
     SpookManager spookManager;
 
 #if USING_CHEAT_SYSTEM
@@ -32,6 +34,7 @@ public class SpookyGameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         spookManager = gameObject.AddComponent<SpookManager>();
+        spookManager.SetSpookBehavior(spookBehavior);
 
 #if USING_CHEAT_SYSTEM
         gameObject.AddComponent<CheatSystem.CheatSystem>();

@@ -62,3 +62,21 @@ public class SpookyThing : MonoBehaviour
     //    UpdateVisible();
     //}
 }
+
+class WaitForVisibilityChange : CustomYieldInstruction
+{
+    bool bVisibilityChanged = false;
+
+    public override bool keepWaiting
+    {
+        get
+        {
+            return !bVisibilityChanged;
+        }
+    }
+
+    public WaitForVisibilityChange(SpookyThing thing)
+    {
+        thing.onVisibleChanged += (bool bIsVisible) => { bVisibilityChanged = true; };
+    }
+}
