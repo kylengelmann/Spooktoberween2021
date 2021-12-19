@@ -37,6 +37,7 @@ public class SpookyPlayer : Character
     public float huntFastBlinkTime = .05f;
     public float huntFastBlinkProbability = .667f;
     public float huntSlowBlinkTime = .1f;
+    public float huntBlinkOffTime = .05f;
     Coroutine huntBlinkCoroutine;
 
     private void Awake()
@@ -116,6 +117,7 @@ public class SpookyPlayer : Character
         return movementComponent.velocity;
     }
 
+    [CheatSystem.Cheat("PlayerOnHuntProgressed")]
     void OnHuntProgressed()
     {
         if (huntBlinkCoroutine == null)
@@ -126,12 +128,25 @@ public class SpookyPlayer : Character
 
     IEnumerator BlinkFlashlight()
     {
-        WaitForSeconds fastBlink = new WaitForSeconds(.05f);
-        WaitForSeconds slowBlink = new WaitForSeconds(.1f);
+        if(!Flashlight) yield break;
+        Light flashLightLight = Flashlight.GetComponentInChildren<Light>();
+        
+        if(!flashLightLight) yield break;
+
+        WaitForSeconds fastBlink = new WaitForSeconds(huntFastBlinkTime);
+        WaitForSeconds slowBlink = new WaitForSeconds(huntSlowBlinkTime);
+        WaitForSeconds offTime = new WaitForSeconds(huntBlinkOffTime);
         float totalTime = 0f;
         while(totalTime < huntTotalBlinkTime)
         {
-            if(Random.value < huntFastBlinkProbability)
+            flashLightLight.enabled = false;
+
+            yield return offTime;
+            totalTime += huntBlinkOffTime;
+
+            flashLightLight.enabled = true;
+
+            if (Random.value < huntFastBlinkProbability)
             {
                 yield return fastBlink;
                 totalTime += huntFastBlinkTime;
@@ -143,6 +158,7 @@ public class SpookyPlayer : Character
             }
         }
 
+        huntBlinkCoroutine = null;
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]

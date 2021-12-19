@@ -12,3 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9e03dceb75980943b3c36650b8350c7, type: 3}
   m_Name: SpoopBehavior
   m_EditorClassIdentifier: 
+  teleportData:
+    teleportProbability: 0.2
+    teleportRadius: 8
+  huntData:
+    huntProbabilities:
+    - 0.2
+    - 0.1
+    - 0.5
+    huntRadius: 3
+    huntTeleports: 3
+    minHuntTeleportTime: 3
+    maxHuntTeleportTime: 5
