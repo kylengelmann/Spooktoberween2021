@@ -204,9 +204,9 @@ float SampleVisibilityShadowMap(float3 positionVS)
 	shadowCoords.z = clamp(shadowCoords.z, .001f, .999f);
 
 #ifdef UNITY_REVERSED_Z
-	float biasK = shadowCoords.z * .1f;
+	float biasK = shadowCoords.z * .01f;
 #else
-	float biasK = (shadowCoords.z - 1.f) * .1f;
+	float biasK = (shadowCoords.z - 1.f) * .01f;
 #endif
 
 	return  _VisibilityShadowTexture.SampleCmp(Point_Clamp_Compare_VisibilityShadowSampler, shadowCoords, shadowCoords.z + biasK);

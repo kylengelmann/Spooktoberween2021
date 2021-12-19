@@ -11,10 +11,46 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class SpookyTilemap : MonoBehaviour
 {
+    [System.NonSerialized] Tilemap tilemap;
+
+    Dictionary<Vector3Int, SpookyTileGeo> geoInstances;
+
+    private void Awake()
+    {
+        tilemap = GetComponent<Tilemap>();
+    }
+
+    private void Update()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying) return;
+#endif
+
+        SpookyPlayer player = PlayerController.GetPlayer();
+        if(!player) return;
+
+        Vector3 playerPos = player.transform.position;
+
+        Vector3Int playerCellPos = tilemap.WorldToCell(playerPos);
+        playerCellPos.z = 0;
+
+        Debug.Log(playerCellPos);
+
+        foreach (Vector3Int cellPos in tilemap.cellBounds.allPositionsWithin)
+        {
+            if (tilemap.HasTile(cellPos))
+            {
+                SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
+                if(tile)
+                {
+                    tile.UpdateVisibility(cellPos, playerCellPos, tilemap);
+                }
+            }
+        }
+    }
+
 #if UNITY_EDITOR
     [SerializeField] GameObject generatedGeoPrefab;
-
-    [System.NonSerialized] Tilemap tilemap;
 
     [System.Serializable]
     public struct SpriteGeoMapEntry
@@ -40,25 +76,25 @@ public class SpookyTilemap : MonoBehaviour
             return;
         }
 
-        Dictionary<Sprite, GameObject> spriteGeoDict = new Dictionary<Sprite, GameObject>();
-        foreach(SpriteGeoMapEntry mapEntry in spriteGeoMap)
-        {
-            GameObject geo = mapEntry.geo;
-            if(geo)
-            {
-                foreach(Sprite sprite in mapEntry.sprites)
-                {
-                    if(spriteGeoDict.ContainsKey(sprite))
-                    {
-                        Debug.LogWarning("Sprite " + sprite.name + " is in the sprite geo map for tilemap " + tilemap.name + " multiple times, only the first instance will be used");
-                    }
-                    else
-                    {
-                        spriteGeoDict.Add(sprite, geo);
-                    }
-                }
-            }
-        }
+        //Dictionary<Sprite, SpriteGeoMapEntry> spriteGeoDict = new Dictionary<Sprite, SpriteGeoMapEntry>();
+        //foreach(SpriteGeoMapEntry mapEntry in spriteGeoMap)
+        //{
+        //    GameObject geo = mapEntry.geo;
+        //    if(geo)
+        //    {
+        //        foreach(Sprite sprite in mapEntry.sprites)
+        //        {
+        //            if(spriteGeoDict.ContainsKey(sprite))
+        //            {
+        //                Debug.LogWarning("Sprite " + sprite.name + " is in the sprite geo map for tilemap " + tilemap.name + " multiple times, only the first instance will be used");
+        //            }
+        //            else
+        //            {
+        //                spriteGeoDict.Add(sprite, mapEntry);
+        //            }
+        //        }
+        //    }
+        //}
 
         bool bMadeSceneDirty = false;
 
@@ -103,21 +139,49 @@ public class SpookyTilemap : MonoBehaviour
         {
             if(tilemap.HasTile(cellPos))
             {
-                Sprite tileSprite = tilemap.GetSprite(cellPos);
-
-                GameObject tileGeo;
-                if (spriteGeoDict.TryGetValue(tileSprite, out tileGeo))
+                SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
+                if(tile & tile.geoPrefab)
                 {
                     Vector3 cellPosFloat = new Vector3(cellPos.x + .5f, cellPos.y + .5f, 0f);
                     Vector3 tileGeoPos = cellToWorldGeo.MultiplyPoint3x4(cellPosFloat);
-                    GameObject tileGeoInstance = (GameObject)PrefabUtility.InstantiatePrefab(tileGeo, gameObject.scene); 
+                    GameObject tileGeoInstance = (GameObject)PrefabUtility.InstantiatePrefab(tile.geoPrefab, gameObject.scene);
                     tileGeoInstance.transform.position = tileGeoPos;
                     tileGeoInstance.transform.rotation = tilemap.transform.rotation;
                     tileGeoInstance.transform.SetParent(tilemapGeoParent.transform, true);
                     tileGeoInstance.name += cellPos.x + "_" + cellPos.y;
 
+                    SpookyTileGeo newGeo = tileGeoInstance.AddComponent<SpookyTileGeo>();
+                    if (newGeo)
+                    {
+                        newGeo.tilePos = cellPos;
+                        newGeo.tilemap = tilemap;
+                    }
+
                     bMadeSceneDirty = true;
                 }
+
+                //Sprite tileSprite = tilemap.GetSprite(cellPos);
+
+                //SpriteGeoMapEntry tileGeoEntry;
+                //if (spriteGeoDict.TryGetValue(tileSprite, out tileGeoEntry))
+                //{
+                //    Vector3 cellPosFloat = new Vector3(cellPos.x + .5f, cellPos.y + .5f, 0f);
+                //    Vector3 tileGeoPos = cellToWorldGeo.MultiplyPoint3x4(cellPosFloat);
+                //    GameObject tileGeoInstance = (GameObject)PrefabUtility.InstantiatePrefab(tileGeoEntry.geo, gameObject.scene); 
+                //    tileGeoInstance.transform.position = tileGeoPos;
+                //    tileGeoInstance.transform.rotation = tilemap.transform.rotation;
+                //    tileGeoInstance.transform.SetParent(tilemapGeoParent.transform, true);
+                //    tileGeoInstance.name += cellPos.x + "_" + cellPos.y;
+
+                //    SpookyTileGeo newGeo = tileGeoInstance.GetComponent<SpookyTileGeo>();
+                //    if(newGeo)
+                //    {
+                //        newGeo.tilePos = new Vector2Int(cellPos.x, cellPos.y);
+                //        newGeo.tilemap = this;
+                //    }
+
+                //    bMadeSceneDirty = true;
+                //}
             }
         }
 
