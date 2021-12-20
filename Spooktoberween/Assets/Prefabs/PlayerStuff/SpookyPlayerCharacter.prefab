@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 362874423}
-  - component: {fileID: 362874424}
   - component: {fileID: 362874425}
   - component: {fileID: 1736722063386423875}
+  - component: {fileID: 3601173879257385877}
   m_Layer: 31
   m_Name: VisibleArea
   m_TagString: Untagged
@@ -33,19 +33,6 @@ Transform:
   m_Father: {fileID: 1023978256251087003}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!65 &362874424
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362874422}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 8, y: 5, z: 5}
-  m_Center: {x: 0, y: 2.5, z: 2}
 --- !u!114 &362874425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,6 +61,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!64 &3601173879257385877
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362874422}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2124705421725058983, guid: 41bf64375f33fe440aa7f6cabeba40cc, type: 3}
 --- !u!1 &1023978255755757128
 GameObject:
   m_ObjectHideFlags: 0
@@ -226,6 +227,11 @@ MonoBehaviour:
   Sprite: {fileID: 1023978255755757128}
   FlashlightPrefab: {fileID: 2671912278504909673, guid: 6b8a9ce578f29a54990731c788a5d714, type: 3}
   visibleArea: {fileID: 362874422}
+  huntTotalBlinkTime: 0.5
+  huntFastBlinkTime: 0.01
+  huntFastBlinkProbability: 0.75
+  huntSlowBlinkTime: 0.075
+  huntBlinkOffTime: 0.05
 --- !u!143 &1023978256251086981
 CharacterController:
   m_ObjectHideFlags: 0
