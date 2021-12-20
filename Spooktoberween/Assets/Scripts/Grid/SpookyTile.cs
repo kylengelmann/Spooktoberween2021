@@ -28,9 +28,13 @@ public class SpookyTile : Tile
 
     Dictionary<Vector3Int, PerCellData> cellData = new Dictionary<Vector3Int, PerCellData>();
 
+
+
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
         base.GetTileData(position, tilemap, ref tileData);
+
+        tileData.colliderType = ColliderType.None;
 
         PerCellData data;
         if(cellData.TryGetValue(position, out data))
