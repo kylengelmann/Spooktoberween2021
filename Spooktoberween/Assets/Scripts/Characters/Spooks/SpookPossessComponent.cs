@@ -53,7 +53,7 @@ public class SpookPossessComponent : MonoBehaviour
             {
                 float distanceSqrFromPlayer = (SpookyGameManager.gameManager.player.transform.position - transform.position).sqrMagnitude;
                 float huntRadius = huntData.huntRadius;
-                if(distanceSqrFromPlayer < huntRadius*huntRadius && Random.value < spookManager.GetHuntProbability())
+                if (distanceSqrFromPlayer < huntRadius * huntRadius && Random.value < spookManager.GetHuntProbability() && CanSeePlayer())
                 {
                     Debug.Log(gameObject.name + ": ima gechu~~");
                     yield return huntCoroutine = StartCoroutine(HuntUpdate());
@@ -62,8 +62,8 @@ public class SpookPossessComponent : MonoBehaviour
                     continue;
                 }
             }
-            
-            if(Random.value < teleportData.teleportProbability)
+
+            if (Random.value < teleportData.teleportProbability)
             {
                 Debug.Log(gameObject.name + ": blink!");
                 yield return teleportCoroutine = StartCoroutine(TeleportUpdate());
@@ -109,8 +109,19 @@ public class SpookPossessComponent : MonoBehaviour
                     yield return new WaitForVisibilityChange(thingPossessing);
                 }
 
+                TeleportCheck canSeePlayer = (in Vector3 teleportLocation, GameObject teleportingObject) =>
+                {
+                    if(!thingPossessing) return false;
+
+                    Bounds bounds = thingPossessing.spriteRenderer.bounds;
+                    Vector3 boundsOffset = bounds.center - gameObject.transform.position;
+                    Vector3 newBoundsLocation = teleportLocation + boundsOffset;
+                    Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
+                    return !VisibleArea.IsObscured( new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z));
+                };
+
                 Vector3 teleportLocation;
-                if(!GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntRadius, out teleportLocation))
+                if(!GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntRadius, out teleportLocation, new TeleportCheck[]{ canSeePlayer }))
                 {
                     Debug.LogFormat("%s failed to find teleport location around player. Player position: %s", gameObject.name, SpookyGameManager.gameManager.player.transform.position);
                     yield return smallWait;
@@ -135,7 +146,18 @@ public class SpookPossessComponent : MonoBehaviour
         spookManager.RemoveHunt(this);
     }
 
-    bool GetTeleportLocationInCircle(Vector3 center, float radius, out Vector3 teleportLocation)
+    bool CanSeePlayer()
+    {
+        Bounds bounds = thingPossessing.spriteRenderer.bounds;
+        Vector3 boundsOffset = bounds.center - transform.position;
+        Vector3 newBoundsLocation = transform.position + boundsOffset;
+        Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
+        return !VisibleArea.IsObscured(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z));
+    }
+
+    delegate bool TeleportCheck(in Vector3 teleportLocation, GameObject teleportingObject);
+
+    bool GetTeleportLocationInCircle(Vector3 center, float radius, out Vector3 teleportLocation, TeleportCheck[] additionalChecks = null)
     {
         bool bLocationFound = false;
         int numAttempts = 0;
@@ -152,6 +174,21 @@ public class SpookPossessComponent : MonoBehaviour
                 Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
                 if (!VisibleArea.IsInVisibleArea(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z)))
                 {
+                    bLocationFound = true;
+                    if (additionalChecks != null)
+                    {
+                        foreach(TeleportCheck additionalCheck in additionalChecks)
+                        {
+                            if(!additionalCheck(navMeshHit.position, gameObject))
+                            {
+                                bLocationFound = false;
+                                break;
+                            }
+                        }
+
+                        if(!bLocationFound) continue;
+                    }
+
                     bLocationFound = true;
                     teleportLocation = navMeshHit.position;
                 }
