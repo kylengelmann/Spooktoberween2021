@@ -25,7 +25,7 @@ public class VisibleArea : MonoBehaviour
         return false;
     }
 
-    static bool IsObscured(in Vector2 position, in Vector2 boxHalfSize)
+    public static bool IsObscured(in Vector2 position, in Vector2 boxHalfSize)
     {
         float boundsCenterHeight = visibleAreaCollider.bounds.center.y;
 
