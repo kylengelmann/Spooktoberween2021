@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerAnimationComponent : MonoBehaviour
 {
     SpookyPlayer player;
-    Animator animator;
+    public Animator animator;
 
     int faceDirectionID = Animator.StringToHash("FaceDirection");
     int isWalkingID = Animator.StringToHash("IsWalking");
@@ -18,7 +18,7 @@ public class PlayerAnimationComponent : MonoBehaviour
             return;
         }
 
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
         if(!animator)
         {
             Debug.LogError("PlayerAnimationComponent: No animator found");
@@ -29,7 +29,7 @@ public class PlayerAnimationComponent : MonoBehaviour
 
     void Update()
     {
-        animator.SetInteger(faceDirectionID, (int)player.currentFaceDirection);
+        animator.SetFloat(faceDirectionID, (float)player.currentFaceDirection);
         animator.SetBool(isWalkingID, player.GetVelocity().sqrMagnitude > .05f);
     }
 }
