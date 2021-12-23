@@ -4,58 +4,58 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 6060113903209802685
-    second: fancyWalls_0
+    second: fancySEFWall
   - first:
       213: 4361184032975010650
-    second: fancyWalls_1
+    second: fancyNWFWall
   - first:
       213: -7958954808348830135
-    second: fancyWalls_2
+    second: fancySWFWall
   - first:
       213: -2697468550625803359
-    second: fancyWalls_3
+    second: fancyNEFWall
   - first:
       213: 2552945626394600474
-    second: fancyWalls_4
+    second: fancySPillar
   - first:
       213: -689855160024214627
-    second: fancyWalls_5
+    second: fancyNPillar
   - first:
       213: -4263576115494935987
-    second: fancyWalls_6
+    second: fancySCorner
   - first:
       213: 5107129463450040495
-    second: fancyWalls_7
+    second: fancySEBWall
   - first:
       213: 839041437643443655
-    second: fancyWalls_8
+    second: fancySETWall
   - first:
       213: -4482269485228143960
-    second: fancyWalls_9
+    second: fancyNWBWall
   - first:
       213: -8751269319845754374
-    second: fancyWalls_10
+    second: fancyNWTWall
   - first:
       213: -613924970713742766
-    second: fancyWalls_11
+    second: fancySWBWall
   - first:
       213: -3305085346740619519
-    second: fancyWalls_12
+    second: fancySWTWall
   - first:
       213: 5367912776799098879
-    second: fancyWalls_13
+    second: fancyNEBWall
   - first:
       213: -671829195752165663
-    second: fancyWalls_14
+    second: fancyNETWall
   - first:
       213: 3623600790167623625
-    second: fancyWalls_15
+    second: fancySHWCorner
   - first:
       213: 5696696699958393242
-    second: fancyWalls_16
+    second: fancySHECorner
   - first:
       213: 5785648596236501985
-    second: fancyWalls_17
+    second: fancyCube
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -157,7 +157,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: fancyWalls_0
+      name: fancySEFWall
       rect:
         serializedVersion: 2
         x: 0
@@ -178,7 +178,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_1
+      name: fancyNWFWall
       rect:
         serializedVersion: 2
         x: 74
@@ -199,7 +199,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_2
+      name: fancySWFWall
       rect:
         serializedVersion: 2
         x: 296
@@ -220,7 +220,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_3
+      name: fancyNEFWall
       rect:
         serializedVersion: 2
         x: 370
@@ -241,7 +241,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_4
+      name: fancySPillar
       rect:
         serializedVersion: 2
         x: 518
@@ -262,7 +262,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_5
+      name: fancyNPillar
       rect:
         serializedVersion: 2
         x: 592
@@ -283,7 +283,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_6
+      name: fancySCorner
       rect:
         serializedVersion: 2
         x: 666
@@ -304,7 +304,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_7
+      name: fancySEBWall
       rect:
         serializedVersion: 2
         x: 0
@@ -325,7 +325,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_8
+      name: fancySETWall
       rect:
         serializedVersion: 2
         x: 74
@@ -346,7 +346,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_9
+      name: fancyNWBWall
       rect:
         serializedVersion: 2
         x: 148
@@ -367,7 +367,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_10
+      name: fancyNWTWall
       rect:
         serializedVersion: 2
         x: 222
@@ -388,7 +388,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_11
+      name: fancySWBWall
       rect:
         serializedVersion: 2
         x: 296
@@ -409,7 +409,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_12
+      name: fancySWTWall
       rect:
         serializedVersion: 2
         x: 370
@@ -430,7 +430,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_13
+      name: fancyNEBWall
       rect:
         serializedVersion: 2
         x: 444
@@ -451,7 +451,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_14
+      name: fancyNETWall
       rect:
         serializedVersion: 2
         x: 518
@@ -472,7 +472,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_15
+      name: fancySHWCorner
       rect:
         serializedVersion: 2
         x: 592
@@ -493,7 +493,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_16
+      name: fancySHECorner
       rect:
         serializedVersion: 2
         x: 666
@@ -514,7 +514,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: fancyWalls_17
+      name: fancyCube
       rect:
         serializedVersion: 2
         x: 0

@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 1182059634615028947, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: -1353155799572429398, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
+      objectReference: {fileID: -918367958518060102, guid: 09b98c2a2511c814287cf87c1e5c9f48, type: 3}
     - target: {fileID: 1351108887285127904, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -74,14 +74,14 @@ PrefabInstance:
     - target: {fileID: 4528048219964147641, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 1953309798847074323, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
+      objectReference: {fileID: -5462198593275802257, guid: 09b98c2a2511c814287cf87c1e5c9f48, type: 3}
     - target: {fileID: 4754790070579011088, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1953309798847074323, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
     - target: {fileID: 7041980475250988753, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Name
-      value: SWWall Variant
+      value: SWTWall
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}

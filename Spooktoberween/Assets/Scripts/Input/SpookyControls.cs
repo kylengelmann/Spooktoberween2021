@@ -126,7 +126,7 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                     ""id"": ""cd411f54-079a-4e1c-9860-be221adbb525"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone(min=0.7)"",
                     ""groups"": """",
                     ""action"": ""Look_Gamepad"",
                     ""isComposite"": false,

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &9042197094374445814
+--- !u!1001 &1300061482217483434
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -9,24 +9,20 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 588845868073167483, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Size.x
-      value: 0.11833589
+      value: 0.11133669
       objectReference: {fileID: 0}
     - target: {fileID: 588845868073167483, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Center.x
-      value: 0.29922956
-      objectReference: {fileID: 0}
-    - target: {fileID: 588845868073167483, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
-      propertyPath: m_Center.y
-      value: 0.35460344
+      value: 0.29227263
       objectReference: {fileID: 0}
     - target: {fileID: 588845868073167483, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Center.z
-      value: -0.00045124238
+      value: -0.00045115614
       objectReference: {fileID: 0}
     - target: {fileID: 1182059634615028947, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 1829685923798179101, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
+      objectReference: {fileID: -1643008223005565491, guid: 09b98c2a2511c814287cf87c1e5c9f48, type: 3}
     - target: {fileID: 1351108887285127904, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -71,33 +67,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.89239913
-      objectReference: {fileID: 0}
-    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.23911758
-      objectReference: {fileID: 0}
-    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.36964372
-      objectReference: {fileID: 0}
-    - target: {fileID: 2361046455204108221, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.09904578
-      objectReference: {fileID: 0}
     - target: {fileID: 4528048219964147641, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: -1651481173456620620, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
+      objectReference: {fileID: -1216780569831663584, guid: 09b98c2a2511c814287cf87c1e5c9f48, type: 3}
     - target: {fileID: 4754790070579011088, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: -1651481173456620620, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
+      objectReference: {fileID: 7500598725408960489, guid: 1a11e25063d20484f95ef228df90ece8, type: 3}
     - target: {fileID: 7041980475250988753, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}
       propertyPath: m_Name
-      value: NEWall Variant
+      value: SEWall
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4cd281df2f110da48a0ad973fe14eb40, type: 3}

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a983a0e4de61f6f44b6735cc774f49e9, type: 3}
-  m_Name: NewSpookyTile
+  m_Name: FancySEFWall
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -32,10 +32,10 @@ MonoBehaviour:
     e32: 0
     e33: 1
   m_InstancedGameObject: {fileID: 0}
-  m_Flags: 1
-  m_ColliderType: 1
-  VisibleSprite: {fileID: 0}
+  m_Flags: 0
+  m_ColliderType: 0
+  VisibleSprite: {fileID: 6060113903209802685, guid: 41ab212c29f8cbb47a087f7ce7a035cf, type: 3}
   HiddenSprite: {fileID: 0}
-  hideBehavior: 0
+  hideBehavior: 2
   hidePivot: {x: 0, y: 0}
-  geoPrefab: {fileID: 0}
+  geoPrefab: {fileID: 8336335435193121403, guid: c74ad326977eadf408cb92737f10fd0f, type: 3}
