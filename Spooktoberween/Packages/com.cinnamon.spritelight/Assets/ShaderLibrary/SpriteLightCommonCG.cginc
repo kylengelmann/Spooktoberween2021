@@ -53,4 +53,20 @@ float GetViewDepth(float4 depth)
 float4 _PlayerWorldPosition;
 float4 _PlayerViewPosition;
 
+float GetStippleClip(float2 screenPos)
+{
+#ifdef UNITY_PIXEL_PERFECT
+	screenPos.x = UVOffset.x + screenPos.x * UVOffset.z;
+	screenPos.y = UVOffset.y + screenPos.y * UVOffset.w;
+#endif	
+	const float4x4 _StippleAlphas = { 31.f / 32.f,  15.f / 32.f,  27.f / 32.f,  11.f / 32.f,
+				  7.f / 32.f,   23.f / 32.f,  3.f / 32.f,   19.f / 32.f,
+				  25.f / 32.f,  9.f / 32.f,   29.f / 32.f,  13.f / 32.f,
+				  1.f / 32.f,   17.f / 32.f,  5.f / 32.f,   21.f / 32.f };
+
+	uint pixelX = screenPos.x % 4;
+	uint pixelY = screenPos.y % 4;
+
+	return _StippleAlphas[pixelX][pixelY];
+}
 #endif
