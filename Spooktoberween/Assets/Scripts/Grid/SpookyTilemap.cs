@@ -221,7 +221,7 @@ public class SpookyTilemap : MonoBehaviour
             if(tilemap.HasTile(cellPos))
             {
                 SpookyTile tile = tilemap.GetTile<SpookyTile>(cellPos);
-                if(tile & tile.geoPrefab)
+                if(tile && tile.geoPrefab)
                 {
                     Vector3 cellPosFloat = new Vector3(cellPos.x + .5f, cellPos.y + .5f, 0f);
                     Vector3 tileGeoPos = cellToWorldGeo.MultiplyPoint3x4(cellPosFloat);
