@@ -34,9 +34,18 @@ public class SpookyTile : Tile
 
         tileData.colliderType = ColliderType.None;
 
-        PerCellData data;
-        if(cellData.TryGetValue(position, out data))
-        tileData.sprite = (data.bIsVisible || !Application.isPlaying) ? VisibleSprite : HiddenSprite;
+        if(Application.isPlaying)
+        {
+            PerCellData data;
+            if(cellData.TryGetValue(position, out data))
+            {
+                tileData.sprite = data.bIsVisible ? VisibleSprite : HiddenSprite;
+            }
+        }
+        else
+        {
+            tileData.sprite = VisibleSprite;
+        }
     }
 
     public override bool StartUp(Vector3Int position, ITilemap tilemap, GameObject go)
