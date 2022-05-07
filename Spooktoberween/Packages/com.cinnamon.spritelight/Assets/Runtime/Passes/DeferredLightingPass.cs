@@ -39,6 +39,8 @@ namespace SpriteLightRendering
 
         class DeferredLightMaterials
         {
+            string m_lightTypeShaderKeyword;
+
             public Material noShadows;
             public Material shadows;
             public Material noReceiveShadows;
@@ -49,63 +51,161 @@ namespace SpriteLightRendering
 
             public DeferredLightMaterials(string lightTypeShaderKeyword)
             {
-                Shader shader = Shader.Find(DeferredShaderName);
+                m_lightTypeShaderKeyword = lightTypeShaderKeyword;
 
-                noShadows = new Material(shader);
-                noShadows.EnableKeyword(lightTypeShaderKeyword);
-                noShadows.EnableKeyword("SHADOWS_OFF");
-                noShadows.EnableKeyword("SINGLE_SIDED");
-                noShadows.SetInteger(StencilRef, 0);
-                noShadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL);
+                //Shader shader = Shader.Find(DeferredShaderName);
 
-                shadows = new Material(shader);
-                shadows.EnableKeyword(lightTypeShaderKeyword);
-                shadows.EnableKeyword("SHADOWS_ON");
-                shadows.EnableKeyword("SINGLE_SIDED");
-                shadows.SetInteger(StencilRef, 0);
-                shadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                GetMaterial(false, false, false);
+                GetMaterial(false, false, true);
+                GetMaterial(false, true, false);
+                GetMaterial(false, true, true);
+                GetMaterial(true, false, false);
+                GetMaterial(true, false, true);
 
-                noReceiveShadows = new Material(shader);
-                noReceiveShadows.EnableKeyword(lightTypeShaderKeyword);
-                noReceiveShadows.EnableKeyword("SHADOWS_OFF");
-                noReceiveShadows.EnableKeyword("SINGLE_SIDED");
-                noReceiveShadows.SetInteger(StencilRef, NO_SHADOW_STENCIL);
-                noReceiveShadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                //noShadows = new Material(shader);
+                //noShadows.EnableKeyword(m_lightTypeShaderKeyword);
+                //noShadows.EnableKeyword("SHADOWS_OFF");
+                //noShadows.EnableKeyword("SINGLE_SIDED");
+                //noShadows.SetInteger(StencilRef, 0);
+                //noShadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL);
 
-                noShadowsDoubleSided = new Material(shader);
-                noShadowsDoubleSided.EnableKeyword(lightTypeShaderKeyword);
-                noShadowsDoubleSided.EnableKeyword("SHADOWS_OFF");
-                noShadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
-                noShadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL);
-                noShadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL);
+                //shadows = new Material(shader);
+                //shadows.EnableKeyword(m_lightTypeShaderKeyword);
+                //shadows.EnableKeyword("SHADOWS_ON");
+                //shadows.EnableKeyword("SINGLE_SIDED");
+                //shadows.SetInteger(StencilRef, 0);
+                //shadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
 
-                shadowsDoubleSided = new Material(shader);
-                shadowsDoubleSided.EnableKeyword(lightTypeShaderKeyword);
-                shadowsDoubleSided.EnableKeyword("SHADOWS_ON");
-                shadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
-                shadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL);
-                shadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                //noReceiveShadows = new Material(shader);
+                //noReceiveShadows.EnableKeyword(m_lightTypeShaderKeyword);
+                //noReceiveShadows.EnableKeyword("SHADOWS_OFF");
+                //noReceiveShadows.EnableKeyword("SINGLE_SIDED");
+                //noReceiveShadows.SetInteger(StencilRef, NO_SHADOW_STENCIL);
+                //noReceiveShadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
 
-                noReceiveShadowsDoubleSided = new Material(shader);
-                noReceiveShadowsDoubleSided.EnableKeyword(lightTypeShaderKeyword);
-                noReceiveShadowsDoubleSided.EnableKeyword("SHADOWS_OFF");
-                noReceiveShadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
-                noReceiveShadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
-                noReceiveShadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                //noShadowsDoubleSided = new Material(shader);
+                //noShadowsDoubleSided.EnableKeyword(m_lightTypeShaderKeyword);
+                //noShadowsDoubleSided.EnableKeyword("SHADOWS_OFF");
+                //noShadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
+                //noShadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL);
+                //noShadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL);
+
+                //shadowsDoubleSided = new Material(shader);
+                //shadowsDoubleSided.EnableKeyword(m_lightTypeShaderKeyword);
+                //shadowsDoubleSided.EnableKeyword("SHADOWS_ON");
+                //shadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
+                //shadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL);
+                //shadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+
+                //noReceiveShadowsDoubleSided = new Material(shader);
+                //noReceiveShadowsDoubleSided.EnableKeyword(m_lightTypeShaderKeyword);
+                //noReceiveShadowsDoubleSided.EnableKeyword("SHADOWS_OFF");
+                //noReceiveShadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
+                //noReceiveShadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                //noReceiveShadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
             }
 
             public Material GetMaterial(bool bCastsShadows, bool bReceiveShadows, bool bDoubleSided)
             {
                 if(bCastsShadows)
                 {
-                    return bDoubleSided ? shadowsDoubleSided : shadows;
+                    if(bDoubleSided)
+                    { 
+                        if(shadowsDoubleSided == null)
+                        {
+                            Shader shader = Shader.Find(DeferredShaderName);
+
+                            shadowsDoubleSided = new Material(shader);
+                            shadowsDoubleSided.EnableKeyword(m_lightTypeShaderKeyword);
+                            shadowsDoubleSided.EnableKeyword("SHADOWS_ON");
+                            shadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
+                            shadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL);
+                            shadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                        }
+                        return shadowsDoubleSided;
+                    }
+                    else
+                    {
+                        if(shadows == null)
+                        {
+                            Shader shader = Shader.Find(DeferredShaderName);
+
+                            shadows = new Material(shader);
+                            shadows.EnableKeyword(m_lightTypeShaderKeyword);
+                            shadows.EnableKeyword("SHADOWS_ON");
+                            shadows.EnableKeyword("SINGLE_SIDED");
+                            shadows.SetInteger(StencilRef, 0);
+                            shadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                        }
+                        return shadows;
+                    }
                 }
                 else if(bReceiveShadows)
                 {
-                    return bDoubleSided ? noShadowsDoubleSided : noShadows;
-                }
+                    if(bDoubleSided)
+                    {
+                        if(noShadowsDoubleSided == null)
+                        {
+                            Shader shader = Shader.Find(DeferredShaderName);
 
-                return bDoubleSided ? noReceiveShadowsDoubleSided : noReceiveShadows;
+                            noShadowsDoubleSided = new Material(shader);
+                            noShadowsDoubleSided.EnableKeyword(m_lightTypeShaderKeyword);
+                            noShadowsDoubleSided.EnableKeyword("SHADOWS_OFF");
+                            noShadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
+                            noShadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL);
+                            noShadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL);
+                        }
+                        return noShadowsDoubleSided;
+                    }
+                    else
+                    {
+                        if(noShadows == null)
+                        {
+                            Shader shader = Shader.Find(DeferredShaderName);
+
+                            noShadows = new Material(shader);
+                            noShadows.EnableKeyword(m_lightTypeShaderKeyword);
+                            noShadows.EnableKeyword("SHADOWS_OFF");
+                            noShadows.EnableKeyword("SINGLE_SIDED");
+                            noShadows.SetInteger(StencilRef, 0);
+                            noShadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL);
+                        }
+                        return noShadows;
+                    }
+                }
+                else
+                {
+                    if(bDoubleSided)
+                    {
+                        if(noReceiveShadowsDoubleSided == null)
+                        {
+                            Shader shader = Shader.Find(DeferredShaderName);
+
+                            noReceiveShadowsDoubleSided = new Material(shader);
+                            noReceiveShadowsDoubleSided.EnableKeyword(m_lightTypeShaderKeyword);
+                            noReceiveShadowsDoubleSided.EnableKeyword("SHADOWS_OFF");
+                            noReceiveShadowsDoubleSided.EnableKeyword("DOUBLE_SIDED");
+                            noReceiveShadowsDoubleSided.SetInteger(StencilRef, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                            noReceiveShadowsDoubleSided.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                        }
+                        return noReceiveShadowsDoubleSided;
+                    }
+                    else
+                    {
+                        if(noReceiveShadows == null)
+                        {
+                            Shader shader = Shader.Find(DeferredShaderName);
+
+                            noReceiveShadows = new Material(shader);
+                            noReceiveShadows.EnableKeyword(m_lightTypeShaderKeyword);
+                            noReceiveShadows.EnableKeyword("SHADOWS_OFF");
+                            noReceiveShadows.EnableKeyword("SINGLE_SIDED");
+                            noReceiveShadows.SetInteger(StencilRef, NO_SHADOW_STENCIL);
+                            noReceiveShadows.SetInteger(StencilReadMask, DOUBLE_SIDED_STENCIL | NO_SHADOW_STENCIL);
+                        }
+                        return noReceiveShadows;
+                    }
+                }
             }
         }
 

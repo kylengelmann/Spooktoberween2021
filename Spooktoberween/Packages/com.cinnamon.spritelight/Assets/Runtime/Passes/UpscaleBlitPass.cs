@@ -10,6 +10,8 @@ namespace SpriteLightRendering
         const string mProfilerTag = "Upscale Blit Pass";
         ProfilingSampler m_ProfilingSampler;
         Material mBlitMaterial;
+        BlendMode m_SrcBlendMode;
+        BlendMode m_DestBlendMode;
 
         RenderTargetIdentifier m_BlitSource;
 
@@ -19,9 +21,8 @@ namespace SpriteLightRendering
 
         public UpscaleBlitPass(RenderPassEvent evt, BlendMode SrcBlendMode, BlendMode DestBlendMode)
         {
-            mBlitMaterial = new Material(Shader.Find("SpriteLight/UpscaleBlit"));
-            mBlitMaterial.SetInt(s_SrcBlendModeID, (int)SrcBlendMode);
-            mBlitMaterial.SetInt(s_DestBlendModeID, (int)DestBlendMode);
+            m_SrcBlendMode = SrcBlendMode;
+            m_DestBlendMode = DestBlendMode;
 
             renderPassEvent = evt;
 
@@ -30,6 +31,13 @@ namespace SpriteLightRendering
 
         public void Setup(RenderTargetHandle BlitSource)
         {
+            if(mBlitMaterial == null)
+            {
+                mBlitMaterial = new Material(Shader.Find("SpriteLight/UpscaleBlit"));
+                mBlitMaterial.SetInt(s_SrcBlendModeID, (int)m_SrcBlendMode);
+                mBlitMaterial.SetInt(s_DestBlendModeID, (int)m_DestBlendMode);
+            }
+
             m_BlitSource = BlitSource.Identifier();
         }
 
