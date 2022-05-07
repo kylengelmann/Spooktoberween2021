@@ -31,8 +31,6 @@ public class SpookyPlayer : Character
     float FloorAngle = 60f;
     Quaternion FloorRotation;
 
-
-
     public float huntTotalBlinkTime = .5f;
     public float huntFastBlinkTime = .05f;
     public float huntFastBlinkProbability = .667f;
@@ -114,7 +112,12 @@ public class SpookyPlayer : Character
 
     public Vector2 GetVelocity()
     {
-        return movementComponent.velocity;
+        if(movementComponent)
+        {
+            return movementComponent.velocity;
+        }
+
+        return Vector2.zero;
     }
 
     [CheatSystem.Cheat("PlayerOnHuntProgressed")]

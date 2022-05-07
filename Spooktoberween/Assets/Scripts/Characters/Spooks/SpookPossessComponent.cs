@@ -85,7 +85,7 @@ public class SpookPossessComponent : MonoBehaviour
 
         Vector3 teleportLocation;
         if (GetTeleportLocationInCircle(transform.position, teleportData.teleportRadius, out teleportLocation)) transform.position = teleportLocation;
-        else Debug.LogFormat("%s failed to teleport. thing location: %s", gameObject.name, transform.position);
+        else Debug.LogFormat("{0} failed to teleport. thing location: {1}", gameObject.name, transform.position);
 
         bIsTeleporting = false;
     }
@@ -123,7 +123,7 @@ public class SpookPossessComponent : MonoBehaviour
                 Vector3 teleportLocation;
                 if(!GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntRadius, out teleportLocation, new TeleportCheck[]{ canSeePlayer }))
                 {
-                    Debug.LogFormat("%s failed to find teleport location around player. Player position: %s", gameObject.name, SpookyGameManager.gameManager.player.transform.position);
+                    Debug.LogFormat("{0} failed to find teleport location around player. Player position: {1}", gameObject.name, SpookyGameManager.gameManager.player.transform.position);
                     yield return smallWait;
                     continue;
                 }

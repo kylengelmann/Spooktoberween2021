@@ -24,7 +24,7 @@ public class SpookyGameManager : MonoBehaviour
     {
         if(gameManager)
         {
-            Debug.LogFormat("static gamemanager already set to %s", gameManager.gameObject.name);
+            Debug.LogFormat("static gamemanager already set to {0}", gameManager.gameObject.name);
             Destroy(this);
             return;
         }
