@@ -8,14 +8,14 @@ public class BehaviorTree
 
     BehaviorNode RootNode;
 
-    Dictionary<string, BehaviorProperty> Properties;
+    Dictionary<string, BehaviorPropertyBase> Properties = new Dictionary<string, BehaviorPropertyBase>();
 
-    public void Init(AIController Controller, BehaviorNode Root, in List<BehaviorProperty> DefaultProperties)
+    public void Init(AIController Controller, BehaviorNode Root, in List<BehaviorPropertyBase> DefaultProperties)
     {
         OwningController = Controller;
         RootNode = Root;
         
-        foreach (BehaviorProperty Prop in DefaultProperties)
+        foreach (BehaviorPropertyBase Prop in DefaultProperties)
         {
             bool bSuccess = AddProperty(Prop);
             if(!bSuccess)
@@ -35,7 +35,7 @@ public class BehaviorTree
         }
     }
 
-    public bool TryGetProperty(string PropName, out BehaviorProperty Prop)
+    public bool TryGetProperty(string PropName, out BehaviorPropertyBase Prop)
     {
         return Properties.TryGetValue(PropName, out Prop);
     }
@@ -45,7 +45,7 @@ public class BehaviorTree
         return Properties.ContainsKey(PropName);
     }
 
-    public bool AddProperty(BehaviorProperty Prop)
+    public bool AddProperty(BehaviorPropertyBase Prop)
     {
         if(Properties.ContainsKey(Prop.Name))
         {
@@ -57,15 +57,22 @@ public class BehaviorTree
     }
 }
 
-public class BehaviorProperty
+public abstract class BehaviorPropertyBase
 {
     public string Name {get; private set;}
-    
-    public object Value;
 
-    public BehaviorProperty(string name, object DefaultValue)
+    protected BehaviorPropertyBase(string name)
     {
         Name = name;
-        Value = DefaultValue;
+    }
+}
+
+public class BehaviorProperty<T> : BehaviorPropertyBase
+{
+    public T Value;
+
+    public BehaviorProperty(string name, T value) : base(name)
+    {
+        Value = value;
     }
 }

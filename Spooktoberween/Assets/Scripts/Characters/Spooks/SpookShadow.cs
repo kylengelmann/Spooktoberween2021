@@ -64,7 +64,7 @@ public class SpookShadow : Character
         if(!navAgent) return;
 
         navAgent.updateRotation = false;
-        StartCoroutine(BehaviorUpdate());
+        //StartCoroutine(BehaviorUpdate());
     }
 
     IEnumerator BehaviorUpdate()

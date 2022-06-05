@@ -56,11 +56,12 @@ public abstract class BehaviorNode
         return result;
     }
 
-    public virtual void Cancel()
+    public void Cancel()
     {
         if (CurrentStatus == ENodeStatus.Running)
         {
             End(false);
+            CurrentStatus = ENodeStatus.NotRunning;
         }
     }
 
@@ -76,7 +77,21 @@ public abstract class BehaviorNode
 
     protected virtual void End(bool bDidSucceed) { }
 
-    protected bool TryGetProperty(string PropName, out BehaviorProperty Prop)
+    protected bool TryGetProperty<T>(string PropName, out BehaviorProperty<T> Prop)
+    {
+        BehaviorPropertyBase BaseProp;
+        bool bFound = TryGetProperty(PropName, out BaseProp);
+        if(bFound && BaseProp is BehaviorProperty<T>)
+        {
+            Prop = (BehaviorProperty<T>)BaseProp;
+            return true;
+        }
+
+        Prop = null;
+        return false;
+    }
+
+    protected bool TryGetProperty(string PropName, out BehaviorPropertyBase Prop)
     {
         if (OwningTree == null)
         {
@@ -99,7 +114,7 @@ public abstract class BehaviorNode
         return OwningTree.HasProperty(PropName);
     }
 
-    protected bool AddProperty(BehaviorProperty Prop)
+    protected bool AddProperty(BehaviorPropertyBase Prop)
     {
         if (OwningTree == null)
         {
@@ -108,6 +123,31 @@ public abstract class BehaviorNode
         }
 
         return OwningTree.AddProperty(Prop);
+    }
+
+    protected bool GetOrAddProperty<T>(string PropName, out BehaviorProperty<T> Prop, T DefaultValue)
+    {
+        if(!TryGetProperty(PropName, out Prop))
+        {
+            Prop = new BehaviorProperty<T>(PropName, DefaultValue);
+            if(!AddProperty(Prop))
+            {
+                Prop = null;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public AIController GetOwningController()
+    {
+        if(OwningTree != null)
+        {
+            return OwningTree.OwningController;
+        }
+
+        return null;
     }
 }
 
@@ -151,10 +191,8 @@ public abstract class CompositeNode : BehaviorNode
         return ENodeStatus.Running;
     }
 
-    public override void Cancel()
+    protected override void End(bool bDidSucceed)
     {
-        base.Cancel();
-
         foreach (BehaviorNode Child in Children)
         {
             Child.Cancel();
@@ -168,7 +206,7 @@ public abstract class DecoratorNode : BehaviorNode
 
     public void SetChild(BehaviorNode child)
     {
-        if (Child == null)
+        if (child == null)
         {
             return;
         }
@@ -206,10 +244,36 @@ public abstract class DecoratorNode : BehaviorNode
         return Child.Update(DeltaSeconds);
     }
 
-    public override void Cancel()
+    protected override void End(bool bDidSucceed)
     {
-        base.Cancel();
-
         Child.Cancel();
     }
+}
+
+public abstract class ServiceNode : DecoratorNode
+{
+    public float ExecuteInterval = .1f;
+
+    float TimeSinceLastExecution;
+
+    protected override ENodeStatus Start()
+    {
+        Execute();
+        TimeSinceLastExecution = 0f;
+        return base.Start();
+    }
+
+    protected override ENodeStatus Tick(float DeltaSeconds)
+    {
+        TimeSinceLastExecution += DeltaSeconds;
+        if(TimeSinceLastExecution > ExecuteInterval)
+        {
+            TimeSinceLastExecution -= ExecuteInterval;
+            Execute();
+        }
+
+        return base.Tick(DeltaSeconds);
+    }
+
+    protected abstract void Execute();
 }
