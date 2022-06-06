@@ -56,8 +56,12 @@ public class MoveTo : BehaviorNode
 
     protected override ENodeStatus Tick(float DeltaSeconds)
     {
-        UpdateGoal();
+        if(GoalObjectProperty != null || Goal)
+        {
+            UpdateGoal();
+        }
 
+        Agent.isStopped = false;
         Agent.SetDestination(GoalLocation);
 
         Vector3 ToEnd = Agent.pathEndPosition - Agent.transform.position;

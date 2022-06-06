@@ -1,7 +1,14 @@
 
-public class Sequence : CompositeNode
+public class SequenceNode : CompositeNode
 {
     int RunningChild = 0;
+
+    protected override ENodeStatus Start()
+    {
+        RunningChild = 0;
+
+        return Children.Count > 0 ? ENodeStatus.Running : ENodeStatus.NotRunning;
+    }
 
     protected override ENodeStatus Tick(float DeltaSeconds)
     {
@@ -16,7 +23,7 @@ public class Sequence : CompositeNode
             ++RunningChild;
             if(RunningChild >= Children.Count)
             {
-                RunningChild = 0;
+                Result = ENodeStatus.Success;
             }
             else
             {

@@ -6,6 +6,7 @@ public class CanSeePlayerService : ServiceNode
     public BehaviorProperty<bool> CanSeePlayerProp;
     public BehaviorProperty<Vector3> LastPlayerPosProp;
     public BehaviorProperty<Vector3> LastPlayerMoveDirProp;
+    public BehaviorProperty<Vector3> CurrentPlayerSearchLocationProp;
 
     public float TimeToLosePlayer = .5f;
     public float MaxSightDistance = 5f;
@@ -40,6 +41,9 @@ public class CanSeePlayerService : ServiceNode
             Vector3 navToPlayer = Vector3.ProjectOnPlane(player.transform.position - controlledCharacter.transform.position, Vector3.up);
             if (Physics.Raycast(visCheckOrigin, navToPlayer, out hitInfo, Mathf.Min(MaxSightDistance, navToPlayer.magnitude), visibilityLayerMask, QueryTriggerInteraction.Ignore))
             {
+                //Debug.DrawLine(visCheckOrigin, visCheckOrigin + Vector3.ProjectOnPlane(hitInfo.point - controlledCharacter.transform.position, Vector3.up), Color.green, 5f);
+                //Debug.DrawLine(hitInfo.point, hitInfo.point + Vector3.ProjectOnPlane(player.transform.position - hitInfo.point, Vector3.up), Color.red, 5f);
+
                 if (timeLostSight > 0f)
                 {
                     if (Time.time - timeLostSight > TimeToLosePlayer)
@@ -54,7 +58,7 @@ public class CanSeePlayerService : ServiceNode
             }
             else
             {
-                Debug.DrawLine(visCheckOrigin, visCheckOrigin + Vector3.ProjectOnPlane(player.transform.position - controlledCharacter.transform.position, Vector3.up), Color.green, 5f);
+                //Debug.DrawLine(visCheckOrigin, visCheckOrigin + Vector3.ProjectOnPlane(player.transform.position - controlledCharacter.transform.position, Vector3.up), Color.green, 5f);
 
                 CanSeePlayerProp.Value = true;
                 timeLostSight = -1f;
@@ -62,6 +66,10 @@ public class CanSeePlayerService : ServiceNode
                 if(LastPlayerPosProp != null)
                 {
                     LastPlayerPosProp.Value = player.transform.position;
+                    if(CurrentPlayerSearchLocationProp != null)
+                    {
+                        CurrentPlayerSearchLocationProp.Value = player.transform.position;
+                    }
                 }
                 if(LastPlayerMoveDirProp != null)
                 {

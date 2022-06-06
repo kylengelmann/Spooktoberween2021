@@ -1,34 +1,43 @@
 
-public class Selector : CompositeNode
+public class SelectorNode : CompositeNode
 {
     int RunningChild = -1;
+
+    protected override ENodeStatus Start()
+    {
+        RunningChild = -1;
+        return base.Start();
+    }
 
     protected override ENodeStatus Tick(float DeltaSeconds)
     {
         ENodeStatus Result = ENodeStatus.NotRunning;
-        if(RunningChild <= 0 && RunningChild < Children.Count)
+        for(int i = 0; i < Children.Count; ++i)
         {
-            Result = Children[RunningChild].Update(DeltaSeconds);
-
-            if(Result != ENodeStatus.Running)
-            {
-                RunningChild = -1;
-            }
-        }
-        else
-        {
-            for(int i = 0; i < Children.Count; ++i)
-            {
-                Result = Children[i].Update(DeltaSeconds);
+            Result = Children[i].Update(DeltaSeconds);
                 
-                if(Result != ENodeStatus.NotRunning)
+            if(Result != ENodeStatus.NotRunning)
+            {
+                if(i != RunningChild && RunningChild >= 0 && RunningChild < Children.Count)
                 {
-                    RunningChild = i;
-                    break;
+                    Children[RunningChild].Cancel();
                 }
+
+                RunningChild = i;
+                break;
             }
         }
 
         return Result;
+    }
+
+    protected override void End(bool bDidSucceed)
+    {
+        if(RunningChild >= 0 && RunningChild < Children.Count)
+        {
+            Children[RunningChild].Cancel();
+        }
+
+        RunningChild = -1;
     }
 }

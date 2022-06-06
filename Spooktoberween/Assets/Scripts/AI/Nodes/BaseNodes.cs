@@ -153,7 +153,7 @@ public abstract class BehaviorNode
 
 public abstract class CompositeNode : BehaviorNode
 {
-    protected List<BehaviorNode> Children;
+    protected List<BehaviorNode> Children = new List<BehaviorNode>();
     public void AddChild(BehaviorNode Child)
     {
         if(Child == null)
@@ -265,11 +265,14 @@ public abstract class ServiceNode : DecoratorNode
 
     protected override ENodeStatus Tick(float DeltaSeconds)
     {
-        TimeSinceLastExecution += DeltaSeconds;
-        if(TimeSinceLastExecution > ExecuteInterval)
+        if(ExecuteInterval > 0)
         {
-            TimeSinceLastExecution -= ExecuteInterval;
-            Execute();
+            TimeSinceLastExecution += DeltaSeconds;
+            if (TimeSinceLastExecution > ExecuteInterval)
+            {
+                TimeSinceLastExecution -= ExecuteInterval;
+                Execute();
+            }
         }
 
         return base.Tick(DeltaSeconds);
