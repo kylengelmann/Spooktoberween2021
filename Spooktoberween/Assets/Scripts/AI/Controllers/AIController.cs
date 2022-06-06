@@ -25,7 +25,7 @@ public abstract class AIController : MonoBehaviour
 
     protected abstract void InitBehavior();
 
-    public void Update()
+    public virtual void Update()
     {
         if(Behavior != null)
         {

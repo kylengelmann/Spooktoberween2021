@@ -6,7 +6,7 @@ public class ShadowController : AIController
 {
     protected override void InitBehavior()
     {
-        BehaviorProperty<GameObject> PlayerProp = new BehaviorProperty<GameObject>("Player", SpookyGameManager.gameManager.player.gameObject);
+        BehaviorProperty<GameObject> PlayerProp = new BehaviorProperty<GameObject>("Player", null);
         BehaviorProperty<bool> SeeProp = new BehaviorProperty<bool>("CanSeePlayer", false);
         BehaviorProperty<Vector3> LastPosProp = new BehaviorProperty<Vector3>("LastPlayerPos", Vector3.zero);
         BehaviorProperty<Vector3> LastDirProp = new BehaviorProperty<Vector3>("LastPlayerMoveDir", Vector3.zero);
@@ -58,5 +58,22 @@ public class ShadowController : AIController
         Props.Add(PlayerProp);
         Props.Add(SeeProp);
         Behavior.Init(this, canSeePlayerServ, Props);
+    }
+
+    public override void Update()
+    {
+        if(SpookyGameManager.gameManager.player)
+        {
+            BehaviorPropertyBase playerProp;
+            if (Behavior.TryGetProperty("Player", out playerProp))
+            {
+                if (playerProp is BehaviorProperty<GameObject>)
+                {
+                    ((BehaviorProperty<GameObject>)playerProp).Value = SpookyGameManager.gameManager.player.gameObject;
+                }
+            }
+        }
+
+        base.Update();
     }
 }
