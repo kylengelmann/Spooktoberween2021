@@ -8,8 +8,11 @@ public class FindPlayerSearchLocationService : ServiceNode
     public BehaviorProperty<Vector3> lastPlayerPosProp;
     public BehaviorProperty<Vector3> lastPlayerDirProp;
     public BehaviorProperty<Vector3> currentSearchLocationProp;
+    public BehaviorProperty<Vector3> searchCenterProp;
 
-    public bool bHasFoundLocation {get; protected set;}
+    public bool bHasFinished {get; protected set;}
+    bool bHasChildFinished;
+    ENodeStatus childStatus = ENodeStatus.NotRunning;
 
     int numLocationsChecked;
     public int numLocationsToCheck = 30;
@@ -39,7 +42,7 @@ public class FindPlayerSearchLocationService : ServiceNode
 
     List<SearchLocationData> searchLocations = new List<SearchLocationData>();
 
-    Vector3 lastSearchLocation;
+    Vector3 searchCenter;
 
     float initialExecuteInterval;
 
@@ -48,8 +51,9 @@ public class FindPlayerSearchLocationService : ServiceNode
         initialExecuteInterval = ExecuteInterval;
 
         numLocationsChecked = 0;
-        bHasFoundLocation = false;
-        lastSearchLocation = currentSearchLocationProp.Value;
+        bHasFinished = false;
+        bHasChildFinished = false;
+        searchCenter = searchCenterProp == null ? currentSearchLocationProp.Value : searchCenterProp.Value;
 
         bestScore = float.NegativeInfinity;
         worstScore = float.PositiveInfinity;
@@ -69,21 +73,40 @@ public class FindPlayerSearchLocationService : ServiceNode
         return base.Start();
     }
 
+    protected override ENodeStatus Tick(float DeltaSeconds)
+    {
+        foreach (SearchLocationData data in searchLocations)
+        {
+            Debug.DrawRay(data.location, Vector3.forward, Color.HSVToRGB((1f - Mathf.Clamp01((data.score - worstScore) / (bestScore - worstScore + 1e-4f))) * .5f, 1, 1));
+        }
+
+        if (!bHasFinished)
+        {
+            Execute();
+        }
+
+        if (!bHasChildFinished)
+        {
+            childStatus = Child.Update(DeltaSeconds);
+            if(childStatus != ENodeStatus.Running)
+            {
+                bHasChildFinished = true;
+            }
+        }
+
+        return (bHasFinished && bHasChildFinished) ? childStatus : ENodeStatus.Running;
+    }
+
     protected override void Execute()
     {
-        //foreach(SearchLocationData data in searchLocations)
-        //{
-        //    Debug.DrawRay(data.location, Vector3.forward, Color.HSVToRGB(Mathf.Clamp01((data.score - worstScore) /(bestScore - worstScore + 1e-4f))*.5f, 1, 1));
-        //}
-
-        if(bHasFoundLocation || !Agent)
+        if(bHasFinished || !Agent)
         {
             return;
         }
 
         if (numLocationsChecked >= numLocationsToCheck)
         {
-            bHasFoundLocation = true;
+            bHasFinished = true;
             ExecuteInterval = -1f;
 
             if (searchLocations.Count <= 0)
@@ -116,7 +139,7 @@ public class FindPlayerSearchLocationService : ServiceNode
 
         Vector2 randLocation = Random.insideUnitCircle * MaxSearchDist;
 
-        Vector3 nextLocation = new Vector3(randLocation.x + lastSearchLocation.x, SpookyCollider.CollisionYValue, randLocation.y + lastSearchLocation.z);
+        Vector3 nextLocation = new Vector3(randLocation.x + searchCenter.x, SpookyCollider.CollisionYValue, randLocation.y + searchCenter.z);
         
         NavMeshHit hit;
         if(!NavMesh.SamplePosition(nextLocation, out hit, .5f, NavMesh.AllAreas))
@@ -125,7 +148,7 @@ public class FindPlayerSearchLocationService : ServiceNode
         }
 
         NavMeshPath path = new NavMeshPath();
-        if(!NavMesh.CalculatePath(Agent.transform.position, nextLocation, NavMesh.AllAreas, path))
+        if(!NavMesh.CalculatePath(lastPlayerPosProp.Value, nextLocation, NavMesh.AllAreas, path))
         {
             return;
         }
@@ -136,10 +159,17 @@ public class FindPlayerSearchLocationService : ServiceNode
         }
 
         Vector3 pathStartDir = Vector3.ProjectOnPlane(path.corners[1] - path.corners[0], Vector3.up);
-        float pathDist = pathStartDir.magnitude;
         pathStartDir.Normalize();
 
-        for(int i = 2; i < path.corners.Length; ++i)
+        path = new NavMeshPath();
+        if (!NavMesh.CalculatePath(Agent.transform.position, nextLocation, NavMesh.AllAreas, path))
+        {
+            return;
+        }
+
+        float pathDist = pathStartDir.magnitude;
+
+        for (int i = 1; i < path.corners.Length; ++i)
         {
             pathDist += Vector3.ProjectOnPlane(path.corners[i] - path.corners[i - 1], Vector3.up).magnitude;
         }

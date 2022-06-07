@@ -16,7 +16,7 @@ public class ShadowController : AIController
         canSeePlayerServ.CanSeePlayerProp = SeeProp;
         canSeePlayerServ.LastPlayerPosProp = LastPosProp;
         canSeePlayerServ.LastPlayerMoveDirProp = LastDirProp;
-        canSeePlayerServ.CurrentPlayerSearchLocationProp = SearchPosProp;
+        //canSeePlayerServ.CurrentPlayerSearchLocationProp = SearchPosProp;
 
         SelectorNode RootSelector = new SelectorNode();
         canSeePlayerServ.SetChild(RootSelector);
@@ -36,22 +36,41 @@ public class ShadowController : AIController
         SequenceNode searchSequence = new SequenceNode();
         RootSelector.AddChild(searchSequence);
 
+        FindPlayerSearchLocationService searchLocationFirstServ = new FindPlayerSearchLocationService();
+        searchLocationFirstServ.ExecuteInterval = 1e-4f;
+        searchLocationFirstServ.lastPlayerDirProp = LastDirProp;
+        searchLocationFirstServ.lastPlayerPosProp = LastPosProp;
+        searchLocationFirstServ.currentSearchLocationProp = SearchPosProp;
+        searchLocationFirstServ.searchCenterProp = LastPosProp;
+        searchSequence.AddChild(searchLocationFirstServ);
+
+        MoveTo moveToLastPlayerPos = new MoveTo();
+        moveToLastPlayerPos.GoalVectorProperty = LastPosProp;
+        searchLocationFirstServ.SetChild(moveToLastPlayerPos);
+
         // Search sequence left branch
+        LiarDecorator searchLoopDecorator = new LiarDecorator();
+        searchLoopDecorator.Result = BehaviorNode.ENodeStatus.Running;
+        searchSequence.AddChild(searchLoopDecorator);
+
         FindPlayerSearchLocationService searchLocationServ = new FindPlayerSearchLocationService();
         searchLocationServ.ExecuteInterval = 1e-4f;
         searchLocationServ.lastPlayerDirProp = LastDirProp;
         searchLocationServ.lastPlayerPosProp = LastPosProp;
         searchLocationServ.currentSearchLocationProp = SearchPosProp;
-        searchSequence.AddChild(searchLocationServ);
+        searchLoopDecorator.SetChild(searchLocationServ);
+
+        SequenceNode searchLoopSequence = new SequenceNode();
+        searchLocationServ.SetChild(searchLoopSequence);
 
         MoveTo moveToSearchLocation = new MoveTo();
         moveToSearchLocation.GoalVectorProperty = SearchPosProp;
-        searchLocationServ.SetChild(moveToSearchLocation);
+        searchLoopSequence.AddChild(moveToSearchLocation);
 
         // Search sequence right branch
         Wait wait = new Wait();
         wait.WaitDuration = 1f;
-        searchSequence.AddChild(wait);
+        searchLoopSequence.AddChild(wait);
 
         Behavior = new BehaviorTree();
         List<BehaviorPropertyBase> Props = new List<BehaviorPropertyBase>();
