@@ -110,7 +110,7 @@ public class SpookyPlayer : Character
         TargetLookRotation = FloorRotation * Quaternion.Euler(0f, TargetLookAngle, 0f);
     }
 
-    public Vector2 GetVelocity()
+    public override Vector2 GetVelocity()
     {
         if(movementComponent)
         {

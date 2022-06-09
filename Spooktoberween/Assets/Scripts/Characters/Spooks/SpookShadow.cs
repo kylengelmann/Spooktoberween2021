@@ -15,6 +15,8 @@ public class SpookShadow : Character
         navAgent.updateRotation = false;
     }
 
+    public override Vector2 GetVelocity() {return navAgent.velocity;}
+
     private void Update()
     {
         EFaceDirection newFaceDir = SpookyUtilities.VectorToFaceDirection(navAgent.velocity);
