@@ -7,10 +7,19 @@ public class SpookManager : MonoBehaviour
     public static SpookManager spookManager;
 
     [System.Serializable]
+    public struct PossessData
+    {
+        public float possessProbability;
+        public float possessNearPlayerProbability;
+        public float nearPlayerPossessRadius;
+    }
+
+    [System.Serializable]
     public struct TeleportData
     {
         public float teleportProbability;
         public float teleportRadius;
+        public float unpossessProbability;
     }
 
     [System.Serializable]
@@ -26,6 +35,9 @@ public class SpookManager : MonoBehaviour
     SpookBehavior spookBehavior;
 
     List<SpookyThing> things = new List<SpookyThing>();
+    List<SpookyThing> thingsNearPlayer = new List<SpookyThing>();
+
+    public uint numIdle { get; private set; }
 
     public uint numHunting {get; private set;}
     HashSet<SpookPossessComponent> hunters = new HashSet<SpookPossessComponent>();
@@ -39,6 +51,12 @@ public class SpookManager : MonoBehaviour
     private void Awake()
     {
         spookManager = this;
+        numIdle = 5;
+    }
+
+    private void Start()
+    {
+        StartCoroutine(PossessUpdate());
     }
 
     public void SetSpookBehavior(SpookBehavior behavior)
@@ -85,7 +103,7 @@ public class SpookManager : MonoBehaviour
         }
     }
 
-    public void RemoveHunt(SpookPossessComponent hunter)
+    public void RemoveHunt(SpookPossessComponent hunter, bool bWasSuccessful)
     {
         if(hunter && hunters.Contains(hunter))
         {
@@ -93,6 +111,11 @@ public class SpookManager : MonoBehaviour
             numHunting = (uint)hunters.Count;
 
             if(numHunting == 0 && onHuntStatusChanged != null) onHuntStatusChanged(false);
+
+            if(bWasSuccessful)
+            {
+                Instantiate(spookBehavior.shadowPrefab, hunter.transform.position, hunter.transform.rotation);
+            }
         }
     }
 
@@ -106,5 +129,54 @@ public class SpookManager : MonoBehaviour
         if(numHunting >= spookBehavior.huntData.huntProbabilities.Length) return 0;
 
         return spookBehavior.huntData.huntProbabilities[numHunting];
+    }
+
+    public void OnThingNearPlayer(SpookyThing thing)
+    {
+        thingsNearPlayer.Add(thing);
+    }
+
+    public void OnThingNotNearPlayer(SpookyThing thing)
+    {
+        thingsNearPlayer.Remove(thing);
+    }
+
+    IEnumerator PossessUpdate()
+    {
+        WaitForSeconds wait = new WaitForSeconds(1f);
+
+        while(true)
+        {
+            if(numIdle > 0 && Random.value < spookBehavior.possessData.possessProbability)
+            {
+                SpookyThing thingToPossess = null;
+                if(thingsNearPlayer.Count > 0 && Random.value < spookBehavior.possessData.possessNearPlayerProbability)
+                {
+                    thingToPossess = thingsNearPlayer[Random.Range(0, thingsNearPlayer.Count)];
+                }
+                else
+                {
+                    thingToPossess = things[Random.Range(0, things.Count)];
+                }
+
+                if(thingToPossess.GetComponent<SpookPossessComponent>() == null)
+                {
+                    thingToPossess.gameObject.AddComponent<SpookPossessComponent>();
+                    --numIdle;
+                }
+            }
+
+            yield return wait;
+        }
+    }
+
+    public void OnUnpossess(SpookPossessComponent possessComponent)
+    {
+        ++numIdle;
+    }
+
+    public void OnShadowDispersed()
+    {
+        ++numIdle;
     }
 }

@@ -28,9 +28,15 @@ public class ShadowController : AIController
         canSeePlayer.ComparisionOperation = (in bool A, in bool B) => { return A == B; };
         RootSelector.AddChild(canSeePlayer);
 
+        SequenceNode moveSequence = new SequenceNode();
+        canSeePlayer.SetChild(moveSequence);
+
         MoveTo moveToPlayer = new MoveTo();
         moveToPlayer.GoalObjectProperty = PlayerProp;
-        canSeePlayer.SetChild(moveToPlayer);
+        moveSequence.AddChild(moveToPlayer);
+
+        Disperse disperse = new Disperse();
+        moveSequence.AddChild(disperse);
 
         // Selector right branch
         SequenceNode searchSequence = new SequenceNode();

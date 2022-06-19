@@ -12,9 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9e03dceb75980943b3c36650b8350c7, type: 3}
   m_Name: SpoopBehavior
   m_EditorClassIdentifier: 
+  possessData:
+    possessProbability: 0.05
+    possessNearPlayerProbability: 0.2
+    nearPlayerPossessRadius: 3
   teleportData:
     teleportProbability: 0.2
     teleportRadius: 8
+    unpossessProbability: 0.1
   huntData:
     huntProbabilities:
     - 0.2
@@ -24,3 +29,4 @@ MonoBehaviour:
     huntTeleports: 3
     minHuntTeleportTime: 3
     maxHuntTeleportTime: 5
+  shadowPrefab: {fileID: 3172230645000626537, guid: 43cafd8a3f9d7cd40a0010e8d93a96eb, type: 3}

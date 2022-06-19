@@ -59,11 +59,13 @@ public class SpookPossessComponent : MonoBehaviour
                     yield return huntCoroutine = StartCoroutine(HuntUpdate());
                     huntCoroutine = null;
 
-                    continue;
+                    break;
                 }
             }
 
-            if (Random.value < teleportData.teleportProbability)
+            float rand = Random.value;
+
+            if (rand < teleportData.teleportProbability)
             {
                 Debug.Log(gameObject.name + ": blink!");
                 yield return teleportCoroutine = StartCoroutine(TeleportUpdate());
@@ -71,7 +73,14 @@ public class SpookPossessComponent : MonoBehaviour
 
                 continue;
             }
+            else if((rand - teleportData.teleportProbability) < teleportData.unpossessProbability)
+            {
+                spookManager.OnUnpossess(this);
+                break;
+            }
         }
+
+        Destroy(this);
     }
 
     IEnumerator TeleportUpdate()
@@ -143,7 +152,7 @@ public class SpookPossessComponent : MonoBehaviour
         Debug.Log("BOO!");
 
         bIsHunting = false;
-        spookManager.RemoveHunt(this);
+        spookManager.RemoveHunt(this, true);
     }
 
     bool CanSeePlayer()
