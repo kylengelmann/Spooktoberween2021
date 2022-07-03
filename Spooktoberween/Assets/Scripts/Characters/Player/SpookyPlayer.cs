@@ -38,6 +38,43 @@ public class SpookyPlayer : Character
     public float huntBlinkOffTime = .05f;
     Coroutine huntBlinkCoroutine;
 
+    [System.Serializable]
+    public struct FlashlightFocusData
+    {
+        public float FocusTime;
+        public float UnfocusTime;
+
+        public float FocusSpotAngle;
+        public float FocusInnerSpotAngle;
+        public float FocusIntensity;
+        public float FocusRange;
+        public float FocusVisibilityAngle;
+
+        public float UnfocusSpotAngle;
+        public float UnfocusInnerSpotAngle;
+        public float UnfocusIntensity;
+        public float UnfocusRange;
+        public float UnfocusVisibilityAngle;
+
+        [System.NonSerialized]
+        public float TimeFocusInput;
+
+        [System.NonSerialized]
+        public float FocusPercentAtInput;
+
+        [System.NonSerialized]
+        public float CurrentFocusPercent;
+
+        [System.NonSerialized]
+        public bool bIsFocused;
+
+        [System.NonSerialized]
+        public bool bIsTransitioning;
+    }
+
+    [SerializeField]
+    FlashlightFocusData flashlightFocusData = new FlashlightFocusData() { FocusTime = .5f, UnfocusTime = .5f, CurrentFocusPercent = 0f, TimeFocusInput = -1f};
+
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
@@ -84,6 +121,8 @@ public class SpookyPlayer : Character
 
         visibleArea.transform.LookAt(transform.position + new Vector3(CurrentLookDir.x, 0f, CurrentLookDir.z), Vector3.up);
         SetLookDir(new Vector2(CurrentLookDir.x, CurrentLookDir.z));
+
+        UpdateFlashlightFocus();
     }
 
     void SetLookDir(in Vector2 newLookDir)
@@ -162,6 +201,65 @@ public class SpookyPlayer : Character
         }
 
         huntBlinkCoroutine = null;
+    }
+
+    public void SetLightFocus(bool bNewFocus)
+    {
+        if(flashlightFocusData.bIsFocused != bNewFocus)
+        {
+            flashlightFocusData.bIsFocused = bNewFocus;
+
+            if ((flashlightFocusData.bIsFocused && flashlightFocusData.CurrentFocusPercent >= 1f) || (!flashlightFocusData.bIsFocused && flashlightFocusData.CurrentFocusPercent <= 0f))
+            {
+                flashlightFocusData.CurrentFocusPercent = flashlightFocusData.bIsFocused ? 1f : 0f;
+            }
+            else
+            {
+                flashlightFocusData.TimeFocusInput = Time.time;
+                flashlightFocusData.FocusPercentAtInput = flashlightFocusData.CurrentFocusPercent;
+                flashlightFocusData.bIsTransitioning = true;
+            }
+            
+        }
+    }
+
+    void UpdateFlashlightFocus()
+    {
+        if(flashlightFocusData.bIsTransitioning)
+        {
+            if(flashlightFocusData.bIsFocused)
+            {
+                flashlightFocusData.CurrentFocusPercent = flashlightFocusData.FocusPercentAtInput + (Time.time - flashlightFocusData.TimeFocusInput) / flashlightFocusData.FocusTime;
+                if(flashlightFocusData.CurrentFocusPercent >= 1f)
+                {
+                    flashlightFocusData.CurrentFocusPercent = 1f;
+                    flashlightFocusData.bIsTransitioning = false;
+                }
+            }
+            else
+            {
+                flashlightFocusData.CurrentFocusPercent = flashlightFocusData.FocusPercentAtInput - (Time.time - flashlightFocusData.TimeFocusInput) / flashlightFocusData.UnfocusTime;
+                if(flashlightFocusData.CurrentFocusPercent <= 0f)
+                {
+                    flashlightFocusData.CurrentFocusPercent = 0f;
+                    flashlightFocusData.bIsTransitioning = false;
+                }
+            }
+
+            Light flashLightComp = Flashlight.GetComponentInChildren<Light>();
+            if(flashLightComp)
+            {
+                flashLightComp.spotAngle = Mathf.Lerp(flashlightFocusData.UnfocusSpotAngle, flashlightFocusData.FocusSpotAngle, flashlightFocusData.CurrentFocusPercent);
+                flashLightComp.innerSpotAngle = Mathf.Lerp(flashlightFocusData.UnfocusInnerSpotAngle, flashlightFocusData.FocusInnerSpotAngle, flashlightFocusData.CurrentFocusPercent);
+                flashLightComp.intensity = Mathf.Lerp(flashlightFocusData.UnfocusIntensity, flashlightFocusData.FocusIntensity, flashlightFocusData.CurrentFocusPercent);
+                flashLightComp.range = Mathf.Lerp(flashlightFocusData.UnfocusRange, flashlightFocusData.FocusRange, flashlightFocusData.CurrentFocusPercent);
+            }
+
+            if(visibilityLight)
+            {
+                visibilityLight.VisibilityBoundsAngle = Mathf.Lerp(flashlightFocusData.UnfocusVisibilityAngle, flashlightFocusData.FocusVisibilityAngle, flashlightFocusData.CurrentFocusPercent);
+            }
+        }
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]

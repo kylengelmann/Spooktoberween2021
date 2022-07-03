@@ -18,10 +18,13 @@ public class PlayerController : MonoBehaviour
         controls.Gameplay.Movement.canceled += OnMovmentInput;
 
         controls.Gameplay.Look_Mouse.performed += OnMouseLookInput;
-        controls.Gameplay.Look_Mouse.performed += OnMouseLookInput;
+        controls.Gameplay.Look_Mouse.canceled += OnMouseLookInput;
 
         controls.Gameplay.Look_Gamepad.performed += OnGamepadLookInput;
-        controls.Gameplay.Look_Gamepad.performed += OnGamepadLookInput;
+        controls.Gameplay.Look_Gamepad.canceled += OnGamepadLookInput;
+
+        controls.Gameplay.FocusLight.performed += OnFocusLightInput;
+        controls.Gameplay.FocusLight.canceled += OnFocusLightInput;
 
         if (isActiveAndEnabled)
         {
@@ -94,6 +97,14 @@ public class PlayerController : MonoBehaviour
         if (player)
         {
             player.HandleLookInput(context.ReadValue<Vector2>());
+        }
+    }
+
+    void OnFocusLightInput(InputAction.CallbackContext context)
+    {
+        if(player)
+        {
+            player.SetLightFocus(context.performed);
         }
     }
 }

@@ -391,6 +391,19 @@ MonoBehaviour:
   huntFastBlinkProbability: 0.75
   huntSlowBlinkTime: 0.075
   huntBlinkOffTime: 0.05
+  flashlightFocusData:
+    FocusTime: 0.5
+    UnfocusTime: 0.5
+    FocusSpotAngle: 35
+    FocusInnerSpotAngle: 15
+    FocusIntensity: 10
+    FocusRange: 6
+    FocusVisibilityAngle: 15
+    UnfocusSpotAngle: 50
+    UnfocusInnerSpotAngle: 30
+    UnfocusIntensity: 3
+    UnfocusRange: 4.5
+    UnfocusVisibilityAngle: 40
 --- !u!143 &1023978256251086981
 CharacterController:
   m_ObjectHideFlags: 0

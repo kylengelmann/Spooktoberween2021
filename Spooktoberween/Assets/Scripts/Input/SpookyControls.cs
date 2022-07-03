@@ -41,6 +41,14 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""FocusLight"",
+                    ""type"": ""Value"",
+                    ""id"": ""a826c9af-256f-4cd4-8643-6f0caef12783"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -131,6 +139,28 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                     ""action"": ""Look_Gamepad"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ca94815f-ac8c-43e9-96f3-cec7be9d4c4d"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FocusLight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3bd04c04-0561-4956-833b-6e07d91e071e"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FocusLight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -142,6 +172,7 @@ public class @SpookyControls : IInputActionCollection, IDisposable
         m_Gameplay_Movement = m_Gameplay.FindAction("Movement", throwIfNotFound: true);
         m_Gameplay_Look_Mouse = m_Gameplay.FindAction("Look_Mouse", throwIfNotFound: true);
         m_Gameplay_Look_Gamepad = m_Gameplay.FindAction("Look_Gamepad", throwIfNotFound: true);
+        m_Gameplay_FocusLight = m_Gameplay.FindAction("FocusLight", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -194,6 +225,7 @@ public class @SpookyControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Movement;
     private readonly InputAction m_Gameplay_Look_Mouse;
     private readonly InputAction m_Gameplay_Look_Gamepad;
+    private readonly InputAction m_Gameplay_FocusLight;
     public struct GameplayActions
     {
         private @SpookyControls m_Wrapper;
@@ -201,6 +233,7 @@ public class @SpookyControls : IInputActionCollection, IDisposable
         public InputAction @Movement => m_Wrapper.m_Gameplay_Movement;
         public InputAction @Look_Mouse => m_Wrapper.m_Gameplay_Look_Mouse;
         public InputAction @Look_Gamepad => m_Wrapper.m_Gameplay_Look_Gamepad;
+        public InputAction @FocusLight => m_Wrapper.m_Gameplay_FocusLight;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -219,6 +252,9 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                 @Look_Gamepad.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Gamepad;
                 @Look_Gamepad.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Gamepad;
                 @Look_Gamepad.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnLook_Gamepad;
+                @FocusLight.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnFocusLight;
+                @FocusLight.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnFocusLight;
+                @FocusLight.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnFocusLight;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -232,6 +268,9 @@ public class @SpookyControls : IInputActionCollection, IDisposable
                 @Look_Gamepad.started += instance.OnLook_Gamepad;
                 @Look_Gamepad.performed += instance.OnLook_Gamepad;
                 @Look_Gamepad.canceled += instance.OnLook_Gamepad;
+                @FocusLight.started += instance.OnFocusLight;
+                @FocusLight.performed += instance.OnFocusLight;
+                @FocusLight.canceled += instance.OnFocusLight;
             }
         }
     }
@@ -241,5 +280,6 @@ public class @SpookyControls : IInputActionCollection, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnLook_Mouse(InputAction.CallbackContext context);
         void OnLook_Gamepad(InputAction.CallbackContext context);
+        void OnFocusLight(InputAction.CallbackContext context);
     }
 }
