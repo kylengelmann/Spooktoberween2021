@@ -1,9 +1,7 @@
 #ifndef SPRITE_COLOR_PASS
 #define SPRITE_COLOR_PASS
 
-#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
-
-struct appdata_t
+struct defaultColorAppdata
 {
 	float4 vertex   : POSITION;
 	float4 color    : COLOR;
@@ -11,7 +9,7 @@ struct appdata_t
 	UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-struct v2f
+struct defaultColorV2f
 {
 	float4 vertex   : SV_POSITION;
 	fixed4 color : COLOR;
@@ -21,11 +19,11 @@ struct v2f
 inline float4 UnityFlipSprite(in float3 pos, in fixed2 flip)
 {
 	return float4(pos.xy * flip, pos.z, 1.0);
-}
+};
 
-v2f SpriteVert(appdata_t IN)
+defaultColorV2f SpriteVert(defaultColorAppdata IN)
 {
-	v2f OUT;
+	defaultColorV2f OUT;
 
 	UNITY_SETUP_INSTANCE_ID(IN);
 
@@ -44,7 +42,7 @@ SamplerState Point_Clamp_GBufferSampler;
 
 float4 _AmbientLightColor;
 
-fixed4 SpriteFragBase(v2f i) : SV_Target
+fixed4 SpriteFragBase(defaultColorV2f i) : SV_Target
 {
 	float4 emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord);
 	emissive.rgb *= _EmissiveMultiplier.rgb;
@@ -60,7 +58,7 @@ fixed4 SpriteFragBase(v2f i) : SV_Target
 	return emissive;
 }
 
-fixed4 SpriteFragBaseTransparent(v2f i) : SV_Target
+fixed4 SpriteFragBaseTransparent(defaultColorV2f i) : SV_Target
 {
 	float4 emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord);
 	emissive.rgb *= emissive.a;
@@ -80,18 +78,46 @@ struct PixelOutput
 	fixed4 specular : SV_Target2;
 };
 
-PixelOutput SpriteFragLighting(v2f i)
+struct LightingParams
+{
+	fixed4 emissive;
+	fixed4 diffuse;
+	fixed4 specular;
+};
+
+LightingParams GetLightingParams(fixed2 texcoord)
 {
 	// Get alpha from diffuse and clip if alpha is below alpha cutoff
-	PixelOutput output;
-	output.diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
-	float alpha = output.diffuse.a;
+	LightingParams params;
+	params.diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, texcoord);
+	float alpha = params.diffuse.a;
 
 	clip(alpha - _AlphaCutoff);
 
 	// Get diffuse and specular textures
-	output.emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
-	output.specular = _Specular.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+	params.emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, texcoord);
+	params.specular = _Specular.Sample(Point_Clamp_GBufferSampler, texcoord);
+
+	return params;
+}
+
+PixelOutput SpriteFragLighting(defaultColorV2f i)
+{
+	// Get alpha from diffuse and clip if alpha is below alpha cutoff
+	PixelOutput output;
+	//output.diffuse = _MainTex.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
+	//float alpha = output.diffuse.a;
+
+	//clip(alpha - _AlphaCutoff);
+
+	//// Get diffuse and specular textures
+	//output.emissive = _Emissive.Sample(Point_Clamp_GBufferSampler, i.texcoord) * i.color;
+	//output.specular = _Specular.Sample(Point_Clamp_GBufferSampler, i.texcoord);
+
+	LightingParams params = GetLightingParams(i.texcoord);
+	output.emissive = params.emissive * i.color;
+	output.diffuse = params.diffuse * i.color;
+	output.specular = params.specular;
 
 	// Calculate diffuse and specular values
 	output.emissive *= _EmissiveMultiplier;
@@ -105,7 +131,7 @@ PixelOutput SpriteFragLighting(v2f i)
 	return output;
 }
 
-PixelOutput SpriteFragLightingTransparent(v2f i)
+PixelOutput SpriteFragLightingTransparent(defaultColorV2f i)
 {
 	PixelOutput output;
 	
@@ -128,7 +154,7 @@ PixelOutput SpriteFragLightingTransparent(v2f i)
 	return output;
 }
 
-PixelOutput SpriteFragUnlit(v2f i)
+PixelOutput SpriteFragUnlit(defaultColorV2f i)
 {
 	PixelOutput output;
 

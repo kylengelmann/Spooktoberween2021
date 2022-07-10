@@ -1,8 +1,6 @@
 #ifndef SPRITE_DEPTH_PASS
 #define SPRITE_DEPTH_PASS
 
-#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
-
 struct appdata
 {
 	float4 Position : POSITION;
@@ -21,7 +19,7 @@ v2f DepthVert(appdata v)
 	o.Position = UnityObjectToClipPos(v.Position);
 	o.uv = v.uv;
 	return o;
-}
+};
 
 SamplerState Point_Clamp_MainTexSampler
 {
@@ -33,5 +31,5 @@ half4 DepthFrag(v2f i) : SV_TARGET
 	half alpha = _MainTex.Sample(Point_Clamp_MainTexSampler, i.uv).a;
 	clip(alpha - _AlphaCutoff);
 	return 0;
-}
+};
 #endif

@@ -20,6 +20,10 @@ public class SpookPossessComponent : MonoBehaviour
 
     const int MAX_TELEPORT_LOCATION_SEARCH_ATTEMPTS = 15;
 
+    float TimeFocused = -1f;
+    public float PossessionDisplayDelay = 3f;
+    public float TimeUnpossess = 5f;
+
     private void Start()
     {
         spookManager = SpookManager.spookManager;
@@ -36,10 +40,38 @@ public class SpookPossessComponent : MonoBehaviour
             return;
         }
 
+        Debug.Log("Mine");
+
+        thingPossessing.onFocusedChanged += OnFocusChanged;
+        if (thingPossessing.bIsFocused)
+        {
+            OnFocusChanged(true);
+        }
+
         teleportData = spookManager.GetTeleportData();
         huntData = spookManager.GetHuntData();
 
         PassiveUpdateRoutine = StartCoroutine(PassiveUpdate());
+    }
+
+    private void Update()
+    {
+        if(TimeFocused <= 0f)
+        {
+            return;
+        }
+
+        float TimeSinceFocused = Time.timeSinceLevelLoad - TimeFocused;
+        if(TimeSinceFocused > PossessionDisplayDelay)
+        {
+            thingPossessing.SetDisplayPossession(true);
+        }
+
+        if(TimeSinceFocused > TimeUnpossess)
+        {
+            spookManager.OnUnpossess(this);
+            Destroy(this);
+        }
     }
 
     IEnumerator PassiveUpdate()
@@ -207,5 +239,23 @@ public class SpookPossessComponent : MonoBehaviour
         }
 
         return bLocationFound;
+    }
+
+    void OnFocusChanged(bool newFocus)
+    {
+        TimeFocused = newFocus ? Time.timeSinceLevelLoad : -1f;
+
+        if(!newFocus)
+        {
+            thingPossessing.SetDisplayPossession(false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if(thingPossessing)
+        {
+            thingPossessing.SetDisplayPossession(false);
+        }
     }
 }

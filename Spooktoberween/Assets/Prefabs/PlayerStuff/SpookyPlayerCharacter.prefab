@@ -404,6 +404,8 @@ MonoBehaviour:
     UnfocusIntensity: 3
     UnfocusRange: 4.5
     UnfocusVisibilityAngle: 40
+    FocusDistanceCheck: 3
+    FocusRangeDistanceAddition: 1
 --- !u!143 &1023978256251086981
 CharacterController:
   m_ObjectHideFlags: 0

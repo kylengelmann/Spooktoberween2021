@@ -1,5 +1,5 @@
-#ifndef SPRITELIGHT_LIT_INPUT_CG_INCLUDED
-#define SPRITELIGHT_LIT_INPUT_CG_INCLUDED
+#ifndef SPOOKY_THING_INPUT_CG_INCLUDED
+#define SPOOKY_THING_LIT_INPUT_CG_INCLUDED
 
 #include "UnityCG.cginc"
 
@@ -18,6 +18,13 @@ fixed4 _SpecularMultiplier;
 fixed4 _EmissiveMultiplier;
 
 fixed4 _Color;
+
+fixed4 _FocusedEmissiveMultiplier;
+fixed4 _FocusedDiffuseMultiplier;
+fixed4 _PossessedColorSubtraction;
+float _TimeFocused;
+float _TimeUnfocused;
+float _TimePossessed;
 
 int _StencilRef;
 CBUFFER_END

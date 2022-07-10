@@ -3,7 +3,6 @@
 
 #include "UnityCG.cginc"
 #include "../ShaderLibrary/SpriteLightCommonCG.cginc"
-#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
 
 struct appdata
 {

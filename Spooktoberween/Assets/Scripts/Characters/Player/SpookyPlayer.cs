@@ -38,6 +38,8 @@ public class SpookyPlayer : Character
     public float huntBlinkOffTime = .05f;
     Coroutine huntBlinkCoroutine;
 
+    SpookyThing thingFocused;
+
     [System.Serializable]
     public struct FlashlightFocusData
     {
@@ -55,6 +57,9 @@ public class SpookyPlayer : Character
         public float UnfocusIntensity;
         public float UnfocusRange;
         public float UnfocusVisibilityAngle;
+
+        public float FocusDistanceCheck;
+        public float FocusRangeDistanceAddition;
 
         [System.NonSerialized]
         public float TimeFocusInput;
@@ -96,6 +101,8 @@ public class SpookyPlayer : Character
             GameObject visibilityObject = Instantiate(VisibilityLightPrefab, Sprite.transform, false);
             visibilityLight = visibilityObject.GetComponent<VisibilityLight>();
             visibilityLight.transform.rotation = Quaternion.identity;
+
+            VisibleArea.visLight = visibilityLight;
         }
         if(FlashlightPrefab)
         {
@@ -258,6 +265,56 @@ public class SpookyPlayer : Character
             if(visibilityLight)
             {
                 visibilityLight.VisibilityBoundsAngle = Mathf.Lerp(flashlightFocusData.UnfocusVisibilityAngle, flashlightFocusData.FocusVisibilityAngle, flashlightFocusData.CurrentFocusPercent);
+            }
+        }
+
+        if(flashlightFocusData.bIsFocused && !flashlightFocusData.bIsTransitioning)
+        {
+            RaycastHit hit;
+            Vector3 traceStart = visibleArea.transform.position;
+            traceStart.y = SpookyCollider.CollisionYValue + 2.5f;
+            if(Physics.Raycast(traceStart, visibleArea.transform.forward, out hit, flashlightFocusData.FocusDistanceCheck, 1 << SpookyLayers.SpookyThingLayer))
+            {
+                Debug.DrawLine(traceStart, traceStart + hit.distance * visibleArea.transform.forward, Color.green);
+
+                Light visLightComp = visibilityLight.light;
+
+                visLightComp.range = Mathf.Min(hit.distance * 2f + flashlightFocusData.FocusRangeDistanceAddition * 2f, flashlightFocusData.FocusRange * 2f);
+
+
+                SpookyThing currentFocus = hit.collider.GetComponent<SpookyThing>();
+                if(currentFocus)
+                {
+                    if(thingFocused && thingFocused != currentFocus )
+                    {
+                        thingFocused.SetFocused(false);
+                    }
+
+                    thingFocused = currentFocus;
+                    thingFocused.SetFocused(true);
+                }
+            }
+            else
+            {
+                Debug.DrawLine(traceStart, traceStart + 3f * visibleArea.transform.forward, Color.red);
+
+                Light visLightComp = visibilityLight.light;
+                visLightComp.range = 7f;
+
+                if(thingFocused)
+                {
+                    thingFocused.SetFocused(false);
+                }
+            }
+        }
+        else
+        {
+            Light visLightComp = visibilityLight.light;
+            visLightComp.range = 7f;
+
+            if(thingFocused)
+            {
+                thingFocused.SetFocused(false);
             }
         }
     }

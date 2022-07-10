@@ -1,8 +1,6 @@
 #ifndef SPRITE_SHADOW_CASTER_PASS_INCLUDED
 #define SPRITE_SHADOW_CASTER_PASS_INCLUDED
 
-#include "../ShaderLibrary/SpriteLightLitInputCG.cginc"
-
 struct Attributes
 {
 	float4 positionOS : POSITION;

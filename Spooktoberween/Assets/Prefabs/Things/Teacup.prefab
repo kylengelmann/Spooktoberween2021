@@ -53,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de94050b0425d844ea0f967e02778bfc, type: 2}
+  - {fileID: 2100000, guid: 556fee1f4647a284db2ab9f8fd87d630, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -168,7 +168,6 @@ GameObject:
   - component: {fileID: 6644566671662507960}
   - component: {fileID: 6644566671662507964}
   - component: {fileID: 6644566671662507967}
-  - component: {fileID: 113906615}
   - component: {fileID: 5508611332026667535}
   m_Layer: 30
   m_Name: Teacup
@@ -234,18 +233,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &113906615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6644566671662507961}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a734a369c794db4eb166a0aad4e848b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &5508611332026667535
 MonoBehaviour:
   m_ObjectHideFlags: 0

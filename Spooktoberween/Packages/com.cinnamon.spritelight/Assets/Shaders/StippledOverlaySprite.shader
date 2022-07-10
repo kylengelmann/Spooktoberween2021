@@ -48,7 +48,7 @@
 				#include "SpriteColorPass.cginc"
 				#include "../ShaderLibrary/SpriteLightCommonCG.cginc"
 
-				PixelOutput StippledSpriteFragLighting(v2f i)
+				PixelOutput StippledSpriteFragLighting(defaultColorV2f i)
 				{
 					clip(i.color.a - GetStippleClip(i.vertex.xy));
 

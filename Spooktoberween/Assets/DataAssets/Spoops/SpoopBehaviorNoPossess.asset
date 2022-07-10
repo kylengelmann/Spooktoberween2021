@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9e03dceb75980943b3c36650b8350c7, type: 3}
+  m_Name: SpoopBehaviorNoPossess
+  m_EditorClassIdentifier: 
+  possessData:
+    possessProbability: 0
+    possessNearPlayerProbability: 0.2
+    nearPlayerPossessRadius: 3
+  teleportData:
+    teleportProbability: 0.2
+    teleportRadius: 8
+    unpossessProbability: 0.1
+  huntData:
+    huntProbabilities:
+    - 0.2
+    - 0.1
+    - 0.5
+    huntRadius: 3
+    huntTeleports: 3
+    minHuntTeleportTime: 3
+    maxHuntTeleportTime: 5
+  shadowPrefab: {fileID: 3172230645000626537, guid: 43cafd8a3f9d7cd40a0010e8d93a96eb, type: 3}
