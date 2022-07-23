@@ -32,6 +32,6 @@ public class CharacterAnimationComponent : MonoBehaviour
     void Update()
     {
         animator.SetFloat(faceDirectionID, (float)character.currentFaceDirection);
-        animator.SetBool(isWalkingID, character.GetVelocity().sqrMagnitude > .05f);
+        animator.SetBool(isWalkingID, character.GetVelocity().sqrMagnitude > .005f);
     }
 }
