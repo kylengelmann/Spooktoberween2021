@@ -152,13 +152,11 @@ public class SpookPossessComponent : MonoBehaviour
 
                 TeleportCheck canSeePlayer = (in Vector3 teleportLocation, GameObject teleportingObject) =>
                 {
-                    if(!thingPossessing) return false;
-
                     Bounds bounds = thingPossessing.spriteRenderer.bounds;
-                    Vector3 boundsOffset = bounds.center - gameObject.transform.position;
+                    Vector3 boundsOffset = bounds.center - transform.position;
                     Vector3 newBoundsLocation = teleportLocation + boundsOffset;
                     Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
-                    return !VisibleArea.IsObscured( new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z));
+                    return !VisibleArea.IsObscured(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z));
                 };
 
                 Vector3 teleportLocation;
@@ -205,9 +203,10 @@ public class SpookPossessComponent : MonoBehaviour
         teleportLocation = Vector3.zero;
         while (!bLocationFound && numAttempts < MAX_TELEPORT_LOCATION_SEARCH_ATTEMPTS)
         {
-            Vector2 randomTeleportLocation = Random.insideUnitCircle * radius;
+            Vector2 random2DTeleportLocation = Random.insideUnitCircle * radius;
+            Vector3 randomTeleportLocation = center + new Vector3(random2DTeleportLocation.x, SpookyCollider.CollisionYValue, random2DTeleportLocation.y);
             NavMeshHit navMeshHit;
-            if (NavMesh.SamplePosition(center + new Vector3(randomTeleportLocation.x, SpookyCollider.CollisionYValue, randomTeleportLocation.y), out navMeshHit, .5f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(randomTeleportLocation, out navMeshHit, .5f, NavMesh.AllAreas))
             {
                 Bounds bounds = thingPossessing.spriteRenderer.bounds;
                 Vector3 boundsOffset = bounds.center - gameObject.transform.position;
@@ -227,18 +226,39 @@ public class SpookPossessComponent : MonoBehaviour
                             }
                         }
 
-                        if(!bLocationFound) continue;
+                        if(!bLocationFound)
+                        {
+                            DrawDebugTeleportData(randomTeleportLocation, Color.yellow);
+                            continue;
+                        }
                     }
 
                     bLocationFound = true;
                     teleportLocation = navMeshHit.position;
                 }
+                else
+                {
+                    DrawDebugTeleportData(randomTeleportLocation, Color.cyan);
+                }
+            }
+            else
+            {
+                DrawDebugTeleportData(randomTeleportLocation, Color.red);
             }
 
             ++numAttempts;
         }
 
         return bLocationFound;
+    }
+
+    [System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]
+    void DrawDebugTeleportData(Vector3 location, Color color)
+    {
+        if (spookManager.IsDisplayingDebugTeleportData())
+        {
+            Debug.DrawRay(location, Vector3.forward*.2f, color, 10f);
+        }
     }
 
     void OnFocusChanged(bool newFocus)

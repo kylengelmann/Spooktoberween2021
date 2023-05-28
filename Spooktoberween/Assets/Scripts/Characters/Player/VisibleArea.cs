@@ -22,7 +22,7 @@ public class VisibleArea : MonoBehaviour
         if(Physics.OverlapBoxNonAlloc(pos3D, new Vector3(boxHalfSize.x, visibleAreaCollider.bounds.extents.y, boxHalfSize.y), overlappingColliders, Quaternion.identity, visibilityLM) > 0)
         {
             // Check if there's anything obscuring view from the player
-            return !IsObscured(position, boxHalfSize);
+            return IsObjectInVisLight(position, boxHalfSize) && !IsObscured(position, boxHalfSize);
         }
 
         return false;
@@ -46,8 +46,6 @@ public class VisibleArea : MonoBehaviour
         const int NUM_CORNERS = 4;
         Vector2[] corners = { new Vector2(-boxHalfSize.x, -boxHalfSize.y), new Vector2(boxHalfSize.x, -boxHalfSize.y), new Vector2(-boxHalfSize.x, boxHalfSize.y), new Vector2(boxHalfSize.x, boxHalfSize.y) };
 
-        bool bIsAnyCornerInVisLight = false;
-
         {
             Vector2 cornerDir = (corners[0] + fromPlayerVec).normalized;
             float dot = Vector2.Dot(cornerDir, perpVec);
@@ -59,8 +57,6 @@ public class VisibleArea : MonoBehaviour
             maxCornerDot = dot;
             maxCorner = 0;
             toMaxCorner = cornerDir;
-
-            bIsAnyCornerInVisLight = IsPointInVisLight(corners[0] + position);
         }
 
         for (int i = 1; i < NUM_CORNERS; ++i)
@@ -80,16 +76,6 @@ public class VisibleArea : MonoBehaviour
                 maxCorner = i;
                 toMaxCorner = cornerDir;
             }
-
-            if(!bIsAnyCornerInVisLight)
-            {
-                IsPointInVisLight(corners[i] + position);
-            }
-        }
-
-        if(!bIsAnyCornerInVisLight)
-        {
-            return true;
         }
 
         if (minCorner >= 0 && maxCorner >= 0)
@@ -108,6 +94,20 @@ public class VisibleArea : MonoBehaviour
                 //Debug.DrawLine(playerPos, playerPos + new Vector3(toMaxCorner.x, 0f, toMaxCorner.y) * maxCornerDist, bMaxHit ? Color.red : Color.cyan);
 
                 return bMaxHit && bMinHit;
+            }
+        }
+
+        return false;
+    }
+
+    static bool IsObjectInVisLight(in Vector2 position, in Vector2 boxHalfSize)
+    {
+        Vector2[] corners = { new Vector2(-boxHalfSize.x, -boxHalfSize.y), new Vector2(boxHalfSize.x, -boxHalfSize.y), new Vector2(-boxHalfSize.x, boxHalfSize.y), new Vector2(boxHalfSize.x, boxHalfSize.y) };
+        foreach(Vector2 corner in corners)
+        {
+            if(IsPointInVisLight(corner + position))
+            {
+                return true;
             }
         }
 
@@ -214,7 +214,7 @@ public class VisibleArea : MonoBehaviour
         foreach(SpookyThing thing in inAreaThings)
         {
             Vector3 thingExtents = thing.spriteRenderer.bounds.extents;
-            thing.SetInVisibleArea(!IsObscured(new Vector2(thing.transform.position.x, thing.transform.position.z), new Vector2(thingExtents.x, thingExtents.z)));
+            thing.SetInVisibleArea(IsInVisibleArea(new Vector2(thing.transform.position.x, thing.transform.position.z), new Vector2(thingExtents.x, thingExtents.z)));
         }
     }
 }
