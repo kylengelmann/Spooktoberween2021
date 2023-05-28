@@ -35,6 +35,10 @@ public class ShadowController : AIController
         moveToPlayer.GoalObjectProperty = PlayerProp;
         moveSequence.AddChild(moveToPlayer);
 
+        Attack attack = new Attack();
+        attack.Target = PlayerProp;
+        moveSequence.AddChild(attack);
+
         Disperse disperse = new Disperse();
         moveSequence.AddChild(disperse);
 

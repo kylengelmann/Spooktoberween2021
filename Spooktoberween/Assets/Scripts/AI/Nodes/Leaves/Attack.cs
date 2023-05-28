@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Attack : MonoBehaviour
+public class Attack : BehaviorNode
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public BehaviorProperty<GameObject> Target;
 
-    // Update is called once per frame
-    void Update()
+    protected override ENodeStatus Start()
     {
-        
+        (Target.Value).GetComponent<SpookyPlayer>().Damage();
+        return ENodeStatus.Success;
     }
 }
