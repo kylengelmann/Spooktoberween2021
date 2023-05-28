@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[assembly:CheatSystem.CheatClass(typeof(SpookManager))]
 public class SpookManager : MonoBehaviour
 {
     public static SpookManager spookManager;
@@ -47,6 +48,10 @@ public class SpookManager : MonoBehaviour
 
     public delegate void OnHuntProgressed();
     public OnHuntProgressed onHuntProgressed;
+
+    #if USING_CHEAT_SYSTEM
+    bool bDebug_DisplayPossesTeleportAttempts = false;
+    #endif // USING_CHEAT_SYSTEM
 
     private void Awake()
     {
@@ -179,4 +184,25 @@ public class SpookManager : MonoBehaviour
     {
         ++numIdle;
     }
+
+#if USING_CHEAT_SYSTEM
+    [CheatSystem.Cheat()]
+    void DisplayDebugTeleportData(int newDisplay = -1)
+    {
+        if(newDisplay < 0)
+        {
+            bDebug_DisplayPossesTeleportAttempts = !bDebug_DisplayPossesTeleportAttempts;
+        }
+        else
+        {
+            bDebug_DisplayPossesTeleportAttempts = newDisplay > 0;
+        }
+    }
+
+
+    public bool IsDisplayingDebugTeleportData()
+    {
+        return bDebug_DisplayPossesTeleportAttempts;
+    }
+#endif
 }
