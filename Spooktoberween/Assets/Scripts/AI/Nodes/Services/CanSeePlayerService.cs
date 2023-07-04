@@ -6,7 +6,7 @@ public class CanSeePlayerService : ServiceNode
     public BehaviorProperty<bool> CanSeePlayerProp;
     public BehaviorProperty<Vector3> LastPlayerPosProp;
     public BehaviorProperty<Vector3> LastPlayerMoveDirProp;
-    public BehaviorProperty<Vector3> CurrentPlayerSearchLocationProp;
+    public BehaviorProperty<float> LostPlayerTime;
 
     public float TimeToLosePlayer = .5f;
     public float MaxSightDistance = 5f;
@@ -66,16 +66,17 @@ public class CanSeePlayerService : ServiceNode
                 if(LastPlayerPosProp != null)
                 {
                     LastPlayerPosProp.Value = player.transform.position;
-                    if(CurrentPlayerSearchLocationProp != null)
-                    {
-                        CurrentPlayerSearchLocationProp.Value = player.transform.position;
-                    }
                 }
                 if(LastPlayerMoveDirProp != null)
                 {
                     LastPlayerMoveDirProp.Value = player.GetVelocity().normalized;
                 }
             }
+        }
+
+        if(LostPlayerTime != null)
+        {
+            LostPlayerTime.Value = timeLostSight;
         }
     }
 }

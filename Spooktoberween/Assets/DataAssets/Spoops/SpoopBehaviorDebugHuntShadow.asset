@@ -10,28 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9e03dceb75980943b3c36650b8350c7, type: 3}
-  m_Name: SpoopBehavior
+  m_Name: SpoopBehaviorDebugHuntShadow
   m_EditorClassIdentifier: 
   possessData:
-    possessNearPlayerProbability: 0.2
+    possessProbability: 1
+    possessNearPlayerProbability: 1
     nearPlayerPossessRadius: 3
   teleportData:
-    teleportCooldown:
-      min: 4
-      max: 10
+    teleportProbability: 0.2
     teleportRadius: 8
-    switchObjectChance: 0.4
-    huntStartTimerLength:
-      min: 5
-      max: 7
-    huntStartPlayerRadius: 2
+    unpossessProbability: 0
   huntData:
-    huntPlayerRadius: 3
-    huntTeleportCooldown:
-      min: 3
-      max: 5
-    huntDuration:
-      min: 10
-      max: 15
-    maxHuntDurationExtension: 4
+    huntProbabilities:
+    - 1
+    - 0.1
+    - 0.5
+    huntRadius: 3
+    huntTeleports: 3
+    minHuntTeleportTime: 3
+    maxHuntTeleportTime: 5
   shadowPrefab: {fileID: 3172230645000626537, guid: 43cafd8a3f9d7cd40a0010e8d93a96eb, type: 3}

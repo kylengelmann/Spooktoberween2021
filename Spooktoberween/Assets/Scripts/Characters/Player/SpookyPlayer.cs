@@ -5,6 +5,13 @@ using UnityEngine;
 [assembly:CheatSystem.CheatClass(typeof(SpookyPlayer))]
 public class SpookyPlayer : Character
 {
+
+    [SerializeField]
+    private int _maxHP = 3;
+    public int maxHP { get { return _maxHP; } private set {_maxHP = value; } }
+
+    public int currentHP { get; protected set;}
+
     public PlayerMovementComponent movementComponent { get; private set; }
 
     public float maxTurnRate = 360;
@@ -80,6 +87,10 @@ public class SpookyPlayer : Character
     [SerializeField]
     FlashlightFocusData flashlightFocusData = new FlashlightFocusData() { FocusTime = .5f, UnfocusTime = .5f, CurrentFocusPercent = 0f, TimeFocusInput = -1f};
 
+    public delegate void OnHPChanged(int newHP, int oldHP);
+
+    public OnHPChanged onHPChanged;
+
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
@@ -115,6 +126,8 @@ public class SpookyPlayer : Character
         {
             spookManager.onHuntProgressed += OnHuntProgressed;
         }
+
+        Heal();
     }
 
     private void Update()
@@ -317,6 +330,54 @@ public class SpookyPlayer : Character
                 thingFocused.SetFocused(false);
             }
         }
+    }
+
+    public void Damage(int amount = 1)
+    {
+        int oldHP = currentHP;
+
+        if(amount > 0)
+        {
+            currentHP = Mathf.Max(currentHP - amount, 0);
+        }
+        else
+        {
+            currentHP = 0;
+        }
+
+        if(onHPChanged != null)
+        {
+            onHPChanged(currentHP, oldHP);
+        }
+
+        if(currentHP <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Heal(int amount = -1)
+    {
+        int oldHP = currentHP;
+
+        if(amount > 0)
+        {
+            currentHP = Mathf.Min(currentHP + amount, maxHP);
+        }
+        else
+        {
+            currentHP = maxHP;
+        }
+
+        if (onHPChanged != null)
+        {
+            onHPChanged(currentHP, oldHP);
+        }
+    }
+
+    void Die()
+    {
+
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]
