@@ -13,20 +13,25 @@ MonoBehaviour:
   m_Name: SpoopBehavior
   m_EditorClassIdentifier: 
   possessData:
-    possessProbability: 0.05
     possessNearPlayerProbability: 0.2
     nearPlayerPossessRadius: 3
   teleportData:
-    teleportProbability: 0.2
+    teleportCooldown:
+      min: 4
+      max: 10
     teleportRadius: 8
-    unpossessProbability: 0.1
+    switchObjectChance: 0.4
+    huntStartTimerLength:
+      min: 5
+      max: 7
+    huntStartPlayerRadius: 2
   huntData:
-    huntProbabilities:
-    - 0.2
-    - 0.1
-    - 0.5
-    huntRadius: 3
-    huntTeleports: 3
-    minHuntTeleportTime: 3
-    maxHuntTeleportTime: 5
+    huntPlayerRadius: 3
+    huntTeleportCooldown:
+      min: 3
+      max: 5
+    huntDuration:
+      min: 10
+      max: 15
+    maxHuntDurationExtension: 4
   shadowPrefab: {fileID: 3172230645000626537, guid: 43cafd8a3f9d7cd40a0010e8d93a96eb, type: 3}

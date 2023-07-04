@@ -11,15 +11,28 @@ public class ShadowController : AIController
         BehaviorProperty<Vector3> LastPosProp = new BehaviorProperty<Vector3>("LastPlayerPos", Vector3.zero);
         BehaviorProperty<Vector3> LastDirProp = new BehaviorProperty<Vector3>("LastPlayerMoveDir", Vector3.zero);
         BehaviorProperty<Vector3> SearchPosProp = new BehaviorProperty<Vector3>("CurrentPlayerSearchLocation", Vector3.zero);
+        BehaviorProperty<float> LostPlayerTimeProp = new BehaviorProperty<float>("LostPlayerTime", -1f);
 
         CanSeePlayerService canSeePlayerServ = new CanSeePlayerService();
         canSeePlayerServ.CanSeePlayerProp = SeeProp;
         canSeePlayerServ.LastPlayerPosProp = LastPosProp;
         canSeePlayerServ.LastPlayerMoveDirProp = LastDirProp;
-        //canSeePlayerServ.CurrentPlayerSearchLocationProp = SearchPosProp;
+        canSeePlayerServ.LostPlayerTime = LostPlayerTimeProp;
 
         SelectorNode RootSelector = new SelectorNode();
         canSeePlayerServ.SetChild(RootSelector);
+
+        // Selector Disperse condition
+        ConditionalDecorator<float> shouldDisperse = new ConditionalDecorator<float>();
+        shouldDisperse.Property = LostPlayerTimeProp;
+        shouldDisperse.ReferenceValue = 10f;
+        shouldDisperse.ComparisionOperation = (in float TimeLostPlayer, in float TimeUntilDisperse) => { return TimeLostPlayer > 0f && Time.time - TimeLostPlayer > TimeUntilDisperse; };
+
+        RootSelector.AddChild(shouldDisperse);
+
+        Disperse disperse = new Disperse();
+
+        shouldDisperse.SetChild(disperse);
 
         // Selector left branch
         ConditionalDecorator<bool> canSeePlayer = new ConditionalDecorator<bool>();
@@ -39,7 +52,6 @@ public class ShadowController : AIController
         attack.Target = PlayerProp;
         moveSequence.AddChild(attack);
 
-        Disperse disperse = new Disperse();
         moveSequence.AddChild(disperse);
 
         // Selector right branch

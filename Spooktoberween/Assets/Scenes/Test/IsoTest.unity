@@ -5989,7 +5989,7 @@ PrefabInstance:
     - target: {fileID: 5963628432291025608, guid: d0f52818a49e4db45b2207239d1530d0, type: 3}
       propertyPath: spookBehavior
       value: 
-      objectReference: {fileID: 11400000, guid: ce7b543429a92474d870e858b22dbdbe, type: 2}
+      objectReference: {fileID: 11400000, guid: c3ab018075e789d47a903e7def954af8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0f52818a49e4db45b2207239d1530d0, type: 3}
 --- !u!1839735485 &5337619772072791684
@@ -8128,7 +8128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6644566671662507965, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.83
+      value: -3.139
       objectReference: {fileID: 0}
     - target: {fileID: 6644566671662507965, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8136,7 +8136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6644566671662507965, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.53
+      value: -0.992
       objectReference: {fileID: 0}
     - target: {fileID: 6644566671662507965, guid: 82f665d5246b4d64bb361ede989d0072, type: 3}
       propertyPath: m_LocalRotation.w

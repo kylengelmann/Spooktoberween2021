@@ -5,14 +5,19 @@ using UnityEngine.AI;
 
 public class SpookPossessComponent : MonoBehaviour
 {
-    SpookyThing thingPossessing;
+    public SpookyThing thingPossessing {get; private set;}
     Coroutine PassiveUpdateRoutine;
 
     bool bIsTeleporting = false;
     Coroutine teleportCoroutine;
 
+    float timeLeftUntilHunt = 0f;
+
     bool bIsHunting = false;
     Coroutine huntCoroutine;
+    float timeLeftToAddToHunt;
+
+    float timeLeftInHunt;
 
     SpookManager spookManager;
     SpookManager.HuntData huntData;
@@ -51,6 +56,8 @@ public class SpookPossessComponent : MonoBehaviour
         teleportData = spookManager.GetTeleportData();
         huntData = spookManager.GetHuntData();
 
+        timeLeftUntilHunt = teleportData.huntStartTimerLength.Get();
+
         PassiveUpdateRoutine = StartCoroutine(PassiveUpdate());
     }
 
@@ -61,6 +68,14 @@ public class SpookPossessComponent : MonoBehaviour
             return;
         }
 
+        if(huntCoroutine != null && !Mathf.Approximately(timeLeftToAddToHunt, 0f))
+        {
+            float timeToAddToHunt = Mathf.Min(timeLeftToAddToHunt, Time.deltaTime);
+            timeLeftToAddToHunt -= timeToAddToHunt;
+            timeLeftInHunt += timeLeftToAddToHunt;
+        }
+
+
         float TimeSinceFocused = Time.timeSinceLevelLoad - TimeFocused;
         if(TimeSinceFocused > PossessionDisplayDelay)
         {
@@ -69,55 +84,58 @@ public class SpookPossessComponent : MonoBehaviour
 
         if(TimeSinceFocused > TimeUnpossess)
         {
-            spookManager.OnUnpossess(this);
-            Destroy(this);
+            spookManager.SwitchObjectPossessing(this);
         }
     }
 
     IEnumerator PassiveUpdate()
     {
-        WaitForSeconds wait = new WaitForSeconds(1f);
+        const float updateWaitTime = .1f;
+        WaitForSeconds wait = new WaitForSeconds(.1f);
+        bool bFirstTeleport = true;
+
         while(true)
         {
             yield return wait;
 
+            if (teleportCoroutine == null)
+            {
+                if(bFirstTeleport)
+                {
+                    bFirstTeleport = false;
+                }
+                else if(Random.value < teleportData.switchObjectChance)
+                {
+                    spookManager.SwitchObjectPossessing(this);
+                    break;
+                }
+
+                teleportCoroutine = StartCoroutine(TeleportUpdate(teleportData.teleportCooldown.Get()));
+            }
+
             if (SpookyGameManager.gameManager.player)
             {
                 float distanceSqrFromPlayer = (SpookyGameManager.gameManager.player.transform.position - transform.position).sqrMagnitude;
-                float huntRadius = huntData.huntRadius;
-                if (distanceSqrFromPlayer < huntRadius * huntRadius && Random.value < spookManager.GetHuntProbability() && CanSeePlayer())
+                if (distanceSqrFromPlayer < teleportData.huntStartPlayerRadius * teleportData.huntStartPlayerRadius && CanSeePlayer())
                 {
-                    Debug.Log(gameObject.name + ": ima gechu~~");
-                    yield return huntCoroutine = StartCoroutine(HuntUpdate());
-                    huntCoroutine = null;
+                    if(timeLeftUntilHunt <= 0f)
+                    {
+                        Debug.Log("Ima getchu");
 
-                    break;
+                        CancelTeleport();
+
+                        huntCoroutine = StartCoroutine(HuntUpdate());
+                        break;
+                    }
+                    timeLeftUntilHunt -= updateWaitTime;
                 }
             }
-
-            float rand = Random.value;
-
-            if (rand < teleportData.teleportProbability)
-            {
-                Debug.Log(gameObject.name + ": blink!");
-                yield return teleportCoroutine = StartCoroutine(TeleportUpdate());
-                teleportCoroutine = null;
-
-                continue;
-            }
-            else if((rand - teleportData.teleportProbability) < teleportData.unpossessProbability)
-            {
-                spookManager.OnUnpossess(this);
-                break;
-            }
         }
-
-        Destroy(this);
     }
 
-    IEnumerator TeleportUpdate()
+    IEnumerator TeleportUpdate(float minTimeUntilTeleport)
     {
-        bIsTeleporting = true;
+        yield return new WaitForSeconds(minTimeUntilTeleport);
 
         if(thingPossessing.bIsVisible)
         {
@@ -125,64 +143,75 @@ public class SpookPossessComponent : MonoBehaviour
         }
 
         Vector3 teleportLocation;
-        if (GetTeleportLocationInCircle(transform.position, teleportData.teleportRadius, out teleportLocation)) transform.position = teleportLocation;
-        else Debug.LogFormat("{0} failed to teleport. thing location: {1}", gameObject.name, transform.position);
+        if (GetTeleportLocationInCircle(transform.position, teleportData.teleportRadius, out teleportLocation))
+        {
+            transform.position = teleportLocation;
+            timeLeftUntilHunt = teleportData.huntStartTimerLength.Get();
+        }
+        else
+        {
+            Debug.LogFormat("{0} failed to teleport. thing location: {1}", gameObject.name, transform.position);
+        }
 
-        bIsTeleporting = false;
+        teleportCoroutine = null;
     }
 
     IEnumerator HuntUpdate()
     {
         spookManager.AddHunt(this);
-        bIsHunting = true;
-        int numTeleportsLeft = huntData.huntTeleports;
-        while(numTeleportsLeft > 0 & bIsHunting)
+
+        timeLeftInHunt = huntData.huntDuration.Get();
+
+        float timeUntilNextTeleport = huntData.huntTeleportCooldown.Get();
+
+        while(timeLeftInHunt > 0f)
         {
-            float currentTeleportTime = Random.Range(huntData.minHuntTeleportTime, huntData.maxHuntTeleportTime);
-            yield return new WaitForSeconds(currentTeleportTime);
+            const float updateTime = .1f;
+            WaitForSeconds smallWait = new WaitForSeconds(updateTime);
 
-            bool bTeleported = false;
-            WaitForSeconds smallWait = new WaitForSeconds(.1f);
-            while(!bTeleported)
+            yield return smallWait;
+
+            if(timeUntilNextTeleport <= 0f)
             {
-                if (thingPossessing.bIsVisible)
+                if (!thingPossessing.bIsVisible)
                 {
-                    yield return new WaitForVisibilityChange(thingPossessing);
+                    TeleportCheck canSeePlayer = (in Vector3 teleportLocation, GameObject teleportingObject) =>
+                    {
+                        Bounds bounds = thingPossessing.spriteRenderer.bounds;
+                        Vector3 boundsOffset = bounds.center - transform.position;
+                        Vector3 newBoundsLocation = teleportLocation + boundsOffset;
+                        Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
+                        return !VisibleArea.IsObscured(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z));
+                    };
+
+                    Vector3 teleportLocation;
+                    if (GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntPlayerRadius, out teleportLocation, new TeleportCheck[] { canSeePlayer }))
+                    {
+                        transform.position = teleportLocation;
+                        spookManager.ProgressHunt();
+                        timeUntilNextTeleport = huntData.huntTeleportCooldown.Get();
+                    }
+                    else
+                    {
+                        Debug.LogFormat("{0} failed to find teleport location around player. Player position: {1}", gameObject.name, SpookyGameManager.gameManager.player.transform.position);
+                        yield return smallWait;
+                        continue;
+                    }
                 }
-
-                TeleportCheck canSeePlayer = (in Vector3 teleportLocation, GameObject teleportingObject) =>
-                {
-                    Bounds bounds = thingPossessing.spriteRenderer.bounds;
-                    Vector3 boundsOffset = bounds.center - transform.position;
-                    Vector3 newBoundsLocation = teleportLocation + boundsOffset;
-                    Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
-                    return !VisibleArea.IsObscured(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z));
-                };
-
-                Vector3 teleportLocation;
-                if(!GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntRadius, out teleportLocation, new TeleportCheck[]{ canSeePlayer }))
-                {
-                    Debug.LogFormat("{0} failed to find teleport location around player. Player position: {1}", gameObject.name, SpookyGameManager.gameManager.player.transform.position);
-                    yield return smallWait;
-                    continue;
-                }
-
-                bTeleported = true;
-                transform.position = teleportLocation;
+            }
+            else
+            {
+                timeUntilNextTeleport -= updateTime;
             }
 
-            --numTeleportsLeft;
-
-            spookManager.ProgressHunt();
+            timeLeftInHunt -= updateTime;
         }
-
-        float teleportTime = Random.Range(huntData.minHuntTeleportTime, huntData.maxHuntTeleportTime);
-        yield return new WaitForSeconds(teleportTime);
 
         Debug.Log("BOO!");
 
-        bIsHunting = false;
         spookManager.RemoveHunt(this, true);
+
+        Destroy(this);
     }
 
     bool CanSeePlayer()
@@ -250,6 +279,16 @@ public class SpookPossessComponent : MonoBehaviour
         }
 
         return bLocationFound;
+    }
+
+    void CancelTeleport()
+    {
+        if(teleportCoroutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(teleportCoroutine);
     }
 
     [System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]
