@@ -117,4 +117,25 @@ public class ShadowController : AIController
 
         base.Update();
     }
+
+    public void Attack()
+    {
+        CharacterAnimationComponent animComponent = GetComponent<CharacterAnimationComponent>();
+        animComponent.onAttackEnded += AttackEnded;
+        GetComponent<CharacterAnimationComponent>().Attack();
+    }
+
+    public void AttackEnded()
+    {
+        if(onAttackEnded != null)
+        {
+            onAttackEnded();
+        }
+
+        GetComponent<CharacterAnimationComponent>().onAttackEnded -= AttackEnded;
+    }
+
+    public delegate void OnAttackEnded();
+
+    public OnAttackEnded onAttackEnded;
 }

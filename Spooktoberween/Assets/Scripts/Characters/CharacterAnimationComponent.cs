@@ -9,6 +9,7 @@ public class CharacterAnimationComponent : MonoBehaviour
 
     int faceDirectionID = Animator.StringToHash("FaceDirection");
     int isWalkingID = Animator.StringToHash("IsWalking");
+    int attackID = Animator.StringToHash("Attack");
 
     private void Awake()
     {
@@ -33,5 +34,23 @@ public class CharacterAnimationComponent : MonoBehaviour
     {
         animator.SetFloat(faceDirectionID, (float)character.currentFaceDirection);
         animator.SetBool(isWalkingID, character.GetVelocity().sqrMagnitude > .005f);
+    }
+
+    public void Attack()
+    {
+        animator.ResetTrigger(attackID);
+        animator.SetTrigger(attackID);
+    }
+
+    public delegate void OnAttackEnded();
+
+    public OnAttackEnded onAttackEnded;
+
+    public void EndAttack()
+    {
+        if(onAttackEnded != null)
+        {
+            onAttackEnded();
+        }
     }
 }

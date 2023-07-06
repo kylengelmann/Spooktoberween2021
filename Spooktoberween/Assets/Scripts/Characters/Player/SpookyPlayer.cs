@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [assembly:CheatSystem.CheatClass(typeof(SpookyPlayer))]
-public class SpookyPlayer : Character
+public class SpookyPlayer : Character, IHittableInterface
 {
 
     [SerializeField]
@@ -330,6 +330,11 @@ public class SpookyPlayer : Character
                 thingFocused.SetFocused(false);
             }
         }
+    }
+
+    public void OnHit(MonoBehaviour objectHitting)
+    {
+        Damage();
     }
 
     public void Damage(int amount = 1)

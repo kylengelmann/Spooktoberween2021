@@ -1,5 +1,77 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &762757184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 762757185}
+  - component: {fileID: 762757186}
+  - component: {fileID: 2275886872171593571}
+  - component: {fileID: 871794912648614624}
+  m_Layer: 7
+  m_Name: HitBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &762757185
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762757184}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3172230643851809927}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &762757186
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762757184}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2275886872171593571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762757184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adba41b868b1d9a40b6e1c1d693bc15b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &871794912648614624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762757184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b89c8da149c6054091e64336570820a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bShouldTick: 1
+  CollisionYValueOffset: 0
 --- !u!1 &3172230643725503068
 GameObject:
   m_ObjectHideFlags: 0
@@ -56,6 +128,7 @@ GameObject:
   - component: {fileID: 3172230643851809926}
   - component: {fileID: 3172230643851809925}
   - component: {fileID: 3172230643851809924}
+  - component: {fileID: 3753543256903297975}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -73,7 +146,8 @@ Transform:
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: -0.084}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 762757185}
   m_Father: {fileID: 3172230645000626542}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
@@ -155,6 +229,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shadowCastingMode: 0
   ReceivesShadows: 0
+--- !u!95 &3753543256903297975
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3172230643851809921}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: d401399409728e446810a41e0ef92033, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3172230645000626537
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,6 +260,7 @@ GameObject:
   - component: {fileID: 3172230645000626543}
   - component: {fileID: 3172230645000626540}
   - component: {fileID: 3172230645000626541}
+  - component: {fileID: 2909717875148525782}
   m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
@@ -200,11 +294,11 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.11
-  m_Speed: 0.6
+  m_Speed: 0.7
   m_Acceleration: 7
   avoidancePriority: 50
   m_AngularSpeed: 0
-  m_StoppingDistance: 0.05
+  m_StoppingDistance: 0.3
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -236,3 +330,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f830e6ec404ebb458edde1848758fe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2909717875148525782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3172230645000626537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 278cd5ff20a0e884f8bb8334f97565bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 3753543256903297975}

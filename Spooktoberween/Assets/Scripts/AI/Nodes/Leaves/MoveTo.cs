@@ -65,7 +65,7 @@ public class MoveTo : BehaviorNode
         Agent.SetDestination(GoalLocation);
 
         Vector3 ToEnd = GoalLocation - Agent.transform.position;
-        if(ToEnd.sqrMagnitude <= .05f)
+        if(ToEnd.sqrMagnitude <= Agent.stoppingDistance * Agent.stoppingDistance + .01f)
         {
             return ENodeStatus.Success;
         }
