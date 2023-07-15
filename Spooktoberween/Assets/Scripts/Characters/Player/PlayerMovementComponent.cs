@@ -13,9 +13,13 @@ public class PlayerMovementComponent : MonoBehaviour
 
     Vector2 movementInput;
 
+    SpookyTimeDilationComponent timeComponent;
+    bool bHasTimeComponent;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        bHasTimeComponent = timeComponent = GetComponent<SpookyTimeDilationComponent>();
     }
 
     private void Update()
@@ -28,6 +32,11 @@ public class PlayerMovementComponent : MonoBehaviour
     void UpdateVelocity(float deltaTime)
     {
         Vector2 goalVeclocity = movementInput * movementParams.movementSpeed;
+        if(bHasTimeComponent)
+        {
+            goalVeclocity *= timeComponent.timeDilation;
+        }
+
         float goalSpeed = goalVeclocity.magnitude;
         Vector2 goalDirection = goalVeclocity / (goalSpeed + Mathf.Epsilon);
 
@@ -42,6 +51,11 @@ public class PlayerMovementComponent : MonoBehaviour
         {
             float speedDiff = goalSpeed - parallelSpeed;
             parallelDeltaSpeed = Mathf.Max(speedDiff, -movementParams.brakingAcceleration * deltaTime);
+
+            if (bHasTimeComponent)
+            {
+               parallelDeltaSpeed *= timeComponent.timeDilation;
+            }
         }
         else if(parallelSpeed < goalSpeed)
         {

@@ -49,6 +49,10 @@ public class SpookyPlayer : Character, IHittableInterface
 
     public float onHitImpulse = 15f;
 
+    public AnimationCurve screamTimeDilateCurve;
+    public float screamTimeDilateDuration = 1.5f;
+    public float screamTimeDilationFactor = .3f;
+
     [System.Serializable]
     public struct FlashlightFocusData
     {
@@ -93,9 +97,14 @@ public class SpookyPlayer : Character, IHittableInterface
 
     public OnHPChanged onHPChanged;
 
+    SpookyTimeDilationComponent timeComponent;
+    bool bHasTimeComponent;
+
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
+
+        bHasTimeComponent = timeComponent = GetComponent<SpookyTimeDilationComponent>();
 
         currentFaceDirection = EFaceDirection.South;
     }
@@ -127,14 +136,20 @@ public class SpookyPlayer : Character, IHittableInterface
         if(spookManager)
         {
             spookManager.onHuntProgressed += OnHuntProgressed;
+            spookManager.onScream += OnScream;
         }
 
         Heal();
     }
 
+    float GetDilatedDeltaTime()
+    {
+        return bHasTimeComponent ? timeComponent.GetDeltaTime() : Time.deltaTime;
+    }
+
     private void Update()
     {
-        CurrentLookAngle = Mathf.SmoothDampAngle(CurrentLookAngle, TargetLookAngle, ref CurrentLookSpeed, turnDampingTime, maxTurnRate, Time.deltaTime);
+        CurrentLookAngle = Mathf.SmoothDampAngle(CurrentLookAngle, TargetLookAngle, ref CurrentLookSpeed, turnDampingTime, maxTurnRate, GetDilatedDeltaTime());
 
         CurrentLookRotation = FloorRotation * Quaternion.Euler(0f, CurrentLookAngle, 0f);
         Vector3 CurrentLookDir = CurrentLookRotation * Vector3.right;
@@ -330,6 +345,28 @@ public class SpookyPlayer : Character, IHittableInterface
             if(thingFocused)
             {
                 thingFocused.SetFocused(false);
+            }
+        }
+    }
+
+    public void OnScream()
+    {
+        StartCoroutine(SlowPlayer());
+    }
+
+    IEnumerator SlowPlayer()
+    {
+        float timeSlowed = 0f;
+        if(screamTimeDilateCurve != null && bHasTimeComponent)
+        {
+            while (timeSlowed < screamTimeDilateDuration)
+            {
+                float currentDilation = screamTimeDilateCurve.Evaluate(timeSlowed / screamTimeDilateDuration);
+                timeComponent.timeDilation = Mathf.Lerp(screamTimeDilationFactor, 1f, currentDilation);
+
+                yield return null;
+
+                timeSlowed += Time.deltaTime;
             }
         }
     }

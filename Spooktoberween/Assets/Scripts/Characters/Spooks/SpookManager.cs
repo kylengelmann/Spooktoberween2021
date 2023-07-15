@@ -51,6 +51,16 @@ public class SpookManager : MonoBehaviour
     bool bDebug_DisplayPossesTeleportAttempts = false;
     #endif // USING_CHEAT_SYSTEM
 
+    public System.Action onScream;
+
+    void OnScream()
+    {
+        if(onScream != null)
+        {
+            onScream.Invoke();
+        }
+    }
+
     private void Awake()
     {
         spookManager = this;

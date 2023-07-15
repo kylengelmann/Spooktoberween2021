@@ -1949,6 +1949,23 @@ Transform:
   m_Father: {fileID: 70553258}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1487744216 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1023978256251086983, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
+  m_PrefabInstance: {fileID: 1023978255107697610}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1487744217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487744216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27e8b6eb9bb45f54c9e09ec942e9a19c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1632675046
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5820,10 +5837,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpookyPlayerCharacter
       objectReference: {fileID: 0}
-    - target: {fileID: 1023978256251087002, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
-      propertyPath: onHitImpulse
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 1023978256251087003, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -5887,7 +5900,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3172230645000626537, guid: 43cafd8a3f9d7cd40a0010e8d93a96eb, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3172230645000626542, guid: 43cafd8a3f9d7cd40a0010e8d93a96eb, type: 3}
       propertyPath: m_RootOrder

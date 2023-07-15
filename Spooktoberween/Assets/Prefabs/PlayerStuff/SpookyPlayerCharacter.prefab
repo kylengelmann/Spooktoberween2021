@@ -380,6 +380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a72f4455e5767b4419ff416722351326, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxHP: 3
   maxTurnRate: 450
   turnDampingTime: 0.1
   VisibilityLightPrefab: {fileID: 1430917484440479, guid: ddec3e09f4a14854d9479de6c758c44d, type: 3}
@@ -391,6 +392,42 @@ MonoBehaviour:
   huntFastBlinkProbability: 0.75
   huntSlowBlinkTime: 0.075
   huntBlinkOffTime: 0.05
+  onHitImpulse: 5
+  screamTimeDilateCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0008392334
+      value: 0.61087036
+      inSlope: -3.50916
+      outSlope: -3.50916
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.062304623
+    - serializedVersion: 3
+      time: 0.42921436
+      value: 0.014099121
+      inSlope: 0.10320482
+      outSlope: 0.10320482
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.1054507
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  screamTimeDilateDuration: 1
+  screamTimeDilationFactor: 0.3
   flashlightFocusData:
     FocusTime: 0.5
     UnfocusTime: 0.5

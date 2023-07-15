@@ -29,6 +29,8 @@ public class Attack : BehaviorNode
             return ENodeStatus.NotRunning;
         }
 
+        SpookManager.spookManager.onScream();
+
         return ENodeStatus.Running;
     }
 
