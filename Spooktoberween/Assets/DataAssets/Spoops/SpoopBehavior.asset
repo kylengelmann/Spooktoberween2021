@@ -24,9 +24,9 @@ MonoBehaviour:
     huntStartTimerLength:
       min: 5
       max: 7
-    huntStartPlayerRadius: 2
+    huntStartPlayerRadius: 1.5
   huntData:
-    huntPlayerRadius: 3
+    huntPlayerRadius: 2
     huntTeleportCooldown:
       min: 3
       max: 5
