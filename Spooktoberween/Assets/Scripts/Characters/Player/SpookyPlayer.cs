@@ -47,6 +47,8 @@ public class SpookyPlayer : Character, IHittableInterface
 
     SpookyThing thingFocused;
 
+    public float onHitImpulse = 15f;
+
     [System.Serializable]
     public struct FlashlightFocusData
     {
@@ -335,6 +337,10 @@ public class SpookyPlayer : Character, IHittableInterface
     public void OnHit(MonoBehaviour objectHitting)
     {
         Damage();
+
+        Vector3 hitDirection = transform.position - objectHitting.transform.position;
+        Vector2 impulse = onHitImpulse * new Vector2(hitDirection.x, hitDirection.z).normalized;
+        movementComponent.AddImpulse(impulse);
     }
 
     public void Damage(int amount = 1)

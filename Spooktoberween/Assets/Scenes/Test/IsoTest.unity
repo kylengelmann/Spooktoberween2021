@@ -5820,6 +5820,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpookyPlayerCharacter
       objectReference: {fileID: 0}
+    - target: {fileID: 1023978256251087002, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
+      propertyPath: onHitImpulse
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1023978256251087003, guid: b81512420f906ef4ba53436da36b58ae, type: 3}
       propertyPath: m_RootOrder
       value: 2

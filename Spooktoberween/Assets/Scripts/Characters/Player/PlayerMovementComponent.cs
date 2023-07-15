@@ -65,6 +65,11 @@ public class PlayerMovementComponent : MonoBehaviour
         characterController.Move(new Vector3(locationDelta.x, 0f, locationDelta.y));
     }
 
+    public void AddImpulse(Vector2 impulse)
+    {
+        velocity += impulse;
+    }
+
     public void SetMovmentInput(Vector2 newMovementInput)
     {
         movementInput = newMovementInput.sqrMagnitude > 1f ? newMovementInput.normalized : newMovementInput;
