@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [assembly:CheatSystem.CheatClass(typeof(SpookyPlayer))]
-public class SpookyPlayer : Character, IHittableInterface
+public class SpookyPlayer : Character, IHittableInterface, ICollectorInterface
 {
 
     [SerializeField]
@@ -100,6 +100,9 @@ public class SpookyPlayer : Character, IHittableInterface
     SpookyTimeDilationComponent timeComponent;
     bool bHasTimeComponent;
 
+    public delegate void OnItemCollected(Collectable collectable);
+    public OnItemCollected onItemCollected;
+
     private void Awake()
     {
         movementComponent = GetComponent<PlayerMovementComponent>();
@@ -115,8 +118,6 @@ public class SpookyPlayer : Character, IHittableInterface
     {
         FloorRotation = CurrentLookRotation = TargetLookRotation = Quaternion.Euler(FloorAngle, 0f, 0f);
         FloorNormal = FloorRotation * Vector3.up;
-
-        Debug.Log(FloorNormal);
 
         if(VisibilityLightPrefab)
         {
@@ -426,6 +427,16 @@ public class SpookyPlayer : Character, IHittableInterface
     void Die()
     {
 
+    }
+
+    public bool Collect(Collectable collectable)
+    {
+        if(onItemCollected != null)
+        {
+            onItemCollected(collectable);
+        }
+
+        return true;
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]
