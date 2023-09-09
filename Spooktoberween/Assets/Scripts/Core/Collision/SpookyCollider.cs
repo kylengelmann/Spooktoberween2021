@@ -11,6 +11,7 @@ public class SpookyCollider : MonoBehaviour
     private void Awake()
     {
         transform.position = new Vector3(transform.position.x, CollisionYValue + CollisionYValueOffset, transform.position.z);
+        transform.hasChanged = false;
 
         bool bShouldDisable = !bShouldTick;
 
@@ -42,6 +43,8 @@ public class SpookyCollider : MonoBehaviour
     private void OnEnable()
     {
         bool bShouldDisable = !bShouldTick;
+
+        Update();
 
         // don't turn off the component in edit mode
 #if UNITY_EDITOR

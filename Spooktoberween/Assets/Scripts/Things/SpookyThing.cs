@@ -1,7 +1,19 @@
 using UnityEngine;
 
+[System.Flags]
+public enum EThingType
+{
+    None = 0,
+
+    Dish = 1,
+    HallDecor = 1 << 1,
+    Furniture = 1 << 2,
+}
+
 public class SpookyThing : MonoBehaviour
 {
+    public EThingType ThingType;
+
     public bool bIsVisible{get; private set;}
 
     public delegate void OnFlagChanged(bool newFlag);
@@ -24,6 +36,9 @@ public class SpookyThing : MonoBehaviour
     int StencilRefDefault;
 
     bool bIsDisplayingPossess = false;
+
+    public delegate void spookyThingEvent(SpookyThing thing);
+    public spookyThingEvent OnTeleported;
 
     private void Awake()
     {
@@ -105,6 +120,14 @@ public class SpookyThing : MonoBehaviour
             bIsDisplayingPossess = bDisplay;
 
             spriteRenderer.material.SetFloat(PossessedTimeID, bDisplay ? Time.timeSinceLevelLoad : -1f);
+        }
+    }
+
+    public void NotifyTeleport()
+    {
+        if(OnTeleported != null)
+        {
+            OnTeleported(this);
         }
     }
 }

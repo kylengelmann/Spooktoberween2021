@@ -24,6 +24,7 @@ public class SpookPossessComponent : MonoBehaviour
     SpookManager.TeleportData teleportData;
 
     const int MAX_TELEPORT_LOCATION_SEARCH_ATTEMPTS = 15;
+    const float SpawnLocationSearchRadius = 1f;
 
     float TimeFocused = -1f;
     public float PossessionDisplayDelay = 3f;
@@ -143,10 +144,17 @@ public class SpookPossessComponent : MonoBehaviour
         }
 
         Vector3 teleportLocation;
-        if (GetTeleportLocationInCircle(transform.position, teleportData.teleportRadius, out teleportLocation))
+        SpookyThingSpawnLocation spawnLocation;
+        if (GetTeleportLocationInCircle(transform.position, teleportData.teleportRadius, out teleportLocation, out spawnLocation))
         {
             transform.position = teleportLocation;
             timeLeftUntilHunt = teleportData.huntStartTimerLength.Get();
+            thingPossessing.NotifyTeleport();
+
+            if(spawnLocation)
+            {
+                spawnLocation.OnThingSpawned(thingPossessing);
+            }
         }
         else
         {
@@ -185,11 +193,18 @@ public class SpookPossessComponent : MonoBehaviour
                     };
 
                     Vector3 teleportLocation;
-                    if (GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntPlayerRadius, out teleportLocation, new TeleportCheck[] { canSeePlayer }))
+                    SpookyThingSpawnLocation spawnLocation;
+                    if (GetTeleportLocationInCircle(SpookyGameManager.gameManager.player.transform.position, huntData.huntPlayerRadius, out teleportLocation, out spawnLocation, new TeleportCheck[] { canSeePlayer }))
                     {
                         transform.position = teleportLocation;
                         spookManager.ProgressHunt();
                         timeUntilNextTeleport = huntData.huntTeleportCooldown.Get();
+                        thingPossessing.NotifyTeleport();
+
+                        if(spawnLocation)
+                        {
+                            spawnLocation.OnThingSpawned(thingPossessing);
+                        }
                     }
                     else
                     {
@@ -225,43 +240,78 @@ public class SpookPossessComponent : MonoBehaviour
 
     delegate bool TeleportCheck(in Vector3 teleportLocation, GameObject teleportingObject);
 
-    bool GetTeleportLocationInCircle(Vector3 center, float radius, out Vector3 teleportLocation, TeleportCheck[] additionalChecks = null)
+    bool GetTeleportLocationInCircle(Vector3 center, float radius, out Vector3 teleportLocation, out SpookyThingSpawnLocation spawnLocation, TeleportCheck[] additionalChecks = null)
     {
+        spawnLocation = null;
         bool bLocationFound = false;
         int numAttempts = 0;
         teleportLocation = Vector3.zero;
+        Collider[] OverlappedSpawners = new Collider[16];
+        HashSet<Collider> CheckedColliders = new HashSet<Collider>();
         while (!bLocationFound && numAttempts < MAX_TELEPORT_LOCATION_SEARCH_ATTEMPTS)
         {
             Vector2 random2DTeleportLocation = Random.insideUnitCircle * radius;
-            Vector3 randomTeleportLocation = center + new Vector3(random2DTeleportLocation.x, SpookyCollider.CollisionYValue, random2DTeleportLocation.y);
+            Vector3 randomTeleportLocation = center + new Vector3(random2DTeleportLocation.x, 0f, random2DTeleportLocation.y);
+            randomTeleportLocation.y = SpookyCollider.CollisionYValue;
             NavMeshHit navMeshHit;
             if (NavMesh.SamplePosition(randomTeleportLocation, out navMeshHit, .5f, NavMesh.AllAreas))
             {
-                Bounds bounds = thingPossessing.spriteRenderer.bounds;
-                Vector3 boundsOffset = bounds.center - gameObject.transform.position;
-                Vector3 newBoundsLocation = navMeshHit.position + boundsOffset;
-                Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
-                if (!VisibleArea.IsInVisibleArea(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z)))
+                bool CheckLocation(Vector3 location)
                 {
-                    bLocationFound = true;
-                    if (additionalChecks != null)
+                    Bounds bounds = thingPossessing.spriteRenderer.bounds;
+                    Vector3 boundsOffset = bounds.center - gameObject.transform.position;
+                    Vector3 newBoundsLocation = navMeshHit.position + boundsOffset;
+                    Vector3 boundsSize = thingPossessing.spriteRenderer.bounds.extents;
+                    if (!VisibleArea.IsInVisibleArea(new Vector2(newBoundsLocation.x, newBoundsLocation.z), new Vector2(boundsSize.x, boundsSize.z)))
                     {
-                        foreach(TeleportCheck additionalCheck in additionalChecks)
+                        if (additionalChecks != null)
                         {
-                            if(!additionalCheck(navMeshHit.position, gameObject))
+                            foreach (TeleportCheck additionalCheck in additionalChecks)
                             {
-                                bLocationFound = false;
-                                break;
+                                if (!additionalCheck(navMeshHit.position, gameObject))
+                                {
+                                    return false;
+                                }
                             }
                         }
 
-                        if(!bLocationFound)
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                int NumOverlaps = Physics.OverlapSphereNonAlloc(navMeshHit.position, SpawnLocationSearchRadius, OverlappedSpawners);
+                for(int i = 0; i < NumOverlaps; ++i)
+                {
+                    if(CheckedColliders.Contains(OverlappedSpawners[i]))
+                    {
+                        continue;
+                    }
+
+                    spawnLocation = OverlappedSpawners[i].gameObject.GetComponent<SpookyThingSpawnLocation>();
+                    if(spawnLocation && spawnLocation.CanThingSpawn(thingPossessing))
+                    {
+                        if(CheckLocation(spawnLocation.transform.position))
                         {
-                            DrawDebugTeleportData(randomTeleportLocation, Color.yellow);
-                            continue;
+                            bLocationFound = true;
+                            teleportLocation = spawnLocation.transform.position;
+                            break;
                         }
                     }
 
+                    CheckedColliders.Add(OverlappedSpawners[i]);
+                }
+
+                if(bLocationFound)
+                {
+                    break;
+                }
+
+                spawnLocation = null;
+
+                if(CheckLocation(navMeshHit.position))
+                {
                     bLocationFound = true;
                     teleportLocation = navMeshHit.position;
                 }

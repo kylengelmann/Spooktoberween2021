@@ -34,7 +34,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - SpookyThingSpawner
   - FlashlightCollision
   - SpookyThing
   - Visibility
