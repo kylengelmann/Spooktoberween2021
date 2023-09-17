@@ -140,7 +140,7 @@ public class SpookyTilemap : MonoBehaviour
         public List<Sprite> sprites;
     }
 
-    [SerializeField, SpookySpriteGeoMapEntry] List<SpriteGeoMapEntry> spriteGeoMap = new List<SpriteGeoMapEntry>();
+    [SerializeField, NamedListEntry("geo")] List<SpriteGeoMapEntry> spriteGeoMap = new List<SpriteGeoMapEntry>();
 
     readonly Matrix4x4 cellToLocalGeo = new Matrix4x4(new Vector4(.5f, -.5f, 0f, 0f),
                                                       new Vector4(.25f, .25f, 0f, 0f),

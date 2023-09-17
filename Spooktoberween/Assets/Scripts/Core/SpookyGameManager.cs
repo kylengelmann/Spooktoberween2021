@@ -13,8 +13,13 @@ public class SpookyGameManager : MonoBehaviour
     public SpookyPlayer player {get; private set;}
 
     [SerializeField] SpookBehavior spookBehavior;
+    [SerializeField] SpookyThingSpawnRatesAsset spawnRates;
+
+    public SpookyThingSpawnRatesAsset GetSpawnRates() { return spawnRates; }
 
     SpookManager spookManager;
+
+    List<SpookyRoom> rooms = new List<SpookyRoom>();
 
 #if USING_CHEAT_SYSTEM
     Light debugDirectionalLight;
@@ -33,6 +38,8 @@ public class SpookyGameManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
+        spawnRates.PreCacheEntries();
+
         spookManager = gameObject.AddComponent<SpookManager>();
         spookManager.SetSpookBehavior(spookBehavior);
 
@@ -49,10 +56,39 @@ public class SpookyGameManager : MonoBehaviour
 #endif
     }
 
+    private void Start()
+    {
+        StartCoroutine(SpawnLoop());
+    }
+
     public void SetPlayerController(PlayerController newPlayerController)
     {
         playerController = newPlayerController;
         player = playerController.player;
+    }
+
+    public void RegisterRoom(SpookyRoom room)
+    {
+        rooms.Add(room);
+    }    
+
+    IEnumerator SpawnLoop()
+    {
+        yield return null;
+
+        foreach(SpookyRoom room in rooms)
+        {
+            yield return room.SpawnRoutine();
+        }
+
+        OnSpawningFinished();
+    }
+
+    void OnSpawningFinished()
+    {
+        spookManager.OnThingsSpawned();
+
+        
     }
 
     [CheatSystem.Cheat(), System.Diagnostics.Conditional("USING_CHEAT_SYSTEM")]

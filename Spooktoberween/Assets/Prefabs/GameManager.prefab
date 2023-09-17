@@ -988,3 +988,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spookBehavior: {fileID: 11400000, guid: c3ab018075e789d47a903e7def954af8, type: 2}
+  spawnRates: {fileID: 11400000, guid: d0f17f27e4628694bac04f8fe4e234b5, type: 2}

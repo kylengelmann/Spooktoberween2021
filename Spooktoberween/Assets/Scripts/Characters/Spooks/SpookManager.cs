@@ -66,10 +66,10 @@ public class SpookManager : MonoBehaviour
         spookManager = this;
     }
 
-    private void Start()
+    public void OnThingsSpawned()
     {
         const int NumSpooks = 3;
-        for(int i = 0; i < NumSpooks; ++i)
+        for (int i = 0; i < NumSpooks; ++i)
         {
             PossessThing();
         }

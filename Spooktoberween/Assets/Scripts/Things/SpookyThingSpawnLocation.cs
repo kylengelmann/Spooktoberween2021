@@ -8,9 +8,26 @@ public class SpookyThingSpawnLocation : MonoBehaviour
     public EThingType TypesAllowed;
     public EThingType TypesBlocked;
     public float ThingSpriteYOffset = 0f;
+
+    private void Start()
+    {
+        foreach(SpookyRoom room in FindObjectsOfType<SpookyRoom>())
+        {
+            if(room.ContainsLocation(transform.position))
+            {
+                room.RegisterSpawner(this);
+            }
+        }
+    }
+
     public bool CanThingSpawn(SpookyThing spookyThing)
     {
-        return !thingOccupying && ((long)(spookyThing.ThingType) & (long)TypesAllowed) != 0 && ((long)(spookyThing.ThingType) & (long)TypesBlocked) == 0;
+        return !thingOccupying && (spookyThing.ThingType & TypesAllowed) != 0 && (spookyThing.ThingType & TypesBlocked) == 0;
+    }
+
+    public bool CanThingSpawn(EThingType ThingType)
+    {
+        return !thingOccupying && (ThingType & TypesAllowed) != 0 && (ThingType & TypesBlocked) == 0;
     }
 
     public void OnThingSpawned(SpookyThing spookyThing)
