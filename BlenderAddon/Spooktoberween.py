@@ -66,39 +66,48 @@ class SpoopPixelRenderer(bpy.types.Operator):
         if not os.path.exists(spoopLibPath):
             self.report({'ERROR'}, "Missing asset library, addon installed wrong")
 
-        normalMat = None
-        with bpy.data.libraries.load(spoopLibPath, assets_only=True) as (data_from, data_to):
-            data_to.materials = data_from.materials
+        normalMat = bpy.data.materials.get("Normal")
 
-        normalMat = data_to.materials[0]
-        print (normalMat)
+        if normalMat == None:
+            with bpy.data.libraries.load(spoopLibPath, assets_only=True) as (data_from, data_to):
+                data_to.materials = data_from.materials
+
+            normalMat = data_to.materials[0]
+
+        print (normalMat.as_pointer())
+
+        context.scene.eevee.taa_render_samples = 1
 
         for obj in selected_objects:
             if obj.type != 'MESH':
                 continue
             
             if obj.data.materials:
-                obj.data.materials[0] = normalMat
+                if(obj.data.materials[0] != normalMat):
+                    obj.data.materials[0] = normalMat
             else:
                 obj.data.materials.append(normalMat)
 
             renderFileName = os.path.join(userpath, obj.name + ".png")
             print (renderFileName)
             
-            camLocation = obj.location - camForward * 10 + camUp * 3.75
+            camLocation = obj.location - camForward * 10.0 + camUp * 3.75
             print (str(obj.location) + " | " + str(camLocation))
             
             cam.location = camLocation
             
             context.scene.render.filepath = renderFileName
             bpy.ops.render.render(write_still=True)
-            
+        
         bpy.ops.object.delete()
+
+        for obj in selected_objects:
+            obj.select_set(True)
             
         return{'FINISHED'}
 
 def menu_func_import(self, context):
-    self.layout.operator(SpoopPixelRenderer.bl_idname, text="Render Pixels")
+    self.layout.operator(SpoopPixelRenderer.bl_idname, text="Spooktoberween|Render Pixels")
 
 def register():
     bpy.utils.register_class(SpoopPixelRenderer)
