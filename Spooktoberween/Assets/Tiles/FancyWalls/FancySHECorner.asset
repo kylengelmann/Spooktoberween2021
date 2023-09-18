@@ -36,6 +36,6 @@ MonoBehaviour:
   m_ColliderType: 0
   VisibleSprite: {fileID: 5696696699958393242, guid: 41ab212c29f8cbb47a087f7ce7a035cf, type: 3}
   HiddenSprite: {fileID: 0}
-  hideBehavior: 3
+  hideBehavior: 4
   hidePivot: {x: 0, y: 0}
   geoPrefab: {fileID: 8013262390141746923, guid: 7943b3fd62e4a694a9314aa053436b32, type: 3}
